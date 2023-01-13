@@ -1,0 +1,58 @@
+version: '3.1'
+services:
+  db:
+    container_name: mongodb
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
+    ports:
+      - ${MONGODB_PORT}:${MONGODB_PORT}
+    volumes:
+      - ./mongodb:/data/db
+    restart: unless-stopped
+    networks:
+      - food_dev_api
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: unless-stopped
+    ports:
+      - ${MONGO_EXPRESS_PORT}:8081
+    environment:
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=false
+      - ME_CONFIG_MONGODB_AUTH_DATABASE=${MONGODB_DATABASE}
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGO_EXPRESS_USERNAME}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_EXPRESS_PASSWORD}
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGODB_ROOT_USERNAME}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGODB_ROOT_PASSWORD}
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    depends_on:
+      - db
+    networks:
+      - food_dev_api
+  fooddev:
+    container_name: food-dev
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile-dev
+    image: food-api
+    env_file:
+      - ./env/.dev.env
+    volumes:
+      - .:/app # create volumn in current directory of container
+      - /app/node_modules # anonymus/unnamed volumn in container
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - food_dev_api
+networks:
+  food_dev_api:
+    driver: bridge
+volumes:
+  mongodb:
+
+
