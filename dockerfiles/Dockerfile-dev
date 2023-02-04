@@ -2,14 +2,14 @@ FROM node:16.18.1-alpine
 
 WORKDIR /app
 
-COPY ./package*.json /app/
+COPY ./package*.json ./
 COPY env/.dev.env ./.env
 
 RUN rm -rf node_modules
 RUN npm cache clean -force
 RUN npm install --verbose
 
-COPY . /app/
+COPY . .
 
 EXPOSE 4000
 CMD npm run start:dev

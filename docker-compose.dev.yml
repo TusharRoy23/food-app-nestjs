@@ -6,10 +6,12 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGODB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGODB_DATABASE}
     ports:
       - ${MONGODB_PORT}:${MONGODB_PORT}
     volumes:
       - ./mongodb:/data/db
+      - ./init-dev-mongo.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     restart: unless-stopped
     networks:
       - food_dev_api
@@ -52,7 +54,6 @@ services:
 networks:
   food_dev_api:
     driver: bridge
+
 volumes:
   mongodb:
-
-
