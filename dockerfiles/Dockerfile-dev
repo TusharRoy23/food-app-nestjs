@@ -5,11 +5,9 @@ WORKDIR /app
 COPY ./package*.json ./
 COPY env/.dev.env ./.env
 
-RUN rm -rf node_modules
-RUN npm cache clean -force
-RUN npm install --verbose
-
 COPY . .
+
+RUN npm install --verbose
 
 EXPOSE 4000
 CMD npm run start:dev
