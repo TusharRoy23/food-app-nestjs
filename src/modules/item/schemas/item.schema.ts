@@ -14,6 +14,8 @@ import { ItemStatus, ItemType, MealFlavor, MealState, MealType } from "../../sha
     }
 })
 export class Item {
+    _id: mongoose.Types.ObjectId;
+
     @Prop({ type: 'String', maxlength: 13, minlength: 1, required: true, lowercase: true })
     name: string;
 

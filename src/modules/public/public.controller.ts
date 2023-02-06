@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Inject, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { IsPublic } from '../shared/decorator/public.decorator';
 import { RegisterDto } from '../restaurant/dto/register.dto';
 import { IPublicService, PUBLIC_SERVICE } from './interfaces/IPublic.service';
+import { ParseObjectIDPipe } from '../shared/pipe/parse-objectid.pipe';
 
 @ApiTags('Public')
 @Controller('public')
@@ -23,5 +24,12 @@ export class PublicController {
     @Get('restaurant/list')
     public async getRestaurantList() {
         return this.publicService.getRestaurantList();
+    }
+
+    @Get('restaurant/:restaurantId/item/list')
+    public async getItemList(
+        @Param('restaurantId', ParseObjectIDPipe) restaurantId: string,
+    ) {
+        return this.publicService.getItemList(restaurantId);
     }
 }

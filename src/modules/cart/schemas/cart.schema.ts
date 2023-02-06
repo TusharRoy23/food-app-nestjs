@@ -17,6 +17,8 @@ import { CartItem } from "./cart-item.schema";
     },
 })
 export class Cart {
+    _id: mongoose.Types.ObjectId;
+
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
     user: User;
 

@@ -17,6 +17,9 @@ import { CurrentStatus } from "../../shared/utils/enum";
     },
 })
 export class Restaurant {
+    @Prop({ type: mongoose.Types.ObjectId })
+    _id: string
+
     @Prop({ type: 'String', maxlength: 13, minlength: 1, required: true, lowercase: true })
     name: string;
 

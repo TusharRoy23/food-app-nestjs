@@ -17,6 +17,8 @@ import { OrderItem } from "./order-item.schemas";
     },
 })
 export class Order {
+    _id: mongoose.Types.ObjectId;
+
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
     user: User;
 

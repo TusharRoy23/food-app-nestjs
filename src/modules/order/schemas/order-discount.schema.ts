@@ -13,6 +13,8 @@ import { Restaurant } from "../../restaurant/schemas";
     },
 })
 export class OrderDiscount {
+    _id: mongoose.Types.ObjectId;
+
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' })
     restaurant: Restaurant;
 

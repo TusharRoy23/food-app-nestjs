@@ -17,6 +17,7 @@ import { ORDER_SERVICE } from './interfaces/IOrder.service';
     controllers: [OrderController],
     providers: [
         { useClass: OrderService, provide: ORDER_SERVICE }
-    ]
+    ],
+    exports: [MongooseModule]
 })
 export class OrderModule { }
