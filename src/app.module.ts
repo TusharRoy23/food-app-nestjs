@@ -8,7 +8,7 @@ import { ItemModule } from './modules/item/item.module';
 import { CartModule } from './modules/cart/cart.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PublicModule } from './modules/public/public.module';
-import { JwtAuthGuard, RolesGuard } from './modules/shared/guards/index';
+import { JwtAuthGuard, RolesGuard, UserTypeGuard } from './modules/shared/guards/index';
 import { APP_GUARD } from '@nestjs/core';
 import { SharedModule } from './modules/shared/shared.module';
 
@@ -30,6 +30,7 @@ import { SharedModule } from './modules/shared/shared.module';
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
+    { provide: APP_GUARD, useClass: UserTypeGuard }
   ]
 })
 export class AppModule { }

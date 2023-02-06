@@ -8,7 +8,7 @@ export interface ISharedService {
     getRestaurantInfo(restaurantUuid: string): Promise<Restaurant>;
     getUserInfo(email: string): Promise<User>;
     isValidRefreshToken(token: string, hashedRefreshToken: string): Promise<boolean>;
-    getItemInfo(itemId: string, restaurantId: string): Promise<Item>;
+    getItemInfo(itemId: string, restaurantId: any): Promise<Item>;
     getItemList(restaurantId: string): Promise<Item[]>;
-    getOrderDiscount(restaurantId: string): Promise<OrderDiscount>;
+    getOrderDiscount(restaurantId: any): Promise<OrderDiscount>;
 }

@@ -52,7 +52,7 @@ export class SharedService implements ISharedService {
         }
     }
 
-    async getItemInfo(itemId: string, restaurantId: string): Promise<Item> {
+    async getItemInfo(itemId: string, restaurantId: any): Promise<Item> {
         try {
             const item: Item = await this.itemModel.findOne({ _id: itemId, restaurant: restaurantId, item_status: ItemStatus.ACTIVE }).exec();
             if (item == null) {
@@ -72,7 +72,7 @@ export class SharedService implements ISharedService {
         }
     }
 
-    async getOrderDiscount(restaurantId: string): Promise<OrderDiscount> {
+    async getOrderDiscount(restaurantId: any): Promise<OrderDiscount> {
         try {
             let currentDate = new Date().toISOString();
             return await this.orderDiscountModel.findOne({

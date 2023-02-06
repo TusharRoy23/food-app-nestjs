@@ -14,8 +14,7 @@ import { Restaurant } from "./restaurant.schema";
     },
 })
 export class RestaurantItem {
-    @Prop({ type: mongoose.Types.ObjectId })
-    _id: string
+    _id: mongoose.Types.ObjectId;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' })
     restaurant: Restaurant;
