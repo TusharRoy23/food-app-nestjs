@@ -1,11 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, Max, Min } from "class-validator";
-import { isValidObjectId } from "../../shared/dto/custom.validators";
+import { IsMongoId, IsNotEmpty, IsNumber, Max, Min } from "class-validator";
 
 export class RatingDto {
     @ApiProperty()
     @IsNotEmpty()
-    @isValidObjectId('restaurant_id')
+    @IsMongoId()
     restaurant_id: string;
 
     @ApiProperty()

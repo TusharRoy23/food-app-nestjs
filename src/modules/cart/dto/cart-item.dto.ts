@@ -1,12 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsString, Max, Min } from "class-validator";
-import { isValidObjectId } from "../../shared/dto/custom.validators";
+import { IsMongoId, IsNotEmpty, IsNumber, IsString, Max, Min } from "class-validator";
 
 export class CartItemDto {
     @ApiProperty()
     @IsString()
     @IsNotEmpty()
-    @isValidObjectId('id')
+    @IsMongoId()
     id: string;
 
     @ApiProperty()

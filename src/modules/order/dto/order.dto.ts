@@ -1,11 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString } from "class-validator";
-import { isValidObjectId } from "../../shared/dto/custom.validators";
+import { IsMongoId, IsNotEmpty, IsString } from "class-validator";
 
 export class OrderDto {
     @ApiProperty()
     @IsString()
     @IsNotEmpty()
-    @isValidObjectId('id')
+    @IsMongoId()
     id: string;
 }

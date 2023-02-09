@@ -130,24 +130,3 @@ export const isValidEnum = (property: string, enumType: any, validationOptions?:
         });
     }
 };
-
-export const isValidObjectId = (property: string, validationOptions?: ValidationOptions) => {
-    return (object: Object, propertyName: string) => {
-        registerDecorator({
-            name: 'isValidObject',
-            target: object.constructor,
-            propertyName: propertyName,
-            constraints: [property],
-            options: validationOptions,
-            validator: {
-                validate(value: string, args: ValidationArguments) {
-                    const validObjId = Types.ObjectId.isValid(value);
-                    return validObjId ? true : false;
-                },
-                defaultMessage(validationArguments?: ValidationArguments) {
-                    return 'Must be a valid id';
-                },
-            }
-        })
-    }
-};
