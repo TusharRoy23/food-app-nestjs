@@ -1,7 +1,11 @@
-import { IsNotEmpty, IsUUID } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEmpty, IsString } from "class-validator";
+import { isValidObjectId } from "../../shared/dto/custom.validators";
 
 export class OrderDto {
-    @IsUUID()
+    @ApiProperty()
+    @IsString()
     @IsNotEmpty()
-    uuid: string;
+    @isValidObjectId('id')
+    id: string;
 }

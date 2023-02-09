@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
-import { Item } from "../../item/schemas/item.schema";
 import { OrderDiscount } from "../../order/schemas";
-import { Restaurant } from "../../restaurant/schemas";
 import { User } from "../../user/schemas/user.schema";
 
 export class UserResponse {
@@ -20,7 +18,8 @@ export class CartReponse {
     cart_amount: number;
     total_amount: number;
     rebate_amount: number;
-    cart_date: string;
+    discount_rate: number;
+    cart_date: Date;
     cart_status: string;
     cart_item: CartItemResponse[]
 }
@@ -37,14 +36,14 @@ export class OrderResponse {
     id: mongoose.Types.ObjectId;
     order_amount: number;
     total_amount: number;
-    Restaurant?: Restaurant;
+    restaurant?: RestaurantResponse;
     serial_number: string;
     rebate_amount: number;
-    order_date: string;
+    discount_rate: number;
+    order_date: Date;
     order_status: string;
     paid_by: string;
     order_item: OrderItemResponse[];
-    order_discount?: OrderDiscount;
     user?: User;
 }
 
@@ -53,7 +52,7 @@ export class OrderItemResponse {
     qty: number;
     amount: number;
     total_amount: number;
-    item: Item;
+    item: ItemReponse;
 }
 
 export class PaginatedOrderResponse {
@@ -83,7 +82,16 @@ export class ItemReponse {
     item_type: string;
     meal_type: string;
     meal_flavor: string;
-    restaurant: Restaurant;
+    restaurant?: RestaurantResponse;
     price: number;
-    discount_rate: number;
+    discount_rate?: number;
+}
+
+export class RestaurantResponse {
+    id: mongoose.Types.ObjectId;
+    name: string;
+    address: string;
+    opening_time?: string;
+    closing_time?: string;
+    current_status?: string;
 }

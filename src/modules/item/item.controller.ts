@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Post, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GetUser } from '../shared/decorator/get-user.decorator';
 import { IsPublic } from '../shared/decorator/public.decorator';
@@ -24,7 +24,7 @@ export class ItemController {
     @Post('/')
     @ResponseMessage(ItemMessage.CREATED)
     public async create(
-        @Body(ValidationPipe) body: CreateItemDto,
+        @Body() body: CreateItemDto,
         @GetUser() user: User
     ) {
         return await this.itemService.create(body, user);
@@ -48,7 +48,7 @@ export class ItemController {
     @Put('/:id')
     @ResponseMessage(ItemMessage.UPDATED)
     public async update(
-        @Body(ValidationPipe) body: UpdateItemDto,
+        @Body() body: UpdateItemDto,
         @Param('id', ParseObjectIDPipe) id: string,
         @GetUser() user: User
     ) {

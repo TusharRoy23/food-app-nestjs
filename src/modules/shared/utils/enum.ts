@@ -11,7 +11,7 @@ export enum UserRole {
 
 export enum UserType {
     VISITOR = 'visitor',
-    RESTAURANT_USER = 'Restaurant-user',
+    RESTAURANT_USER = 'restaurant-user',
     ADMIN = 'admin'
 }
 
@@ -35,7 +35,7 @@ export enum ItemType {
     FOOD = 'food',
     DRINK = 'drink',
     ALCOHOL = 'alcohol',
-    VICTUALS = 'Victuals'
+    VICTUALS = 'victuals'
 }
 
 export enum MealState {

@@ -28,10 +28,10 @@ export class OrderDiscount {
     discount_rate: number;
 
     @Prop({ type: 'Date', required: true })
-    start_date: string;
+    start_date: Date;
 
     @Prop({ type: 'Date', required: true })
-    end_date: string;
+    end_date: Date;
 
     @Prop({ type: 'Date', default: Date.now() })
     created_date?: string;

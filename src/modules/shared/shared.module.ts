@@ -1,4 +1,5 @@
 import { Global, Module } from "@nestjs/common";
+import { CartModule } from "../cart/cart.module";
 import { ItemModule } from "../item/item.module";
 import { OrderModule } from "../order/order.module";
 import { RestaurantModule } from "../restaurant/restaurant.module";
@@ -10,7 +11,7 @@ const sharedService = { provide: SHARED_SERVICE, useClass: SharedService }
 
 @Global()
 @Module({
-    imports: [RestaurantModule, UserModule, ItemModule, OrderModule],
+    imports: [RestaurantModule, UserModule, ItemModule, OrderModule, CartModule],
     providers: [
         sharedService
     ],

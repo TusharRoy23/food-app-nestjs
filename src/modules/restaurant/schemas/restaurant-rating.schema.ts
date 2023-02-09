@@ -14,8 +14,7 @@ import { Restaurant } from "./restaurant.schema";
     },
 })
 export class RestaurantRating {
-    @Prop({ type: mongoose.Types.ObjectId })
-    _id: string
+    _id: mongoose.Types.ObjectId;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' })
     restaurant: Restaurant;
@@ -27,7 +26,7 @@ export class RestaurantRating {
     star: number;
 
     @Prop({ type: 'Date', default: Date.now() })
-    rating_date: string;
+    rating_date: Date;
 }
 
 export const RestaurantRatingSchema = SchemaFactory.createForClass(RestaurantRating);

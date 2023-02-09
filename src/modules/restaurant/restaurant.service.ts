@@ -1,23 +1,30 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { throwException } from '../shared/errors/all.exception';
-import { connectionName, CurrentStatus, UserRole, UserType } from '../shared/utils/enum';
-import { PaginationPayload, PaginatedOrderResponse } from '../shared/utils/response.utils';
-import { OrderDiscount } from '../order/schemas';
+import { connectionName, CurrentStatus, OrderStatus, UserRole, UserType } from '../shared/utils/enum';
+import { PaginationPayload, PaginatedOrderResponse, OrderResponse } from '../shared/utils/response.utils';
+import { Order, OrderDiscount, OrderDiscountDocument, OrderDocument } from '../order/schemas';
 import { User, UserDocument } from '../user/schemas/user.schema';
 import { CreateOrderDiscountDto } from './dto/create-order-discount.dto';
 import { RatingDto } from './dto/rating.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateOrderDiscountDto } from './dto/update-order-discount.dto';
 import { IRestaurantService } from './interfaces/IRestaurant.service';
-import { Restaurant, RestaurantDocument } from './schemas';
+import { Restaurant, RestaurantDocument, RestaurantItem, RestaurantItemDocument, RestaurantRating, RestaurantRatingDocument } from './schemas';
+import { ISharedService, SHARED_SERVICE } from '../shared/interfaces/IShared.service';
+import { Item } from '../item/schemas/item.schema';
 
 @Injectable()
 export class RestaurantService implements IRestaurantService {
     constructor(
         @InjectModel(Restaurant.name, connectionName.MAIN_DB) private restaurantModel: Model<RestaurantDocument>,
-        @InjectModel(User.name, connectionName.MAIN_DB) private userModel: Model<UserDocument>
+        @InjectModel(Restaurant.name, connectionName.MAIN_DB) private restaurantRatingModel: Model<RestaurantRatingDocument>,
+        @InjectModel(Order.name, connectionName.MAIN_DB) private orderModel: Model<OrderDocument>,
+        @InjectModel(User.name, connectionName.MAIN_DB) private userModel: Model<UserDocument>,
+        @InjectModel(RestaurantItem.name, connectionName.MAIN_DB) private restaurantItemModel: Model<RestaurantItemDocument>,
+        @InjectModel(OrderDiscount.name, connectionName.MAIN_DB) private orderDiscountModel: Model<OrderDiscountDocument>,
+        @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
     ) { }
 
     async register(registerDto: RegisterDto): Promise<string> {
@@ -34,7 +41,7 @@ export class RestaurantService implements IRestaurantService {
 
             // Create Restaurant
             const restaurant = new Restaurant();
-            restaurant.user = [createdUser.id];
+            restaurant.users = [createdUser.id];
             restaurant.name = registerDto.restaurant_name;
             restaurant.address = registerDto.address;
             restaurant.opening_time = registerDto.opening_time;
@@ -55,53 +62,180 @@ export class RestaurantService implements IRestaurantService {
             return throwException(error);
         }
     }
-    getOrderList(email: string): Promise<string> {
-        console.log('email: ', email);
+    async getOrderList(user: User): Promise<OrderResponse[]> {
         try {
-            return Promise.resolve(email);
-            // return {
-            //     orders: [{ uuid: order.uuid,
-            //         serial_number: order.serial_number,
-            //         order_amount: order.order_amount,
-            //         total_amount: order.total_amount,
-            //         rebate_amount: order.rebate_amount,
-            //         order_date: order.order_date,
-            //         order_status: order.order_status,
-            //         paid_by: order.paid_by,
-            //         order_discount: order.order_discount,
-            //         user: order.user,
-            //         order_item: newOrderItem, }],
-            //     count: 0,
-            //     currentPage: 0,
-            //     totalPages: 0,
-            //     nextPage: 0,
-            // };
+            const orders: Order[] = await this.orderModel.find({ restaurant: user.restaurant._id })
+                .populate({ path: 'order_items', populate: 'item' })
+                .populate('order_discount')
+                .exec();
+
+            const orderResponses: OrderResponse[] = [];
+            orders.forEach((order) => {
+                orderResponses.push({
+                    id: order._id,
+                    order_amount: order.order_amount,
+                    order_date: new Date(order.order_date),
+                    order_status: order.order_status,
+                    paid_by: order.paid_by,
+                    rebate_amount: order.rebate_amount,
+                    discount_rate: order?.order_discount?.discount_rate,
+                    serial_number: order.serial_number,
+                    total_amount: order.total_amount,
+                    order_item: order.order_items.map((orderItem) => ({
+                        id: orderItem._id,
+                        amount: orderItem.amount,
+                        qty: orderItem.qty,
+                        total_amount: orderItem.total_amount,
+                        item: {
+                            id: orderItem.item._id,
+                            item_type: orderItem.item.item_type,
+                            meal_flavor: orderItem.item.meal_flavor,
+                            meal_state: orderItem.item.meal_state,
+                            meal_type: orderItem.item.meal_type,
+                            name: orderItem.item.name,
+                            price: orderItem.item.price,
+                        }
+                    }))
+                });
+            });
+
+            return orderResponses;
         } catch (error: any) {
             return throwException(error);
         }
     }
-    releaseOrder(orderUuid: String, user: User): Promise<String> {
-        throw new Error('Method not implemented.');
+
+    async releaseOrder(orderId: String, user: User): Promise<String> {
+        try {
+            const order: Order = await this.orderModel.findOneAndUpdate(
+                { _id: orderId, restaurant: user.restaurant, order_status: OrderStatus.PENDING },
+                { order_status: OrderStatus.RELEASED }, { new: true }).exec();
+            if (order == null) {
+                throw new NotFoundException('Order not found');
+            }
+            return 'Order Released successfully';
+        } catch (error: any) {
+            return throwException(error);
+        }
     }
-    completeOrder(orderUuid: String, user: User): Promise<String> {
-        throw new Error('Method not implemented.');
+
+    async completeOrder(orderId: String, user: User): Promise<String> {
+        try {
+            const order: Order = await this.orderModel.findOneAndUpdate(
+                { _id: orderId, restaurant: user.restaurant, order_status: OrderStatus.RELEASED },
+                { order_status: OrderStatus.PAID }, { new: true })
+                .populate({ path: 'order_items', populate: 'item' })
+                .populate('order_discount')
+                .exec();
+
+            if (order == null) {
+                throw new NotFoundException('Order not found');
+            }
+
+            await Promise.all(
+                order.order_items.map(async (orderItem) => {
+                    const restaurantItem: RestaurantItem = await this.restaurantItemModel.findOne({ item: orderItem.item._id }).exec();
+                    if (restaurantItem) {
+                        await this.restaurantItemModel.findOneAndUpdate(
+                            { _id: restaurantItem._id }, { sell_count: restaurantItem.sell_count + orderItem.qty }, { new: true }
+                        ).exec();
+                    } else {
+                        const item: Item = await this.sharedService.getItemInfo(orderItem.item._id.toString(), user.restaurant._id);
+                        const resItem = new RestaurantItem();
+                        resItem.restaurant = user.restaurant;
+                        resItem.sell_count = orderItem.qty;
+                        resItem.item = item;
+                        await new this.restaurantItemModel(resItem).save();
+                    }
+                })
+            );
+            return 'Order completed';
+        } catch (error: any) {
+            return throwException(error);
+        }
     }
-    getOrderDiscount(user: User): Promise<OrderDiscount[]> {
-        throw new Error('Method not implemented.');
+
+    async getOrderDiscount(user: User): Promise<OrderDiscount[]> {
+        try {
+            return await this.orderDiscountModel.find({ restaurant: user.restaurant }).exec();
+        } catch (error: any) {
+            return throwException(error);
+        }
     }
-    createOrderDiscount(orderDiscountDto: CreateOrderDiscountDto, user: User): Promise<OrderDiscount> {
-        throw new Error('Method not implemented.');
+
+    async createOrderDiscount(orderDiscountDto: CreateOrderDiscountDto, user: User): Promise<OrderDiscount> {
+        try {
+            const orderDis: OrderDiscount[] = await this.orderDiscountModel.find().and([
+                { restaurant: user.restaurant._id },
+                { start_date: { $lte: new Date(orderDiscountDto.start_date) } },
+                { end_date: { $gte: new Date(orderDiscountDto.end_date) } }
+            ]);
+
+            if (orderDis.length) {
+                throw new BadRequestException('Already exists.');
+            }
+
+            const orderDiscount = new OrderDiscount();
+            orderDiscount.restaurant = user.restaurant;
+            orderDiscount.discount_rate = orderDiscountDto.discount_rate;
+            orderDiscount.max_amount = orderDiscountDto.max_amount;
+            orderDiscount.min_amount = orderDiscountDto.min_amount;
+            orderDiscount.start_date = new Date(orderDiscountDto.start_date);
+            orderDiscount.end_date = new Date(orderDiscountDto.end_date);
+
+            const newResult = await new this.orderDiscountModel(orderDiscount).save();
+            return newResult;
+        } catch (error: any) {
+            return throwException(error);
+        }
     }
-    updateOrderDiscount(orderDiscountDto: UpdateOrderDiscountDto, user: User, uuid: string): Promise<OrderDiscount> {
-        throw new Error('Method not implemented.');
+
+    async updateOrderDiscount(orderDiscountDto: UpdateOrderDiscountDto, user: User, discountId: string): Promise<OrderDiscount> {
+        try {
+            const isUsed: boolean = await this.isUsedOrderDiscount(discountId);
+            if (isUsed) {
+                throw new BadRequestException('Discount has been used already');
+            }
+            const orderDiscount: OrderDiscount = await this.orderDiscountModel.findOneAndUpdate({ _id: discountId, restaurant: user.restaurant }, orderDiscountDto, { new: true }).exec();
+            if (orderDiscount == null) {
+                throw new BadRequestException('Failed');
+            }
+            return orderDiscount;
+        } catch (error: any) {
+            return throwException(error);
+        }
     }
-    deleteOrderDiscount(user: User, uuid: string): Promise<boolean> {
-        throw new Error('Method not implemented.');
+
+    async deleteOrderDiscount(user: User, discountId: string): Promise<boolean> {
+        try {
+            const isUsed: boolean = await this.isUsedOrderDiscount(discountId);
+            if (isUsed) {
+                throw new BadRequestException('Discount has been used already');
+            }
+            const isDeleted = await this.orderDiscountModel.findOneAndDelete({ _id: discountId, restaurant: user.restaurant }).exec();
+            if (isDeleted == null) {
+                throw new NotFoundException('Not found');
+            }
+            return true;
+        } catch (error: any) {
+            return throwException(error);
+        }
     }
-    giveRating(user: User, ratingDto: RatingDto): Promise<String> {
-        throw new Error('Method not implemented.');
-    }
+
     searchRestaurant(keyword: string): Promise<Restaurant[]> {
-        throw new Error('Method not implemented.');
+        try {
+
+        } catch (error: any) {
+            return throwException(error);
+        }
+    }
+
+    private async isUsedOrderDiscount(discountId: string): Promise<boolean> {
+        try {
+            const order: Order = await this.orderModel.findOne({ order_discount: discountId }).exec();
+            return order == null ? false : true;
+        } catch (error: any) {
+            return throwException(error);
+        }
     }
 }

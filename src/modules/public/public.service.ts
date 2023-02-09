@@ -20,15 +20,14 @@ export class PublicService implements IPublicService {
             await this.sharedService.getRestaurantInfo(restaurantId);
             const items: Item[] = await this.sharedService.getItemList(restaurantId);
             const list: ItemReponse[] = items.map((item) => ({
-                'meal_state': item.meal_state,
-                'name': item.name,
-                'item_type': item.item_type,
-                'meal_flavor': item.meal_flavor,
-                'meal_type': item.meal_type,
-                'restaurant': item.restaurant,
-                'price': item.price,
-                'discount_rate': item.discount_rate,
-                'id': item._id
+                meal_state: item.meal_state,
+                name: item.name,
+                item_type: item.item_type,
+                meal_flavor: item.meal_flavor,
+                meal_type: item.meal_type,
+                price: item.price,
+                discount_rate: item.discount_rate,
+                id: item._id
             }))
             return list;
         } catch (error: any) {

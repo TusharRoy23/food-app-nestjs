@@ -9,16 +9,16 @@ export class UserTypeGuard implements CanActivate {
     constructor(private reflector: Reflector) { }
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-        const userType = this.reflector.getAllAndOverride<UserType>(USER_TYPE_KEY, [
+        const userTypes = this.reflector.getAllAndOverride<UserType[]>(USER_TYPE_KEY, [
             context.getHandler(),
             context.getClass()
         ]);
 
-        if (!userType) {
+        if (!userTypes) {
             return true;
         }
 
         const { user } = context.switchToHttp().getRequest();
-        return user?.user_type === userType;
+        return userTypes.some((userType: UserType) => user?.user_type === userType);
     }
 }

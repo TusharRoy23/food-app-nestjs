@@ -1,23 +1,51 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import moment from "moment";
 import { Item, ItemDocuement } from "../../item/schemas/item.schema";
-import { User, UserDocument } from "../../../modules/user/schemas/user.schema";
-import { Restaurant, RestaurantDocument } from "../../restaurant/schemas";
+import { User, UserDocument } from "../../user/schemas/user.schema";
+import { Restaurant, RestaurantDocument, RestaurantRating, RestaurantRatingDocument } from "../../restaurant/schemas";
 import { throwException } from "../errors/all.exception";
 import { ISharedService } from "../interfaces/IShared.service";
-import { connectionName, CurrentStatus, ItemStatus } from "../utils/enum";
+import { CartStatus, connectionName, CurrentStatus, ItemStatus } from "../utils/enum";
 import { OrderDiscount, OrderDiscountDocument } from "../../order/schemas";
+import { Cart, CartDocument } from "../../cart/schemas";
+import { RatingDto } from "../../restaurant/dto/index.dto";
 
 @Injectable()
 export class SharedService implements ISharedService {
     constructor(
         @InjectModel(Restaurant.name, connectionName.MAIN_DB) private readonly restaurantModel: Model<RestaurantDocument>,
+        @InjectModel(RestaurantRating.name, connectionName.MAIN_DB) private restaurantRatingModel: Model<RestaurantRatingDocument>,
         @InjectModel(User.name, connectionName.MAIN_DB) private readonly userModel: Model<UserDocument>,
         @InjectModel(Item.name, connectionName.MAIN_DB) private readonly itemModel: Model<ItemDocuement>,
-        @InjectModel(OrderDiscount.name, connectionName.MAIN_DB) private readonly orderDiscountModel: Model<OrderDiscountDocument>
+        @InjectModel(OrderDiscount.name, connectionName.MAIN_DB) private readonly orderDiscountModel: Model<OrderDiscountDocument>,
+        @InjectModel(Cart.name, connectionName.MAIN_DB) private cartModel: Model<CartDocument>,
     ) { }
+
+    async updateCartInfo(conditions: any, payload: any): Promise<Cart> {
+        try {
+            const cart: Cart = await this.cartModel.findOneAndUpdate(conditions, payload, { new: true }).exec();
+            if (cart == null) {
+                throw new NotFoundException('Cart not found');
+            }
+            return cart;
+        } catch (error: any) {
+            return throwException(error);
+        }
+    }
+
+    async getCartInfo(cartId: string, user: User): Promise<Cart> {
+        try {
+            const cart: Cart = await this.cartModel.findOne({ _id: cartId, cart_status: CartStatus.SAVED })
+                .populate({ path: 'cart_items', populate: 'item' }).exec();
+            if (cart == null) {
+                throw new NotFoundException('Cart not found');
+            }
+            return cart;
+        } catch (error: any) {
+            return throwException(error);
+        }
+    }
 
     async getUserInfo(email: string): Promise<User> {
         try {
@@ -77,10 +105,35 @@ export class SharedService implements ISharedService {
             let currentDate = new Date().toISOString();
             return await this.orderDiscountModel.findOne({
                 restaurant: restaurantId,
-                start_date: { $gte: currentDate },
-                end_date: { $lte: currentDate }
-            }).exec();
+                start_date: { $lte: currentDate },
+                end_date: { $gte: currentDate }
+            }).sort({ start_date: -1 }).exec();
         } catch (error) {
+            return throwException(error);
+        }
+    }
+
+    async giveRating(user: User, ratingDto: RatingDto): Promise<String> {
+        try {
+            const rating: RestaurantRating = await this.restaurantRatingModel.findOneAndUpdate(
+                { user: user._id, restaurant: ratingDto.restaurant_id },
+                { star: ratingDto.star }, { new: true }
+            )
+                .exec();
+            if (rating == null) {
+                const restaurant: Restaurant = await this.getRestaurantInfo(ratingDto.restaurant_id);
+                const newRating: RestaurantRating = await new this.restaurantRatingModel({
+                    restaurant: restaurant,
+                    star: ratingDto.star,
+                    user
+                }).save();
+
+                if (newRating == null) {
+                    throw new InternalServerErrorException('Rating unsuccessful');
+                }
+            }
+            return 'Thanks for your rating';
+        } catch (error: any) {
             return throwException(error);
         }
     }

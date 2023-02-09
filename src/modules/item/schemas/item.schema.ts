@@ -53,7 +53,7 @@ export class Item {
     discount_rate?: number;
 
     @Prop({ type: 'Date', default: Date.now() })
-    created_date?: string;
+    created_date: Date;
 
     @Prop({ type: 'String', default: ItemStatus.ACTIVE, enum: ItemStatus })
     item_status: string;

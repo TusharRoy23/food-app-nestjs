@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GetUser } from '../shared/decorator/get-user.decorator';
 import { IsPublic } from '../shared/decorator/public.decorator';
 import { Roles } from '../shared/decorator/roles.decorator';
-import { TypeOfUser } from '../shared/decorator/user-type.decorator';
+import { TypeOfUsers } from '../shared/decorator/user-type.decorator';
 import { ParseObjectIDPipe } from '../shared/pipe/parse-objectid.pipe';
 import { UserRole, UserType } from '../shared/utils/enum';
 import { User } from '../user/schemas/user.schema';
@@ -15,7 +15,7 @@ import { CART_SERVICE, ICartService } from './interfaces/ICart.interface';
 @Controller('cart')
 @IsPublic(false)
 @Roles(UserRole.NONE)
-@TypeOfUser(UserType.VISITOR)
+@TypeOfUsers(UserType.VISITOR)
 export class CartController {
     constructor(
         @Inject(CART_SERVICE) private readonly cartService: ICartService

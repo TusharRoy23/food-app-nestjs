@@ -16,6 +16,9 @@ import { CART_SERVICE } from './interfaces/ICart.interface';
     controllers: [CartController],
     providers: [
         { useClass: CartService, provide: CART_SERVICE }
+    ],
+    exports: [
+        MongooseModule
     ]
 })
 export class CartModule { }

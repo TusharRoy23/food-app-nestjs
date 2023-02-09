@@ -18,6 +18,8 @@ import { hashString, isStringMatched } from "../../shared/utils/hashing.utils";
     },
 })
 export class User {
+    _id: mongoose.Types.ObjectId;
+
     @Prop({ type: 'String', required: true, unique: true, lowercase: true })
     @IsEmail()
     email: string;

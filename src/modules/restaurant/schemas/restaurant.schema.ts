@@ -11,7 +11,6 @@ import { CurrentStatus } from "../../shared/utils/enum";
             delete ret._id;
             delete ret.__v;
             delete ret.user;
-            delete ret.item;
             return ret;
         },
     },
@@ -26,10 +25,7 @@ export class Restaurant {
     address: string;
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
-    user: User[];
-
-    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Item' }] })
-    item: Item[];
+    users: User[];
 
     @Prop({ type: 'String' })
     profile_img: string;

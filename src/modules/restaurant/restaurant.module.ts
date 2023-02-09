@@ -13,6 +13,7 @@ import { RestaurantController } from './restaurant.controller';
 import { RestaurantService } from './restaurant.service';
 import { UserModule } from '../user/user.module';
 import { RESTAURANT_SERVICE } from './interfaces/IRestaurant.service';
+import { OrderModule } from '../order/order.module';
 
 const restaurantService = { useClass: RestaurantService, provide: RESTAURANT_SERVICE };
 
@@ -23,7 +24,8 @@ const restaurantService = { useClass: RestaurantService, provide: RESTAURANT_SER
             { name: RestaurantItem.name, schema: RestaurantItemSchema },
             { name: RestaurantRating.name, schema: RestaurantRatingSchema }
         ], connectionName.MAIN_DB),
-        UserModule
+        UserModule,
+        OrderModule
     ],
     controllers: [RestaurantController],
     providers: [

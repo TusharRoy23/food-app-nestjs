@@ -26,7 +26,7 @@ export class Order {
     restaurant: Restaurant;
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'OrderItem' }] })
-    order_item: OrderItem[];
+    order_items: OrderItem[];
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'OrderDiscount' })
     order_discount: OrderDiscount;
@@ -44,7 +44,7 @@ export class Order {
     total_amount: number;
 
     @Prop({ type: 'Date', default: Date.now() })
-    order_date: string;
+    order_date: Date;
 
     @Prop({
         type: 'String',

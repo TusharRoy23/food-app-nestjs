@@ -26,7 +26,7 @@ export class Cart {
     restaurant: Restaurant;
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CartItem' }] })
-    cart_item: CartItem[];
+    cart_items: CartItem[];
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'OrderDiscount' })
     order_discount: OrderDiscount;
@@ -41,7 +41,7 @@ export class Cart {
     rebate_amount: number;
 
     @Prop({ type: 'Date', default: Date.now() })
-    cart_date: string;
+    cart_date: Date;
 
     @Prop({
         type: 'String',

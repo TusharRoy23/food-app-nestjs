@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Inject, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GetUser } from '../shared/decorator/get-user.decorator';
 import { IsPublic } from '../shared/decorator/public.decorator';
@@ -18,7 +18,7 @@ export class AuthController {
     @IsPublic(true)
     @Post('/signin')
     public async signIn(
-        @Body(ValidationPipe) signInCredentialDto: SignInCredentialsDto
+        @Body() signInCredentialDto: SignInCredentialsDto
     ): Promise<{ user: User, accessToken: string, refreshToken: string }> {
         return await this.authService.signIn(signInCredentialDto);
     }
@@ -26,7 +26,7 @@ export class AuthController {
     @IsPublic(true)
     @Post('/signup')
     public async signUp(
-        @Body(ValidationPipe) signUpCredentialDto: SignUpCredentialsDto
+        @Body() signUpCredentialDto: SignUpCredentialsDto
     ): Promise<string> {
         return this.authService.createUser(signUpCredentialDto);
     }
@@ -35,7 +35,7 @@ export class AuthController {
     @UseGuards(JwtRefreshTokenGuard)
     @Post('/refresh-token')
     public async refreshToken(
-        @Body(ValidationPipe) refreshTokenDto: RefreshTokenDto,
+        @Body() refreshTokenDto: RefreshTokenDto,
         @GetUser() user: User
     ) {
         return this.authService.getNewAccessAndRefreshToken(user);

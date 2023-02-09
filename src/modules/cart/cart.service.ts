@@ -57,6 +57,7 @@ export class CartService implements ICartService {
                 cart_amount: cart_info.cart_amount,
                 total_amount: cart_info.total_amount,
                 rebate_amount: cart_info.rebate_amount,
+                discount_rate: itemInfo.discount_rate,
                 cart_date: cart_info.cart_date,
                 cart_status: cart_info.cart_status,
                 cart_item: []
@@ -70,7 +71,7 @@ export class CartService implements ICartService {
                 cart: cart_info
             }).save();
 
-            await this.cartModel.findOneAndUpdate({ _id: cart_info._id }, { cart_item: [cartItem] }, { new: true }).exec();
+            await this.cartModel.findOneAndUpdate({ _id: cart_info._id }, { cart_items: [cartItem] }, { new: true }).exec();
 
             result['cart_item'].push({
                 id: cartItem._id,
@@ -86,7 +87,11 @@ export class CartService implements ICartService {
                     meal_type: itemInfo.meal_state,
                     name: itemInfo.name,
                     price: itemInfo.price,
-                    restaurant: itemInfo.restaurant
+                    restaurant: {
+                        id: itemInfo.restaurant._id,
+                        name: itemInfo.restaurant.name,
+                        address: itemInfo.restaurant.address
+                    }
                 },
             });
             return result as CartReponse;
@@ -102,9 +107,10 @@ export class CartService implements ICartService {
                 cart_amount: cart.cart_amount,
                 total_amount: cart.total_amount,
                 rebate_amount: cart.rebate_amount,
-                cart_date: cart.cart_date,
+                discount_rate: cart.order_discount.discount_rate,
+                cart_date: new Date(cart.cart_date),
                 cart_status: cart.cart_status,
-                cart_item: cart.cart_item.map((cartItem) => ({
+                cart_item: cart.cart_items.map((cartItem) => ({
                     amount: cartItem.amount,
                     id: cartItem._id,
                     qty: cartItem.qty,
@@ -117,8 +123,7 @@ export class CartService implements ICartService {
                         meal_state: cartItem.item.meal_state,
                         meal_type: cartItem.item.meal_state,
                         name: cartItem.item.name,
-                        price: cartItem.item.price,
-                        restaurant: cartItem.item.restaurant
+                        price: cartItem.item.price
                     }
                 }))
             };
@@ -184,7 +189,8 @@ export class CartService implements ICartService {
     private async getCartInfo(cartId: string, user: User): Promise<Cart> {
         try {
             const cart: Cart = await this.cartModel.findOne({ _id: cartId, cart_status: CartStatus.SAVED, user: user })
-                .populate({ path: 'cart_item', populate: 'item' }).exec();
+                .populate('order_discount')
+                .populate({ path: 'cart_items', populate: 'item' }).exec();
 
             if (!cart) {
                 throw new NotFoundException('Cart not found');
@@ -221,8 +227,7 @@ export class CartService implements ICartService {
                             meal_state: cartItem.item.meal_state,
                             meal_type: cartItem.item.meal_state,
                             name: cartItem.item.name,
-                            price: cartItem.item.price,
-                            restaurant: cartItem.item.restaurant
+                            price: cartItem.item.price
                         }
                     })
                 });
@@ -241,7 +246,7 @@ export class CartService implements ICartService {
                 rebate_amount: rebate_amount,
                 total_amount: totalAmount,
                 order_discount: null,
-                cart_item: cartItems
+                cart_items: cartItems
             };
 
             if (rebate_amount > 0) {
@@ -255,6 +260,7 @@ export class CartService implements ICartService {
                 cart_amount: updatedCart.cart_amount,
                 total_amount: updatedCart.total_amount,
                 rebate_amount: updatedCart.rebate_amount,
+                discount_rate: discountInfo.discount_rate,
                 cart_date: cart.cart_date,
                 cart_status: cart.cart_status,
                 cart_item: cartItemResponse

@@ -22,7 +22,7 @@ export const isTime = (property: string, validationOptions?: ValidationOptions) 
     }
 };
 
-export const isValidNumber = (property: string, validationOptions?: ValidationOptions) => {
+export const isValidNumber = (property: string, canBeEmpty: boolean = false, validationOptions?: ValidationOptions) => {
     return (object: Object, propertyName: string) => {
         registerDecorator({
             name: 'isValidNumber',
@@ -32,6 +32,7 @@ export const isValidNumber = (property: string, validationOptions?: ValidationOp
             options: validationOptions,
             validator: {
                 validate(value: number, args: ValidationArguments) {
+                    if (canBeEmpty) return true;
                     const regex = /^[0-9]*(\.[0-9]{0,2})?$/;
                     return typeof value === 'number' && regex.test(value.toString());
                 },
