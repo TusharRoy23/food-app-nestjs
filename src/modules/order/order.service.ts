@@ -2,7 +2,7 @@ import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common
 import { InjectModel } from '@nestjs/mongoose';
 import { CartStatus, connectionName } from '../shared/utils/enum';
 import { throwException } from '../shared/errors/all.exception';
-import { OrderResponse } from '../shared/utils/response.utils';
+import { OrderResponse, PaginatedOrderResponse, PaginationPayload } from '../shared/utils/response.utils';
 import { IOrderService } from './interfaces/IOrder.service';
 import { Order, OrderDocument, OrderItem, OrderItemDocument } from './schemas';
 import { Model } from 'mongoose';
@@ -11,6 +11,8 @@ import { SHARED_SERVICE, ISharedService } from '../shared/interfaces/IShared.ser
 import { User } from '../user/schemas/user.schema';
 import { Item } from '../item/schemas/item.schema';
 import { RatingDto } from '../restaurant/dto/rating.dto';
+import { PaginationParams } from '../shared/dto/pagination-params';
+import { getPaginationData, pagination } from '../shared/utils/pagination.utils';
 
 @Injectable()
 export class OrderService implements IOrderService {
@@ -79,7 +81,17 @@ export class OrderService implements IOrderService {
             await Promise.all(
                 cartItems.map(async (cartItem) => {
                     const orderItem: OrderItem = await new this.orderItemModel({
-                        item: cartItem.item,
+                        item_id: cartItem.item._id,
+                        name: cartItem.item.name,
+                        icon: cartItem.item.icon,
+                        image: cartItem.item.image,
+                        item_type: cartItem.item.item_type,
+                        item_status: cartItem.item.item_status,
+                        meal_type: cartItem.item.meal_type,
+                        meal_state: cartItem.item.meal_state,
+                        meal_flavor: cartItem.item.meal_flavor,
+                        price: cartItem.item.price,
+                        discount_rate: cartItem.item.discount_rate,
                         amount: cartItem.amount,
                         qty: cartItem.qty,
                         total_amount: cartItem.total_amount,
@@ -88,19 +100,22 @@ export class OrderService implements IOrderService {
 
                     orderItems.push(orderItem);
                     orderResponse.order_item.push({
+                        id: orderItem._id,
                         qty: orderItem.qty,
                         amount: orderItem.amount,
                         total_amount: orderItem.total_amount,
                         item: {
-                            id: orderItem.item._id,
-                            item_type: orderItem.item.item_type,
-                            meal_flavor: orderItem.item.meal_flavor,
-                            meal_state: orderItem.item.meal_state,
-                            meal_type: orderItem.item.meal_type,
-                            name: orderItem.item.name,
-                            price: orderItem.item.price,
-                        },
-                        id: orderItem._id
+                            id: orderItem.item_id,
+                            item_type: orderItem.item_type,
+                            meal_flavor: orderItem.meal_flavor,
+                            meal_state: orderItem.meal_state,
+                            meal_type: orderItem.meal_type,
+                            name: orderItem.name,
+                            price: orderItem.price,
+                            discount_rate: orderItem.discount_rate,
+                            icon: orderItem.icon,
+                            image: orderItem.image
+                        }
                     })
                 })
             );
@@ -114,13 +129,23 @@ export class OrderService implements IOrderService {
         }
     }
 
-    async getOrdersByUser(user: User): Promise<OrderResponse[]> {
+    async getOrdersByUser(paginationParams: PaginationParams, user: User): Promise<PaginatedOrderResponse> {
         try {
-            const orders: Order[] = await this.orderModel.find({ user: user._id })
+            const paginationPayload: PaginationPayload = pagination({ page: paginationParams.page, size: paginationParams.pageSize });
+            const query = this.orderModel.find({ user: user._id })
                 .populate('restaurant')
-                .populate({ path: 'order_items', populate: 'item' })
+                .populate('order_items')
                 .populate('order_discount')
-                .exec();
+                .sort({ _id: -1 })
+                .limit(paginationPayload.limit);
+            if (paginationParams.startId && paginationParams.page > 1) {
+                query.and([
+                    { _id: { $lt: paginationParams.startId } }
+                ]);
+            } else {
+                query.skip(paginationPayload.offset);
+            }
+            const orders: Order[] = await query.exec();
 
             const orderResponses: OrderResponse[] = [];
             orders.forEach((order) => {
@@ -145,19 +170,33 @@ export class OrderService implements IOrderService {
                         qty: orderItem.qty,
                         total_amount: orderItem.total_amount,
                         item: {
-                            id: orderItem.item._id,
-                            item_type: orderItem.item.item_type,
-                            meal_flavor: orderItem.item.meal_flavor,
-                            meal_state: orderItem.item.meal_state,
-                            meal_type: orderItem.item.meal_type,
-                            name: orderItem.item.name,
-                            price: orderItem.item.price,
+                            id: orderItem.item_id,
+                            item_type: orderItem.item_type,
+                            meal_flavor: orderItem.meal_flavor,
+                            meal_state: orderItem.meal_state,
+                            meal_type: orderItem.meal_type,
+                            name: orderItem.name,
+                            price: orderItem.price,
+                            discount_rate: orderItem.discount_rate,
+                            icon: orderItem.icon,
+                            image: orderItem.image
                         }
                     }))
                 });
             });
 
-            return orderResponses;
+            const total = await this.orderModel.count();
+            const paginatedData = getPaginationData({ total, page: +paginationPayload.currentPage, limit: +paginationPayload.limit });
+
+            const paginatedOrderResponse: PaginatedOrderResponse = {
+                orders: orderResponses,
+                count: total,
+                currentPage: paginatedData.currentPage,
+                nextPage: paginatedData.nextPage,
+                totalPages: paginatedData.totalPages
+            };
+
+            return paginatedOrderResponse;
         } catch (error: any) {
             return throwException(error);
         }

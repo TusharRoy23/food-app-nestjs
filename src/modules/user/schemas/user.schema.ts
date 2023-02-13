@@ -43,7 +43,10 @@ export class User {
     restaurant: Restaurant;
 
     @Prop({ type: 'String' })
-    hashedRefreshToken: string
+    hashedRefreshToken: string;
+
+    @Prop({ type: 'Boolean' })
+    login_status: boolean;
 
     async doPasswordHashing(password: string): Promise<string> {
         return await hashString(password);

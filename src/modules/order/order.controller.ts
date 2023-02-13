@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post, Query } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { RatingDto } from '../restaurant/dto/rating.dto';
 import { GetUser } from '../shared/decorator/get-user.decorator';
 import { IsPublic } from '../shared/decorator/public.decorator';
 import { Roles } from '../shared/decorator/roles.decorator';
 import { TypeOfUsers } from '../shared/decorator/user-type.decorator';
+import { PaginationParams } from '../shared/dto/pagination-params';
 import { ParseObjectIDPipe } from '../shared/pipe/parse-objectid.pipe';
 import { UserRole, UserType } from '../shared/utils/enum';
 import { User } from '../user/schemas/user.schema';
@@ -31,9 +32,10 @@ export class OrderController {
 
     @Get('/list')
     public async retrieve(
+        @Query() paginationParams: PaginationParams,
         @GetUser() user: User
     ) {
-        return this.orderService.getOrdersByUser(user);
+        return this.orderService.getOrdersByUser(paginationParams, user);
     }
 
     @Post('restaurant/rating')

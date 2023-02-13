@@ -1,3 +1,4 @@
+import { PaginationParams } from "../../shared/dto/pagination-params";
 import { OrderDiscount } from "../../../modules/order/schemas";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { OrderResponse, PaginatedOrderResponse, PaginationPayload } from "../../shared/utils/response.utils";
@@ -9,7 +10,7 @@ export const RESTAURANT_SERVICE = 'RESTAURANT_SERVICE';
 export interface IRestaurantService {
     register(registerDto: RegisterDto): Promise<string>;
     getRestaurantList(): Promise<Restaurant[]>;
-    getOrderList(user: User): Promise<OrderResponse[]>;
+    getOrderList(user: User, paginationParams: PaginationParams): Promise<PaginatedOrderResponse>;
     releaseOrder(orderId: String, user: User): Promise<String>;
     completeOrder(orderId: String, user: User): Promise<String>;
     getOrderDiscount(user: User): Promise<OrderDiscount[]>;

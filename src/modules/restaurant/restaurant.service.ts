@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { throwException } from '../shared/errors/all.exception';
@@ -7,19 +7,19 @@ import { PaginationPayload, PaginatedOrderResponse, OrderResponse } from '../sha
 import { Order, OrderDiscount, OrderDiscountDocument, OrderDocument } from '../order/schemas';
 import { User, UserDocument } from '../user/schemas/user.schema';
 import { CreateOrderDiscountDto } from './dto/create-order-discount.dto';
-import { RatingDto } from './dto/rating.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateOrderDiscountDto } from './dto/update-order-discount.dto';
 import { IRestaurantService } from './interfaces/IRestaurant.service';
-import { Restaurant, RestaurantDocument, RestaurantItem, RestaurantItemDocument, RestaurantRating, RestaurantRatingDocument } from './schemas';
+import { Restaurant, RestaurantDocument, RestaurantItem, RestaurantItemDocument } from './schemas';
 import { ISharedService, SHARED_SERVICE } from '../shared/interfaces/IShared.service';
 import { Item } from '../item/schemas/item.schema';
+import { PaginationParams } from '../shared/dto/pagination-params';
+import { getPaginationData, pagination } from '../shared/utils/pagination.utils';
 
 @Injectable()
 export class RestaurantService implements IRestaurantService {
     constructor(
         @InjectModel(Restaurant.name, connectionName.MAIN_DB) private restaurantModel: Model<RestaurantDocument>,
-        @InjectModel(Restaurant.name, connectionName.MAIN_DB) private restaurantRatingModel: Model<RestaurantRatingDocument>,
         @InjectModel(Order.name, connectionName.MAIN_DB) private orderModel: Model<OrderDocument>,
         @InjectModel(User.name, connectionName.MAIN_DB) private userModel: Model<UserDocument>,
         @InjectModel(RestaurantItem.name, connectionName.MAIN_DB) private restaurantItemModel: Model<RestaurantItemDocument>,
@@ -62,12 +62,27 @@ export class RestaurantService implements IRestaurantService {
             return throwException(error);
         }
     }
-    async getOrderList(user: User): Promise<OrderResponse[]> {
+    async getOrderList(user: User, paginationParams: PaginationParams): Promise<PaginatedOrderResponse> {
         try {
-            const orders: Order[] = await this.orderModel.find({ restaurant: user.restaurant._id })
-                .populate({ path: 'order_items', populate: 'item' })
+            const paginationPayload: PaginationPayload = pagination({ page: paginationParams.page, size: paginationParams.pageSize });
+            const query = this.orderModel.find()
+                .and([
+                    { restaurant: user.restaurant._id },
+                ])
+                .populate('order_items')
                 .populate('order_discount')
-                .exec();
+                .sort({ _id: -1 })
+                .limit(paginationPayload.limit);
+
+            if (paginationParams.startId && paginationParams.page > 1) {
+                query.and([
+                    { _id: { $lt: paginationParams.startId } }
+                ]);
+            } else {
+                query.skip(paginationPayload.offset);
+            }
+
+            const orders: Order[] = await query.exec();
 
             const orderResponses: OrderResponse[] = [];
             orders.forEach((order) => {
@@ -87,19 +102,33 @@ export class RestaurantService implements IRestaurantService {
                         qty: orderItem.qty,
                         total_amount: orderItem.total_amount,
                         item: {
-                            id: orderItem.item._id,
-                            item_type: orderItem.item.item_type,
-                            meal_flavor: orderItem.item.meal_flavor,
-                            meal_state: orderItem.item.meal_state,
-                            meal_type: orderItem.item.meal_type,
-                            name: orderItem.item.name,
-                            price: orderItem.item.price,
+                            id: orderItem.item_id,
+                            item_type: orderItem.item_type,
+                            meal_flavor: orderItem.meal_flavor,
+                            meal_state: orderItem.meal_state,
+                            meal_type: orderItem.meal_type,
+                            name: orderItem.name,
+                            price: orderItem.price,
+                            discount_rate: orderItem.discount_rate,
+                            icon: orderItem.icon,
+                            image: orderItem.image
                         }
                     }))
                 });
             });
 
-            return orderResponses;
+            const total = await this.orderModel.count();
+            const paginatedData = getPaginationData({ total, page: +paginationPayload.currentPage, limit: +paginationPayload.limit });
+
+            const paginatedOrderResponse: PaginatedOrderResponse = {
+                orders: orderResponses,
+                count: total,
+                currentPage: paginatedData.currentPage,
+                nextPage: paginatedData.nextPage,
+                totalPages: paginatedData.totalPages
+            };
+
+            return paginatedOrderResponse;
         } catch (error: any) {
             return throwException(error);
         }
@@ -134,13 +163,13 @@ export class RestaurantService implements IRestaurantService {
 
             await Promise.all(
                 order.order_items.map(async (orderItem) => {
-                    const restaurantItem: RestaurantItem = await this.restaurantItemModel.findOne({ item: orderItem.item._id }).exec();
+                    const restaurantItem: RestaurantItem = await this.restaurantItemModel.findOne({ item: orderItem.item_id }).exec();
                     if (restaurantItem) {
                         await this.restaurantItemModel.findOneAndUpdate(
                             { _id: restaurantItem._id }, { sell_count: restaurantItem.sell_count + orderItem.qty }, { new: true }
                         ).exec();
                     } else {
-                        const item: Item = await this.sharedService.getItemInfo(orderItem.item._id.toString(), user.restaurant._id);
+                        const item: Item = await this.sharedService.getItemInfo(orderItem.item_id.toString(), user.restaurant._id);
                         const resItem = new RestaurantItem();
                         resItem.restaurant = user.restaurant;
                         resItem.sell_count = orderItem.qty;

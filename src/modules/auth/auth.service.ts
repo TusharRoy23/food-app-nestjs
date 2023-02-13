@@ -27,7 +27,7 @@ export class AuthService implements IAuthService {
             if (!isPasswordMatched) {
                 throw new NotFoundException('Username/Password not matched');
             }
-
+            await this.updateLoginStatus(userData, true);
             const refreshToken = await this.getRefreshToken(userData);
             await this.updateRefreshToken(refreshToken, payload.email);
 
@@ -72,10 +72,11 @@ export class AuthService implements IAuthService {
 
     async logout(user: User): Promise<boolean> {
         try {
-            const updated = await this.userModel.findOneAndUpdate({ email: user.email }, { hashedRefreshToken: '' }).exec();
+            const updated = await this.userModel.findOneAndUpdate({ email: user.email }, { hashedRefreshToken: '' }, { new: true }).exec();
             if (!updated) {
                 throw new ForbiddenException('Not allowed');
             }
+            await this.updateLoginStatus(user, false);
             return true;
         } catch (error) {
             return throwException(error);
@@ -124,5 +125,10 @@ export class AuthService implements IAuthService {
         } catch (error: any) {
             return throwException(error);
         }
+    }
+
+    private async updateLoginStatus(user: User, status: boolean): Promise<boolean> {
+        const updated = await this.userModel.findOneAndUpdate({ _id: user._id }, { login_status: status }, { new: true }).exec();
+        return updated == null ? false : true;
     }
 }

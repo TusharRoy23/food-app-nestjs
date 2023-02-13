@@ -20,12 +20,12 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'access-jwt') {
         try {
             const user = payload;
             const userData = await this.sharedService.getUserInfo(user.email);
-            if (!Object.keys(userData).length) {
+            if (!Object.keys(userData).length || !userData.login_status) {
                 throw new UnauthorizedException('Unauthorized request');
             }
             return userData;
         } catch (error: any) {
-            return throwException(`${error.message}`);
+            return throwException(error);
         }
     }
 }

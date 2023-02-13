@@ -22,7 +22,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh-
         try {
             const userData: User = await this.sharedService.getUserInfo(user.email);
             const isValid: boolean = await this.sharedService.isValidRefreshToken(req.body?.token, userData.hashedRefreshToken);
-            if (!isValid) {
+            if (!isValid || !userData.login_status) {
                 throw new ForbiddenException('Not allowed');
             }
             return userData;

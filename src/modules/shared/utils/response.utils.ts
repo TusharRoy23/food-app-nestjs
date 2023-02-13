@@ -76,15 +76,17 @@ export class PaginationDataResponse {
 }
 
 export class ItemReponse {
-    id: mongoose.Types.ObjectId;
+    id?: mongoose.Types.ObjectId;
     meal_state: string;
     name: string;
+    icon?: string;
+    image?: string;
     item_type: string;
     meal_type: string;
     meal_flavor: string;
     restaurant?: RestaurantResponse;
     price: number;
-    discount_rate?: number;
+    discount_rate: number;
 }
 
 export class RestaurantResponse {

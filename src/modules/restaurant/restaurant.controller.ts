@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Inject, Param, Patch, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query } from '@nestjs/common';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { GetUser } from '../shared/decorator/get-user.decorator';
 import { IsPublic } from '../shared/decorator/public.decorator';
 import { Roles } from '../shared/decorator/roles.decorator';
 import { TypeOfUsers } from '../shared/decorator/user-type.decorator';
+import { PaginationParams } from '../shared/dto/pagination-params';
 import { ParseObjectIDPipe } from '../shared/pipe/parse-objectid.pipe';
 import { UserRole, UserType } from '../shared/utils/enum';
 import { User } from '../user/schemas/user.schema';
@@ -23,9 +24,10 @@ export class RestaurantController {
 
     @Get('/orders')
     public async getOrderList(
+        @Query() paginationParams: PaginationParams,
         @GetUser() user: User
     ) {
-        return this.restaurantService.getOrderList(user);
+        return this.restaurantService.getOrderList(user, paginationParams);
     }
 
     @Post('/order/:orderId/release')
