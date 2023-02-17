@@ -4,6 +4,7 @@ import { IsPublic } from '../shared/decorator/public.decorator';
 import { RegisterDto } from '../restaurant/dto/register.dto';
 import { IPublicService, PUBLIC_SERVICE } from './interfaces/IPublic.service';
 import { ParseObjectIDPipe } from '../shared/pipe/parse-objectid.pipe';
+import { SearchRestaurantDto } from '../restaurant/dto/search-restaurant.dto';
 
 @ApiTags('Public')
 @Controller('public')
@@ -14,10 +15,10 @@ export class PublicController {
     ) { }
 
     @Post('restaurant/register')
-    @UsePipes()
     public async register(
         @Body() registerDto: RegisterDto
     ) {
+        console.log('registerDto cont: ', registerDto);
         return this.publicService.restaurantRegistration(registerDto);
     }
 
@@ -31,5 +32,12 @@ export class PublicController {
         @Param('restaurantId', ParseObjectIDPipe) restaurantId: string,
     ) {
         return this.publicService.getItemList(restaurantId);
+    }
+
+    @Post('restaurant/search')
+    public async searchRestaurant(
+        @Body() searchRestaurantDto: SearchRestaurantDto
+    ) {
+        return this.publicService.searchRestaurant(searchRestaurantDto.keyword);
     }
 }

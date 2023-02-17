@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger"
 import { IsEmail, IsString, MaxLength, MinLength } from "class-validator"
 
 export class SignInCredentialsDto {
-    @ApiProperty({ default: 'tushar@gm.com' })
+    @ApiProperty({ default: 'tushar@gmm.com' })
     @IsEmail()
     email: string
 

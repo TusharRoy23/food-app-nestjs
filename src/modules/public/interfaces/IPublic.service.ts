@@ -8,4 +8,5 @@ export interface IPublicService {
     restaurantRegistration(registerDto: RegisterDto): Promise<string>;
     getRestaurantList(): Promise<Restaurant[]>;
     getItemList(restaurantId: string): Promise<ItemReponse[]>;
+    searchRestaurant(keyword: string): Promise<Restaurant[]>;
 }

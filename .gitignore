@@ -1,6 +1,9 @@
 # compiled output
 /dist
 /node_modules
+/restaurant.json
+/restaurantbk.json
+/restaurants.csv
 
 # Logs
 logs

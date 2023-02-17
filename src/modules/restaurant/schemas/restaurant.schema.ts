@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose, { HydratedDocument } from "mongoose";
-import { Item } from "../../item/schemas/item.schema";
 import { User } from "../../user/schemas/user.schema";
 import { CurrentStatus } from "../../shared/utils/enum";
 

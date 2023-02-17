@@ -1,23 +1,26 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { throwException } from '../shared/errors/all.exception';
 import { connectionName, CurrentStatus, OrderStatus, UserRole, UserType } from '../shared/utils/enum';
-import { PaginationPayload, PaginatedOrderResponse, OrderResponse } from '../shared/utils/response.utils';
+import { PaginationPayload, PaginatedOrderResponse, OrderResponse, RestaurantResponse } from '../shared/utils/response.utils';
 import { Order, OrderDiscount, OrderDiscountDocument, OrderDocument } from '../order/schemas';
 import { User, UserDocument } from '../user/schemas/user.schema';
 import { CreateOrderDiscountDto } from './dto/create-order-discount.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateOrderDiscountDto } from './dto/update-order-discount.dto';
 import { IRestaurantService } from './interfaces/IRestaurant.service';
-import { Restaurant, RestaurantDocument, RestaurantItem, RestaurantItemDocument } from './schemas';
+import { Restaurant, RestaurantDocument, RestaurantItem, RestaurantItemDocument } from './schemas/index';
 import { ISharedService, SHARED_SERVICE } from '../shared/interfaces/IShared.service';
 import { Item } from '../item/schemas/item.schema';
 import { PaginationParams } from '../shared/dto/pagination-params';
 import { getPaginationData, pagination } from '../shared/utils/pagination.utils';
+import { ElasticsearchService } from '@nestjs/elasticsearch';
+import { IRestaurantSearchResult } from './interfaces/IRestaurant-search';
 
 @Injectable()
 export class RestaurantService implements IRestaurantService {
+    private restaurantIdx = 'restaurants';
     constructor(
         @InjectModel(Restaurant.name, connectionName.MAIN_DB) private restaurantModel: Model<RestaurantDocument>,
         @InjectModel(Order.name, connectionName.MAIN_DB) private orderModel: Model<OrderDocument>,
@@ -25,9 +28,11 @@ export class RestaurantService implements IRestaurantService {
         @InjectModel(RestaurantItem.name, connectionName.MAIN_DB) private restaurantItemModel: Model<RestaurantItemDocument>,
         @InjectModel(OrderDiscount.name, connectionName.MAIN_DB) private orderDiscountModel: Model<OrderDiscountDocument>,
         @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
+        private readonly elasticSearchService: ElasticsearchService
     ) { }
 
     async register(registerDto: RegisterDto): Promise<string> {
+        console.log('registerDto: ', registerDto);
         try {
             // Create User
             const user = new User();
@@ -48,9 +53,8 @@ export class RestaurantService implements IRestaurantService {
             restaurant.closing_time = registerDto.closing_time;
             const createdRestaurant = await new this.restaurantModel(restaurant).save();
             await this.userModel.findOneAndUpdate({ email: createdUser.email }, { restaurant: createdRestaurant.id });
-
-            return Promise.resolve('Restaurant Successfully Created!');
-
+            // await this.indexRestaurant(createdRestaurant);
+            return Promise.resolve('Restaurant succ Created!');
         } catch (error: any) {
             return throwException(error);
         }
@@ -251,9 +255,40 @@ export class RestaurantService implements IRestaurantService {
         }
     }
 
-    searchRestaurant(keyword: string): Promise<Restaurant[]> {
+    async searchRestaurant(keyword: string): Promise<Restaurant[]> {
         try {
-
+            return await this.elasticSearchService.search<IRestaurantSearchResult>({
+                index: this.restaurantIdx,
+                body: {
+                    query: {
+                        bool: {
+                            must: [
+                                {
+                                    term: {
+                                        'current_status.keyword': {
+                                            "value": CurrentStatus.ACTIVE
+                                        }
+                                    },
+                                }
+                            ],
+                            should: [
+                                {
+                                    query_string: {
+                                        fields: ["name", "address"],
+                                        query: `${keyword}*`
+                                    },
+                                }
+                            ],
+                            minimum_should_match: 1
+                        }
+                    }
+                }
+            }).then((response) => {
+                const hits = response.body.hits.hits;
+                return hits.map(restaurant => restaurant._source);
+            }).catch((error) => {
+                throw new InternalServerErrorException('Error on search');
+            });
         } catch (error: any) {
             return throwException(error);
         }
@@ -263,6 +298,30 @@ export class RestaurantService implements IRestaurantService {
         try {
             const order: Order = await this.orderModel.findOne({ order_discount: discountId }).exec();
             return order == null ? false : true;
+        } catch (error: any) {
+            return throwException(error);
+        }
+    }
+
+    private async indexRestaurant(restaurant: Restaurant): Promise<boolean> {
+        console.log('restaurant: ', restaurant);
+        try {
+            return this.elasticSearchService.index<IRestaurantSearchResult, RestaurantResponse>({
+                index: this.restaurantIdx,
+                body: {
+                    id: restaurant._id,
+                    name: restaurant.name,
+                    address: restaurant.address,
+                    closing_time: restaurant.closing_time,
+                    opening_time: restaurant.opening_time,
+                    current_status: restaurant.current_status
+                }
+            }).then((resp) => {
+                console.log('resp: ', resp.body);
+                return true;
+            }).catch((error) => {
+                throw new InternalServerErrorException('Error on indexing');
+            });
         } catch (error: any) {
             return throwException(error);
         }

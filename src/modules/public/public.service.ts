@@ -42,4 +42,8 @@ export class PublicService implements IPublicService {
     async getRestaurantList(): Promise<Restaurant[]> {
         return this.restaurantService.getRestaurantList();
     }
+
+    async searchRestaurant(keyword: string): Promise<Restaurant[]> {
+        return this.restaurantService.searchRestaurant(keyword);
+    }
 }

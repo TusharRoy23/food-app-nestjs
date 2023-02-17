@@ -30,7 +30,8 @@ services:
       - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGODB_ROOT_PASSWORD}
       - ME_CONFIG_MONGODB_SERVER=mongodb
     depends_on:
-      - db
+      db:
+        condition: service_started
     networks:
       - food_dev_api
   fooddev:
@@ -47,8 +48,40 @@ services:
     ports:
       - "${APP_PORT}:${APP_PORT}"
     depends_on:
-      - db
+      db:
+        condition: service_started
+      # esFood01:
+      #   condition: service_completed_successfully
     restart: unless-stopped
+    networks:
+      - food_dev_api
+  esFood01:
+    container_name: esFood01
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
+    env_file:
+      - ./env/.dev.env
+    volumes:
+      - esFoodData01:/usr/share/elasticsearch/data
+    ports:
+      - ${ES_HOST_PORT}:9200
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - food_dev_api
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:${ELK_VERSION}
+    environment:
+      - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_NODE}
+      - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME}
+      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
+    ports:
+      - ${KIBANA_HOST_PORT}:5601
+    depends_on:
+      esFood01:
+        condition: service_started
     networks:
       - food_dev_api
 networks:
@@ -57,3 +90,4 @@ networks:
 
 volumes:
   mongodb:
+  esFoodData01:
