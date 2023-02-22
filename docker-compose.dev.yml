@@ -61,7 +61,7 @@ services:
     env_file:
       - ./env/.dev.env
     volumes:
-      - esFoodData01:/usr/share/elasticsearch/data
+      - ./esFoodData01:/usr/share/elasticsearch/data
     ports:
       - ${ES_HOST_PORT}:9200
     ulimits:

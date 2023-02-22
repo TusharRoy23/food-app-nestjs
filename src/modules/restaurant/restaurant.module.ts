@@ -3,11 +3,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { connectionName } from '../shared/utils/enum';
 import {
     Restaurant,
+    RestaurantSchema,
     RestaurantItem,
     RestaurantItemSchema,
     RestaurantRating,
-    RestaurantRatingSchema,
-    RestaurantSchema
+    RestaurantRatingSchema
 } from './schemas';
 import { RestaurantController } from './restaurant.controller';
 import { RestaurantService } from './restaurant.service';

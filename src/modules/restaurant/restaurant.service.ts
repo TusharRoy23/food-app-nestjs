@@ -32,7 +32,6 @@ export class RestaurantService implements IRestaurantService {
     ) { }
 
     async register(registerDto: RegisterDto): Promise<string> {
-        console.log('registerDto: ', registerDto);
         try {
             // Create User
             const user = new User();
@@ -52,9 +51,10 @@ export class RestaurantService implements IRestaurantService {
             restaurant.opening_time = registerDto.opening_time;
             restaurant.closing_time = registerDto.closing_time;
             const createdRestaurant = await new this.restaurantModel(restaurant).save();
-            await this.userModel.findOneAndUpdate({ email: createdUser.email }, { restaurant: createdRestaurant.id });
-            // await this.indexRestaurant(createdRestaurant);
-            return Promise.resolve('Restaurant succ Created!');
+
+            await this.userModel.findOneAndUpdate({ email: createdUser.email }, { restaurant: createdRestaurant.id }, { new: true });
+            this.indexRestaurant(createdRestaurant);
+            return Promise.resolve('Restaurant Successfully Created!');
         } catch (error: any) {
             return throwException(error);
         }
@@ -255,7 +255,7 @@ export class RestaurantService implements IRestaurantService {
         }
     }
 
-    async searchRestaurant(keyword: string): Promise<Restaurant[]> {
+    async searchRestaurant(keyword: string): Promise<RestaurantResponse[]> {
         try {
             return await this.elasticSearchService.search<IRestaurantSearchResult>({
                 index: this.restaurantIdx,
@@ -265,9 +265,7 @@ export class RestaurantService implements IRestaurantService {
                             must: [
                                 {
                                     term: {
-                                        'current_status.keyword': {
-                                            "value": CurrentStatus.ACTIVE
-                                        }
+                                        'current_status': CurrentStatus.ACTIVE
                                     },
                                 }
                             ],
@@ -304,10 +302,10 @@ export class RestaurantService implements IRestaurantService {
     }
 
     private async indexRestaurant(restaurant: Restaurant): Promise<boolean> {
-        console.log('restaurant: ', restaurant);
         try {
             return this.elasticSearchService.index<IRestaurantSearchResult, RestaurantResponse>({
                 index: this.restaurantIdx,
+                id: restaurant._id.toString(),
                 body: {
                     id: restaurant._id,
                     name: restaurant.name,
@@ -317,7 +315,6 @@ export class RestaurantService implements IRestaurantService {
                     current_status: restaurant.current_status
                 }
             }).then((resp) => {
-                console.log('resp: ', resp.body);
                 return true;
             }).catch((error) => {
                 throw new InternalServerErrorException('Error on indexing');

@@ -5,7 +5,7 @@ import { RESTAURANT_SERVICE, IRestaurantService } from '../restaurant/interfaces
 import { Restaurant } from '../restaurant/schemas';
 import { throwException } from '../shared/errors/all.exception';
 import { ISharedService, SHARED_SERVICE } from '../shared/interfaces/IShared.service';
-import { ItemReponse } from '../shared/utils/response.utils';
+import { ItemReponse, RestaurantResponse } from '../shared/utils/response.utils';
 import { IPublicService } from './interfaces/IPublic.service';
 
 @Injectable()
@@ -43,7 +43,7 @@ export class PublicService implements IPublicService {
         return this.restaurantService.getRestaurantList();
     }
 
-    async searchRestaurant(keyword: string): Promise<Restaurant[]> {
+    async searchRestaurant(keyword: string): Promise<RestaurantResponse[]> {
         return this.restaurantService.searchRestaurant(keyword);
     }
 }

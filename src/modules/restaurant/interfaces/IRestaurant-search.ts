@@ -1,10 +1,10 @@
-import { Restaurant } from "../schemas"
+import { RestaurantResponse } from "../../shared/utils/response.utils";
 
 export interface IRestaurantSearchResult {
     hits: {
         total: number,
         hits: Array<{
-            _source: Restaurant
+            _source: RestaurantResponse
         }>
     }
 }

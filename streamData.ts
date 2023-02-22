@@ -1,40 +1,41 @@
-import { createReadStream, createWriteStream } from "fs";
-import { parse } from "csv-parse";
+const fs = require('fs');
 
-const readerStream = createReadStream('./restaurants.csv');
-const createStream = createWriteStream('./restaurant.json');
+fs.readFile('./restaurants.json', 'utf-8', (err, jsonStr) => {
+    if (err) {
+        console.log('Error occured on read file');
+        return;
+    }
+    try {
+        const restaurants = JSON.parse(jsonStr);
+        let newData = '';
+        restaurants.forEach(element => {
+            const obj = {
+                _index: 'restaurants',
+                _id: element._id.$oid,
+                _source: {
+                    id: element._id.$oid,
+                    name: element.name,
+                    address: element.address,
+                    current_status: element.current_status,
+                    opening_time: element.opening_time,
+                    closing_time: element.closing_time
+                }
+            };
 
-const parser = parse({
-    delimiter: ',', from_line: 2, cast: true
-});
-
-readerStream.pipe(parser)
-    .on('data', (row) => {
-        console.log('row: ', row);
-        const obj = {
-            _index: 'restaurants',
-            _id: row[0],
-            _source: {
-                id: row[0],
-                name: row[1],
-                address: row[2],
-                users: JSON.parse(row[3]),
-                opening_time: row[4],
-                closing_time: row[5],
-                current_status: row[6],
+            newData += JSON.stringify(obj) + '\n';
+        });
+        fs.writeFile("./restaurant.json", newData, (err) => {
+            if (err) {
+                console.log('Error occured on write file');
+                return;
             }
-        };
-        console.log(obj);
-        createStream.write(JSON.stringify(obj) + "\n");
-    }).on('end', () => {
-        console.log('finished');
-    }).on('error', (error) => {
+            try {
+                console.log('success: ', jsonStr);
+            } catch (error) {
+                console.log('write error: ', error);
+            }
+        })
+    } catch (error) {
         console.log('error: ', error);
-    });
-
-// readerStream.on('data', (chunk) => {
-//     const jsonData = JSON.stringify(chunk);
-//     console.log('jsonData: ', jsonData);
-//     const value = JSON.parse(jsonData);
-//     console.log('value: ', value);
-// });
+    }
+})
