@@ -2,9 +2,8 @@
 /dist
 /node_modules
 /restaurant.json
-/restaurantbk.json
-/restaurants.csv
 /esFoodData01
+/restaurants.json
 
 # Logs
 logs
