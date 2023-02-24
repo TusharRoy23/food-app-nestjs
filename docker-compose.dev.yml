@@ -84,6 +84,18 @@ services:
         condition: service_started
     networks:
       - food_dev_api
+  # redis:
+  #   image: redis/redis-stack-server:${REDIS_VERSION}
+  #   env_file:
+  #     - ./env/.dev.env
+  #   container_name: redis-stack-server
+  #   volumes:
+  #     - ./redis-data:/data
+  #   networks:
+  #     - food_dev_api
+  #   ports:
+  #     - "${REDIS_PORT}:${REDIS_PORT}"
+  #   restart: unless-stopped
 networks:
   food_dev_api:
     driver: bridge
@@ -91,3 +103,4 @@ networks:
 volumes:
   mongodb:
   esFoodData01:
+  redis-data:
