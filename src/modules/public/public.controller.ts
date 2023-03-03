@@ -17,7 +17,6 @@ export class PublicController {
     public async register(
         @Body(new ValidationPipe({ skipMissingProperties: false })) registerDto: RegisterDto
     ) {
-        console.log('registerDto cont: ', registerDto);
         return this.publicService.restaurantRegistration(registerDto);
     }
 
