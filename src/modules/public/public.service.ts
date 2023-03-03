@@ -39,7 +39,7 @@ export class PublicService implements IPublicService {
         return this.restaurantService.register(registerDto);
     }
 
-    async getRestaurantList(): Promise<Restaurant[]> {
+    async getRestaurantList(): Promise<RestaurantResponse[]> {
         return this.restaurantService.getRestaurantList();
     }
 

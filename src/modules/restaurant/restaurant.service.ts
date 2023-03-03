@@ -60,9 +60,29 @@ export class RestaurantService implements IRestaurantService {
             return throwException(error);
         }
     }
-    async getRestaurantList(): Promise<Restaurant[]> {
+    async getRestaurantList(): Promise<RestaurantResponse[]> {
         try {
-            return await this.restaurantModel.find({ current_status: CurrentStatus.ACTIVE }).exec();
+            return await this.elasticSearchService.search<IRestaurantSearchResult>({
+                index: this.restaurantIdx,
+                body: {
+                    query: {
+                        bool: {
+                            must: [
+                                {
+                                    term: {
+                                        'current_status': CurrentStatus.ACTIVE
+                                    },
+                                }
+                            ]
+                        }
+                    }
+                }
+            }).then((response) => {
+                const hits = response.body.hits.hits;
+                return hits.map(restaurant => restaurant._source);
+            }).catch((error) => {
+                throw new InternalServerErrorException('Error on search');
+            });
         } catch (error) {
             return throwException(error);
         }
