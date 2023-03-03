@@ -6,7 +6,7 @@ import { PaginationParams } from "../../shared/dto/pagination-params";
 
 export const ORDER_SERVICE = 'ORDER_SERVICE';
 export interface IOrderService {
-    submitOrder(cartId: string, user: User): Promise<OrderResponse>;
-    getOrdersByUser(paginationParams: PaginationParams, user: User): Promise<PaginatedOrderResponse>;
-    giveRating(user: User, ratingDto: RatingDto): Promise<String>;
+    submitOrder(cartId: string): Promise<OrderResponse>;
+    getOrdersByUser(paginationParams: PaginationParams): Promise<PaginatedOrderResponse>;
+    giveRating(ratingDto: RatingDto): Promise<String>;
 }

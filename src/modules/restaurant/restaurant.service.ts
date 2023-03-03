@@ -10,13 +10,13 @@ import { CreateOrderDiscountDto } from './dto/create-order-discount.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateOrderDiscountDto } from './dto/update-order-discount.dto';
 import { IRestaurantService } from './interfaces/IRestaurant.service';
-import { Restaurant, RestaurantDocument, RestaurantItem, RestaurantItemDocument } from './schemas/index';
-import { ISharedService, SHARED_SERVICE } from '../shared/interfaces/IShared.service';
+import { Restaurant, RestaurantDocument, RestaurantItem, RestaurantItemDocument } from './schemas';
 import { Item } from '../item/schemas/item.schema';
 import { PaginationParams } from '../shared/dto/pagination-params';
 import { getPaginationData, pagination } from '../shared/utils/pagination.utils';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { IRestaurantSearchResult } from './interfaces/IRestaurant-search';
+import { IRequestService, REQUEST_SERVICE, ISharedService, SHARED_SERVICE } from '../shared/interfaces';
 
 @Injectable()
 export class RestaurantService implements IRestaurantService {
@@ -28,6 +28,7 @@ export class RestaurantService implements IRestaurantService {
         @InjectModel(RestaurantItem.name, connectionName.MAIN_DB) private restaurantItemModel: Model<RestaurantItemDocument>,
         @InjectModel(OrderDiscount.name, connectionName.MAIN_DB) private orderDiscountModel: Model<OrderDiscountDocument>,
         @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
+        @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
         private readonly elasticSearchService: ElasticsearchService
     ) { }
 
@@ -66,8 +67,9 @@ export class RestaurantService implements IRestaurantService {
             return throwException(error);
         }
     }
-    async getOrderList(user: User, paginationParams: PaginationParams): Promise<PaginatedOrderResponse> {
+    async getOrderList(paginationParams: PaginationParams): Promise<PaginatedOrderResponse> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             const paginationPayload: PaginationPayload = pagination({ page: paginationParams.page, size: paginationParams.pageSize });
             const query = this.orderModel.find()
                 .and([
@@ -138,8 +140,9 @@ export class RestaurantService implements IRestaurantService {
         }
     }
 
-    async releaseOrder(orderId: String, user: User): Promise<String> {
+    async releaseOrder(orderId: String): Promise<String> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             const order: Order = await this.orderModel.findOneAndUpdate(
                 { _id: orderId, restaurant: user.restaurant, order_status: OrderStatus.PENDING },
                 { order_status: OrderStatus.RELEASED }, { new: true }).exec();
@@ -152,8 +155,9 @@ export class RestaurantService implements IRestaurantService {
         }
     }
 
-    async completeOrder(orderId: String, user: User): Promise<String> {
+    async completeOrder(orderId: String): Promise<String> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             const order: Order = await this.orderModel.findOneAndUpdate(
                 { _id: orderId, restaurant: user.restaurant, order_status: OrderStatus.RELEASED },
                 { order_status: OrderStatus.PAID }, { new: true })
@@ -188,16 +192,18 @@ export class RestaurantService implements IRestaurantService {
         }
     }
 
-    async getOrderDiscount(user: User): Promise<OrderDiscount[]> {
+    async getOrderDiscount(): Promise<OrderDiscount[]> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             return await this.orderDiscountModel.find({ restaurant: user.restaurant }).exec();
         } catch (error: any) {
             return throwException(error);
         }
     }
 
-    async createOrderDiscount(orderDiscountDto: CreateOrderDiscountDto, user: User): Promise<OrderDiscount> {
+    async createOrderDiscount(orderDiscountDto: CreateOrderDiscountDto): Promise<OrderDiscount> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             const orderDis: OrderDiscount[] = await this.orderDiscountModel.find().and([
                 { restaurant: user.restaurant._id },
                 { start_date: { $lte: new Date(orderDiscountDto.start_date) } },
@@ -223,8 +229,9 @@ export class RestaurantService implements IRestaurantService {
         }
     }
 
-    async updateOrderDiscount(orderDiscountDto: UpdateOrderDiscountDto, user: User, discountId: string): Promise<OrderDiscount> {
+    async updateOrderDiscount(orderDiscountDto: UpdateOrderDiscountDto, discountId: string): Promise<OrderDiscount> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             const isUsed: boolean = await this.isUsedOrderDiscount(discountId);
             if (isUsed) {
                 throw new BadRequestException('Discount has been used already');
@@ -239,8 +246,9 @@ export class RestaurantService implements IRestaurantService {
         }
     }
 
-    async deleteOrderDiscount(user: User, discountId: string): Promise<boolean> {
+    async deleteOrderDiscount(discountId: string): Promise<boolean> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             const isUsed: boolean = await this.isUsedOrderDiscount(discountId);
             if (isUsed) {
                 throw new BadRequestException('Discount has been used already');
@@ -322,5 +330,9 @@ export class RestaurantService implements IRestaurantService {
         } catch (error: any) {
             return throwException(error);
         }
+    }
+
+    private getUserDetailsFromRequest(): User {
+        return this.requestService.getUserInfo();
     }
 }

@@ -6,19 +6,21 @@ import { connectionName, ItemStatus } from '../shared/utils/enum';
 import { CreateItemDto, UpdateItemDto } from './dto/index.dto';
 import { IItemService } from './interfaces/IItem.interface';
 import { Item, ItemDocuement } from './schemas/item.schema';
-import { ISharedService, SHARED_SERVICE } from '../shared/interfaces/IShared.service';
 import { ItemMessage } from './constants/enum';
 import { User } from '../user/schemas/user.schema';
+import { IRequestService, REQUEST_SERVICE, ISharedService, SHARED_SERVICE } from '../shared/interfaces';
 
 @Injectable()
 export class ItemService implements IItemService {
     constructor(
         @InjectModel(Item.name, connectionName.MAIN_DB) private itemModel: Model<ItemDocuement>,
         @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
+        @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
     ) { }
 
-    async create(payload: CreateItemDto, user: User): Promise<string> {
+    async create(payload: CreateItemDto): Promise<string> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             const item = new Item();
             item.restaurant = user.restaurant;
 
@@ -33,24 +35,27 @@ export class ItemService implements IItemService {
         }
     }
 
-    async retrive(user: User): Promise<Item[]> {
+    async retrive(): Promise<Item[]> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             return await this.itemModel.find({ item_status: ItemStatus.ACTIVE, restaurant: user.restaurant }).exec();
         } catch (error: any) {
             return throwException(error);
         }
     }
 
-    async update(payload: UpdateItemDto, id: string, user: User): Promise<Item> {
+    async update(payload: UpdateItemDto, id: string): Promise<Item> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             return await this.itemModel.findOneAndUpdate({ _id: id, restaurant: user.restaurant }, payload, { new: true }).exec();
         } catch (error) {
             return throwException(error);
         }
     }
 
-    async delete(id: string, user: User): Promise<string> {
+    async delete(id: string): Promise<string> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             const itemDelStatus = await this.itemModel.findOneAndDelete({ _id: id, restaurant: user.restaurant }).exec();
             if (itemDelStatus == null) {
                 throw new NotFoundException('Item not found');
@@ -59,5 +64,9 @@ export class ItemService implements IItemService {
         } catch (error: any) {
             return throwException(error);
         }
+    }
+
+    private getUserDetailsFromRequest(): User {
+        return this.requestService.getUserInfo();
     }
 }

@@ -1,6 +1,5 @@
 import { Body, Controller, Inject, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { GetUser } from '../shared/decorator/get-user.decorator';
 import { IsPublic } from '../shared/decorator/public.decorator';
 import { ResponseMessage } from '../shared/decorator/response-msg.decorator';
 import { JwtRefreshTokenGuard } from '../shared/guards/jwt-refresh-token.guard';
@@ -35,19 +34,16 @@ export class AuthController {
     @UseGuards(JwtRefreshTokenGuard)
     @Post('/refresh-token')
     public async refreshToken(
-        @Body() refreshTokenDto: RefreshTokenDto,
-        @GetUser() user: User
+        @Body() refreshTokenDto: RefreshTokenDto
     ) {
-        return this.authService.getNewAccessAndRefreshToken(user);
+        return this.authService.getNewAccessAndRefreshToken();
     }
 
     @IsPublic(false)
     @ApiBearerAuth()
     @Post('/logout')
     @ResponseMessage('Logout successfully')
-    public async logout(
-        @GetUser() user: User
-    ) {
-        return this.authService.logout(user);
+    public async logout() {
+        return this.authService.logout();
     }
 }

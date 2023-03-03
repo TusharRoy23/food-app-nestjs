@@ -4,7 +4,7 @@ import { RegisterDto } from '../restaurant/dto/index.dto';
 import { RESTAURANT_SERVICE, IRestaurantService } from '../restaurant/interfaces/IRestaurant.service';
 import { Restaurant } from '../restaurant/schemas';
 import { throwException } from '../shared/errors/all.exception';
-import { ISharedService, SHARED_SERVICE } from '../shared/interfaces/IShared.service';
+import { ISharedService, SHARED_SERVICE } from '../shared/interfaces';
 import { ItemReponse, RestaurantResponse } from '../shared/utils/response.utils';
 import { IPublicService } from './interfaces/IPublic.service';
 

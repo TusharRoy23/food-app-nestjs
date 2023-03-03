@@ -10,12 +10,14 @@ import { User, UserDocument } from '../user/schemas/user.schema';
 import { SignInCredentialsDto, SignUpCredentialsDto } from './dto';
 import { IAuthService } from './interfaces/IAuth.service';
 import { ISharedService, SHARED_SERVICE } from '../shared/interfaces/IShared.service';
+import { IRequestService, REQUEST_SERVICE } from '../shared/interfaces';
 
 @Injectable()
 export class AuthService implements IAuthService {
     constructor(
         @InjectModel(User.name, connectionName.MAIN_DB) private userModel: Model<UserDocument>,
         @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
+        @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
         private jwtService: JwtService
     ) { }
 
@@ -55,8 +57,9 @@ export class AuthService implements IAuthService {
         }
     }
 
-    async getNewAccessAndRefreshToken(user: User): Promise<TokenResponse> {
+    async getNewAccessAndRefreshToken(): Promise<TokenResponse> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             const userData: User = await this.sharedService.getUserInfo(user.email);
             const refreshToken = await this.getRefreshToken(userData);
             await this.updateRefreshToken(refreshToken, user.email);
@@ -70,9 +73,14 @@ export class AuthService implements IAuthService {
         }
     }
 
-    async logout(user: User): Promise<boolean> {
+    async logout(): Promise<boolean> {
         try {
-            const updated = await this.userModel.findOneAndUpdate({ email: user.email }, { hashedRefreshToken: '' }, { new: true }).exec();
+            const user: User = this.getUserDetailsFromRequest();
+            const updated = await this.userModel.findOneAndUpdate(
+                { email: user.email, login_status: true },
+                { hashedRefreshToken: '', login_status: false },
+                { new: true }
+            ).exec();
             if (!updated) {
                 throw new ForbiddenException('Not allowed');
             }
@@ -130,5 +138,9 @@ export class AuthService implements IAuthService {
     private async updateLoginStatus(user: User, status: boolean): Promise<boolean> {
         const updated = await this.userModel.findOneAndUpdate({ _id: user._id }, { login_status: status }, { new: true }).exec();
         return updated == null ? false : true;
+    }
+
+    private getUserDetailsFromRequest(): User {
+        return this.requestService.getUserInfo();
     }
 }

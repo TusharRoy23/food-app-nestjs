@@ -1,14 +1,12 @@
 import { Body, Controller, Get, Inject, Param, Post, Query } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { RatingDto } from '../restaurant/dto/rating.dto';
-import { GetUser } from '../shared/decorator/get-user.decorator';
 import { IsPublic } from '../shared/decorator/public.decorator';
 import { Roles } from '../shared/decorator/roles.decorator';
 import { TypeOfUsers } from '../shared/decorator/user-type.decorator';
 import { PaginationParams } from '../shared/dto/pagination-params';
 import { ParseObjectIDPipe } from '../shared/pipe/parse-objectid.pipe';
 import { UserRole, UserType } from '../shared/utils/enum';
-import { User } from '../user/schemas/user.schema';
 import { IOrderService, ORDER_SERVICE } from './interfaces/IOrder.service';
 
 @ApiTags('Order')
@@ -24,25 +22,22 @@ export class OrderController {
 
     @Post('/:cartId')
     public async create(
-        @Param('cartId', ParseObjectIDPipe) cartId: string,
-        @GetUser() user: User
+        @Param('cartId', ParseObjectIDPipe) cartId: string
     ) {
-        return this.orderService.submitOrder(cartId, user);
+        return this.orderService.submitOrder(cartId);
     }
 
     @Get('/list')
     public async retrieve(
-        @Query() paginationParams: PaginationParams,
-        @GetUser() user: User
+        @Query() paginationParams: PaginationParams
     ) {
-        return this.orderService.getOrdersByUser(paginationParams, user);
+        return this.orderService.getOrdersByUser(paginationParams);
     }
 
     @Post('restaurant/rating')
     public async giveRating(
-        @Body() ratingDto: RatingDto,
-        @GetUser() user: User
+        @Body() ratingDto: RatingDto
     ) {
-        return this.orderService.giveRating(user, ratingDto);
+        return this.orderService.giveRating(ratingDto);
     }
 }

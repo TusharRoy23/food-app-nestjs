@@ -7,6 +7,6 @@ export const AUTH_SERVICE = 'AUTH_SERVICE';
 export interface IAuthService {
     signIn(payload: SignInCredentialsDto): Promise<UserResponse>;
     createUser(signupDto: SignUpCredentialsDto): Promise<string>;
-    getNewAccessAndRefreshToken(user: User): Promise<TokenResponse>;
-    logout(user: User): Promise<boolean>;
+    getNewAccessAndRefreshToken(): Promise<TokenResponse>;
+    logout(): Promise<boolean>;
 }

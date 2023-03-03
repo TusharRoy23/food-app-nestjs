@@ -7,12 +7,12 @@ import { IOrderService } from './interfaces/IOrder.service';
 import { Order, OrderDocument, OrderItem, OrderItemDocument } from './schemas';
 import { Model } from 'mongoose';
 import { Cart } from '../cart/schemas';
-import { SHARED_SERVICE, ISharedService } from '../shared/interfaces/IShared.service';
 import { User } from '../user/schemas/user.schema';
 import { Item } from '../item/schemas/item.schema';
 import { RatingDto } from '../restaurant/dto/rating.dto';
 import { PaginationParams } from '../shared/dto/pagination-params';
 import { getPaginationData, pagination } from '../shared/utils/pagination.utils';
+import { IRequestService, REQUEST_SERVICE, SHARED_SERVICE, ISharedService } from '../shared/interfaces';
 
 @Injectable()
 export class OrderService implements IOrderService {
@@ -20,17 +20,19 @@ export class OrderService implements IOrderService {
         @InjectModel(Order.name, connectionName.MAIN_DB) private orderModel: Model<OrderDocument>,
         @InjectModel(OrderItem.name, connectionName.MAIN_DB) private orderItemModel: Model<OrderItemDocument>,
         @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
+        @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
     ) { }
 
-    async submitOrder(cartId: string, user: User): Promise<OrderResponse> {
+    async submitOrder(cartId: string): Promise<OrderResponse> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             const cart: Cart = await this.sharedService.getCartInfo(cartId, user);
             const cartItems: { item: Item, amount: number, qty: number, total_amount: number }[] = [];
             const orderItems: OrderItem[] = [];
             let orderAmount: number = 0.0;
 
             cart?.cart_items.forEach((cartItem) => {
-                const discountRate = cartItem.item.discount_rate > 0 ? cartItem.item.discount_rate / 100 : 1;
+                const discountRate = cartItem.item?.discount_rate > 0 ? cartItem.item.discount_rate / 100 : 1;
                 const amount = cartItem.qty * (cartItem.item.price * discountRate);
                 orderAmount += amount;
                 cartItems.push({
@@ -43,7 +45,7 @@ export class OrderService implements IOrderService {
 
             let rebate_amount = 0; let total_amount = orderAmount;
             const discountInfo = await this.sharedService.getOrderDiscount(cart.restaurant._id);
-            if (discountInfo.discount_rate > 0 && orderAmount <= discountInfo.max_amount && orderAmount >= discountInfo.min_amount) {
+            if (discountInfo?.discount_rate > 0 && orderAmount <= discountInfo.max_amount && orderAmount >= discountInfo.min_amount) {
                 rebate_amount = orderAmount * discountInfo.discount_rate;
                 total_amount = orderAmount - rebate_amount;
             }
@@ -71,7 +73,7 @@ export class OrderService implements IOrderService {
                 },
                 serial_number: orderInfo.serial_number,
                 rebate_amount: orderInfo.rebate_amount,
-                discount_rate: discountInfo.discount_rate,
+                discount_rate: discountInfo?.discount_rate || 0,
                 order_date: orderInfo.order_date,
                 order_status: orderInfo.order_status,
                 paid_by: orderInfo.paid_by,
@@ -91,7 +93,7 @@ export class OrderService implements IOrderService {
                         meal_state: cartItem.item.meal_state,
                         meal_flavor: cartItem.item.meal_flavor,
                         price: cartItem.item.price,
-                        discount_rate: cartItem.item.discount_rate,
+                        discount_rate: cartItem.item?.discount_rate || 0,
                         amount: cartItem.amount,
                         qty: cartItem.qty,
                         total_amount: cartItem.total_amount,
@@ -112,7 +114,7 @@ export class OrderService implements IOrderService {
                             meal_type: orderItem.meal_type,
                             name: orderItem.name,
                             price: orderItem.price,
-                            discount_rate: orderItem.discount_rate,
+                            discount_rate: orderItem?.discount_rate || 0,
                             icon: orderItem.icon,
                             image: orderItem.image
                         }
@@ -129,8 +131,9 @@ export class OrderService implements IOrderService {
         }
     }
 
-    async getOrdersByUser(paginationParams: PaginationParams, user: User): Promise<PaginatedOrderResponse> {
+    async getOrdersByUser(paginationParams: PaginationParams): Promise<PaginatedOrderResponse> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             const paginationPayload: PaginationPayload = pagination({ page: paginationParams.page, size: paginationParams.pageSize });
             const query = this.orderModel.find({ user: user._id })
                 .populate('restaurant')
@@ -202,8 +205,9 @@ export class OrderService implements IOrderService {
         }
     }
 
-    async giveRating(user: User, ratingDto: RatingDto): Promise<String> {
+    async giveRating(ratingDto: RatingDto): Promise<String> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             const rating = await this.sharedService.giveRating(user, ratingDto);
             if (rating == null) {
                 throw new InternalServerErrorException('Failed');
@@ -212,5 +216,9 @@ export class OrderService implements IOrderService {
         } catch (error) {
             return throwException(error);
         }
+    }
+
+    private getUserDetailsFromRequest(): User {
+        return this.requestService.getUserInfo();
     }
 }

@@ -2,7 +2,6 @@ import { BadRequestException, Inject, Injectable, NotFoundException } from '@nes
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { throwException } from '../shared/errors/all.exception';
-import { ISharedService, SHARED_SERVICE } from '../shared/interfaces/IShared.service';
 import { CartItemResponse, CartReponse } from '../shared/utils/response.utils';
 import { CartStatus, connectionName } from '../shared/utils/enum';
 import { Item } from '../item/schemas/item.schema';
@@ -11,6 +10,7 @@ import { CartItemDto } from './dto/cart-item.dto';
 import { ICartService } from './interfaces/ICart.interface';
 import { Cart, CartDocument, CartItem, CartItemDocument } from './schemas';
 import { User } from '../user/schemas/user.schema';
+import { IRequestService, REQUEST_SERVICE, ISharedService, SHARED_SERVICE } from '../shared/interfaces';
 
 @Injectable()
 export class CartService implements ICartService {
@@ -18,10 +18,12 @@ export class CartService implements ICartService {
         @InjectModel(Cart.name, connectionName.MAIN_DB) private cartModel: Model<CartDocument>,
         @InjectModel(CartItem.name, connectionName.MAIN_DB) private cartItemModel: Model<CartItemDocument>,
         @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
+        @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
     ) { }
 
-    async create(cartItemDto: CartItemDto, user: User, restaurantId: string): Promise<CartReponse> {
+    async create(cartItemDto: CartItemDto, restaurantId: string): Promise<CartReponse> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             const restaurantInfo: Restaurant = await this.sharedService.getRestaurantInfo(restaurantId);
             const itemInfo: Item = await this.sharedService.getItemInfo(cartItemDto.id, restaurantId);
 
@@ -99,8 +101,9 @@ export class CartService implements ICartService {
             return throwException(error);
         }
     }
-    async retrieve(cartId: string, user: User): Promise<CartReponse> {
+    async retrieve(cartId: string): Promise<CartReponse> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             const cart: Cart = await this.getCartInfo(cartId, user);
             const result: CartReponse = {
                 id: cart._id,
@@ -134,8 +137,9 @@ export class CartService implements ICartService {
         }
     }
 
-    async update(cartItemDto: CartItemDto, user: User, cartId: string): Promise<CartReponse> {
+    async update(cartItemDto: CartItemDto, cartId: string): Promise<CartReponse> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             const cart: Cart = await this.getCartInfo(cartId, user);
             const itemInfo: Item = await this.sharedService.getItemInfo(cartItemDto.id, cart.restaurant._id);
             if (itemInfo == null) {
@@ -174,8 +178,9 @@ export class CartService implements ICartService {
         }
     }
 
-    async delete(cartItemId: string, cartId: string, user: User): Promise<CartReponse> {
+    async delete(cartItemId: string, cartId: string): Promise<CartReponse> {
         try {
+            const user: User = this.getUserDetailsFromRequest();
             const cartItem: CartItem = await this.cartItemModel.findOneAndDelete({ cart: cartId, _id: cartItemId }, { new: true }).exec();
             if (cartItem == null) {
                 throw new NotFoundException('Cart Item not found');
@@ -236,7 +241,7 @@ export class CartService implements ICartService {
             let rebate_amount = 0;
 
             const discountInfo = await this.sharedService.getOrderDiscount(cart.restaurant._id);
-            if (discountInfo && discountInfo.discount_rate > 0 && totalAmount <= discountInfo.max_amount && totalAmount >= discountInfo.min_amount) {
+            if (discountInfo && discountInfo?.discount_rate > 0 && totalAmount <= discountInfo.max_amount && totalAmount >= discountInfo.min_amount) {
                 rebate_amount = totalAmount * discountInfo.discount_rate;
                 totalAmount = totalAmount - rebate_amount;
             }
@@ -260,7 +265,7 @@ export class CartService implements ICartService {
                 cart_amount: updatedCart.cart_amount,
                 total_amount: updatedCart.total_amount,
                 rebate_amount: updatedCart.rebate_amount,
-                discount_rate: discountInfo.discount_rate,
+                discount_rate: discountInfo?.discount_rate || 0,
                 cart_date: cart.cart_date,
                 cart_status: cart.cart_status,
                 cart_item: cartItemResponse
@@ -270,5 +275,9 @@ export class CartService implements ICartService {
         } catch (error: any) {
             return throwException(error);
         }
+    }
+
+    private getUserDetailsFromRequest(): User {
+        return this.requestService.getUserInfo();
     }
 }

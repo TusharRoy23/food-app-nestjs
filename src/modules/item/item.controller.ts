@@ -1,12 +1,10 @@
 import { Body, Controller, Delete, Get, Inject, Param, Post, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { GetUser } from '../shared/decorator/get-user.decorator';
 import { IsPublic } from '../shared/decorator/public.decorator';
 import { ResponseMessage } from '../shared/decorator/response-msg.decorator';
 import { Roles } from '../shared/decorator/roles.decorator';
 import { ParseObjectIDPipe } from '../shared/pipe/parse-objectid.pipe';
 import { UserRole } from '../shared/utils/enum';
-import { User } from '../user/schemas/user.schema';
 import { ItemMessage } from './constants/enum';
 import { CreateItemDto, UpdateItemDto } from './dto/index.dto';
 import { IItemService, ITEM_SERVICE } from './interfaces/IItem.interface';
@@ -24,34 +22,31 @@ export class ItemController {
     @Post('/')
     @ResponseMessage(ItemMessage.CREATED)
     public async create(
-        @Body() body: CreateItemDto,
-        @GetUser() user: User
+        @Body() body: CreateItemDto
     ) {
-        return await this.itemService.create(body, user);
+        return await this.itemService.create(body);
     }
 
     @Get('/')
     @ResponseMessage(ItemMessage.RETRIVED)
-    public async retrive(@GetUser() user: User) {
-        return await this.itemService.retrive(user);
+    public async retrive() {
+        return await this.itemService.retrive();
     }
 
     @Delete('/:id')
     @ResponseMessage(ItemMessage.DELETED)
     public async delete(
-        @Param('id', ParseObjectIDPipe) id: string,
-        @GetUser() user: User
+        @Param('id', ParseObjectIDPipe) id: string
     ) {
-        return await this.itemService.delete(id, user);
+        return await this.itemService.delete(id);
     }
 
     @Put('/:id')
     @ResponseMessage(ItemMessage.UPDATED)
     public async update(
         @Body() body: UpdateItemDto,
-        @Param('id', ParseObjectIDPipe) id: string,
-        @GetUser() user: User
+        @Param('id', ParseObjectIDPipe) id: string
     ) {
-        return await this.itemService.update(body, id, user);
+        return await this.itemService.update(body, id);
     }
 }
