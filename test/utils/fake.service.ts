@@ -3,11 +3,12 @@ import { ItemReponse, RestaurantResponse } from "../../src/modules/shared/utils/
 import { IPublicService } from "../../src/modules/public/interfaces/IPublic.service";
 import { getItemList, getRestaurantList } from "./generate";
 
-const restaurants = getRestaurantList();
-const items = getItemList(4);
+export const restaurants = getRestaurantList(4);
+export const items = getItemList(4);
+export const restaurantRegistrationMsg = 'Restaurant Successfully Created!';
 export class FakePublicService implements IPublicService {
     restaurantRegistration(registerDto: RegisterDto): Promise<string> {
-        return Promise.resolve('Restaurant Successfully Created!');
+        return Promise.resolve(restaurantRegistrationMsg);
     }
     getRestaurantList(): Promise<RestaurantResponse[]> {
         return Promise.resolve(restaurants);

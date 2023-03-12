@@ -1,42 +1,76 @@
 import * as request from 'supertest';
-import { INestApplication } from "@nestjs/common"
+import { INestApplication, ValidationPipe } from "@nestjs/common";
+import mongoose from "mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
-import { FakePublicService } from './utils/fake.service';
+import { FakePublicService, restaurants, items, restaurantRegistrationMsg } from './utils/fake.service';
 import { PUBLIC_SERVICE } from '../src/modules/public/interfaces/IPublic.service';
-import { getRestaurantList } from './utils/generate';
-import { RESTAURANT_SERVICE } from '../src/modules/restaurant/interfaces/IRestaurant.service';
-import { SHARED_SERVICE } from '../src/modules/shared/interfaces';
-import { PublicModule } from '../src/modules/public/public.module';
-import { AppModule } from '../src/app.module';
+import { PublicController } from '../src/modules/public/public.controller';
+import { RegisterDto } from '../src/modules/restaurant/dto/register.dto';
 
 describe('Public Controller (e2e)', () => {
     let app: INestApplication;
-    // const restaurants = getRestaurantList(4);
+    let agent: any;
 
-    beforeEach(async () => {
+    const registerDto: RegisterDto = {
+        address: restaurants[0].address,
+        email: 'tushar@gm.com',
+        closing_time: restaurants[0].closing_time,
+        opening_time: restaurants[0].opening_time,
+        password: 'tushar',
+        restaurant_name: restaurants[0].name,
+        name: restaurants[0].name
+    }
+
+    beforeAll(async () => {
         const moduleRef: TestingModule = await Test.createTestingModule({
-            imports: [AppModule],
-        })
-            // .useMocker((token) => {
-            //     console.log('token: ', token);
-            //     if (token === RESTAURANT_SERVICE) {
-            //         return {};
-            //     }
-            //     if (token === SHARED_SERVICE) {
-            //         return {};
-            //     }
-            // })
-            .overrideProvider(FakePublicService)
-            .useClass(FakePublicService)
-            .compile();
+            controllers: [
+                PublicController
+            ],
+            providers: [
+                { provide: PUBLIC_SERVICE, useExisting: FakePublicService },
+                FakePublicService
+            ]
+        }).compile();
+
         app = moduleRef.createNestApplication();
+        app.useGlobalPipes(new ValidationPipe());
         await app.init();
+        agent = request(app.getHttpServer());
     });
 
-    it('/public/restaurant/list GET', () => {
-        return request(app.getHttpServer())
-            .get('/api/v1/public/restaurant/list')
-            .expect(200)
-        //.expect(restaurants);
-    })
-})
+    it('Restaurant List GET 200', () => {
+        return agent
+            .get('/public/restaurant/list')
+            .expect(200);
+    });
+
+    it('Should return valid Restaurant list', async () => {
+        return agent.get('/public/restaurant/list')
+            .then(response => {
+                const restaurantList = response.body;
+                expect(restaurantList[0].name).toEqual(restaurants[0].name);
+            });
+    });
+
+    it('Item List GET 200', () => {
+        return agent.get(`/public/restaurant/${restaurants[0].id}/item/list`).expect(200);
+    });
+
+    it('Should return valid Item list', () => {
+        return agent.get(`/public/restaurant/${restaurants[0].id}/item/list`).then(response => {
+            const itemList = response.body;
+            expect(new mongoose.Types.ObjectId(itemList[0].id)).toEqual(items[0].id)
+        });
+    });
+
+    it('Restaurant Registration POST 201', () => {
+        return agent.post('/public/restaurant/register').send(registerDto).expect(201);
+    });
+
+    it('Restaurant should successfully register', () => {
+        return agent.post('/public/restaurant/register').send(registerDto).then(response => {
+            const message = response.text;
+            expect(restaurantRegistrationMsg).toStrictEqual(message);
+        })
+    });
+});
