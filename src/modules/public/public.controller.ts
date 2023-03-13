@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Param, Post, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { IsPublic } from '../shared/decorator/public.decorator';
 import { RegisterDto } from '../restaurant/dto/register.dto';
@@ -16,7 +16,7 @@ export class PublicController {
 
     @Post('restaurant/register')
     public async register(
-        @Body() registerDto: RegisterDto
+        @Body(new ValidationPipe({ skipMissingProperties: false })) registerDto: RegisterDto
     ) {
         console.log('registerDto cont: ', registerDto);
         return this.publicService.restaurantRegistration(registerDto);
