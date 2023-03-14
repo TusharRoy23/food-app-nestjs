@@ -1,6 +1,4 @@
-import { User } from "../../user/schemas/user.schema";
 import { OrderResponse, PaginatedOrderResponse } from "../../shared/utils/response.utils";
-import { OrderDto } from "../dto/order.dto";
 import { RatingDto } from "../../restaurant/dto/index.dto";
 import { PaginationParams } from "../../shared/dto/pagination-params";
 

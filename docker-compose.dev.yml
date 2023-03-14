@@ -50,8 +50,8 @@ services:
     depends_on:
       db:
         condition: service_started
-      # esFood01:
-      #   condition: service_completed_successfully
+      esFood01:
+        condition: service_started
     restart: unless-stopped
     networks:
       - food_dev_api

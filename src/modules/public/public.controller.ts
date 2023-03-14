@@ -1,10 +1,9 @@
-import { Body, Controller, Get, Inject, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Inject, Param, Post, Query, ValidationPipe } from '@nestjs/common';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from '../shared/decorator/public.decorator';
 import { RegisterDto } from '../restaurant/dto/register.dto';
 import { IPublicService, PUBLIC_SERVICE } from './interfaces/IPublic.service';
 import { ParseObjectIDPipe } from '../shared/pipe/parse-objectid.pipe';
-import { SearchRestaurantDto } from '../restaurant/dto/search-restaurant.dto';
 
 @ApiTags('Public')
 @Controller('public')
@@ -35,9 +34,10 @@ export class PublicController {
     }
 
     @Post('restaurant/search')
+    @ApiQuery({ name: 'keyword', required: true })
     public async searchRestaurant(
-        @Body() searchRestaurantDto: SearchRestaurantDto
+        @Query('keyword') keyword: string
     ) {
-        return this.publicService.searchRestaurant(searchRestaurantDto.keyword);
+        return this.publicService.searchRestaurant(keyword);
     }
 }

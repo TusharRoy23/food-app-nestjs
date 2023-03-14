@@ -19,7 +19,7 @@ export class CartItem {
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Item' })
     item: Item;
 
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Item' })
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Cart' })
     cart: Cart;
 
     @Prop({ type: 'Number', default: 0.0 })

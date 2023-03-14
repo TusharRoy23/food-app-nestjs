@@ -188,7 +188,7 @@ export class OrderService implements IOrderService {
                 });
             });
 
-            const total = await this.orderModel.count();
+            const total = await this.orderModel.count().and([{ user: user._id }]);
             const paginatedData = getPaginationData({ total, page: +paginationPayload.currentPage, limit: +paginationPayload.limit });
 
             const paginatedOrderResponse: PaginatedOrderResponse = {

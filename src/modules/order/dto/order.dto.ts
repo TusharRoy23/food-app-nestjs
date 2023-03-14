@@ -5,6 +5,6 @@ export class OrderDto {
     @ApiProperty()
     @IsString()
     @IsNotEmpty()
-    @IsMongoId()
+    @IsMongoId({ message: 'Must be a valid Id' })
     id: string;
 }

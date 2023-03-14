@@ -1,11 +1,22 @@
-import { ApiProperty, PartialType } from "@nestjs/swagger";
-import { IsString, MaxLength, MinLength, IsNotEmpty } from "class-validator";
-import { SignInCredentialsDto } from "./signin-credentials.dto";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsString, MaxLength, MinLength, IsDefined, IsEmail } from "class-validator";
 
-export class SignUpCredentialsDto extends PartialType(SignInCredentialsDto) {
-    @ApiProperty()
+export class SignUpCredentialsDto {
+    @ApiProperty({ default: 'tushar@gmm.com' })
+    @IsDefined()
+    @IsEmail()
+    email: string
+
+    @ApiProperty({ default: 'tushar' })
+    @IsDefined()
     @IsString()
-    @IsNotEmpty()
+    @MinLength(3)
+    @MaxLength(10)
+    password: string
+
+    @ApiProperty()
+    @IsDefined()
+    @IsString()
     @MinLength(3)
     @MaxLength(15)
     name: string;

@@ -129,25 +129,3 @@ export const isValidEnum = (property: string, enumType: any, validationOptions?:
         });
     }
 };
-
-export const isRequired = (property: string, validationOptions?: ValidationOptions) => {
-    console.log('property: ', property);
-    return (object: Object, propertyName: string) => {
-        registerDecorator({
-            name: 'isValidDate',
-            target: object.constructor,
-            propertyName: propertyName,
-            constraints: [property],
-            options: validationOptions,
-            validator: {
-                validate(value: string, args: ValidationArguments) {
-                    console.log('value: ', value);
-                    return value != null ? false : true;
-                },
-                defaultMessage(validationArguments?: ValidationArguments) {
-                    return `${property} is required`;
-                },
-            }
-        })
-    }
-}

@@ -110,7 +110,7 @@ export class CartService implements ICartService {
                 cart_amount: cart.cart_amount,
                 total_amount: cart.total_amount,
                 rebate_amount: cart.rebate_amount,
-                discount_rate: cart.order_discount.discount_rate,
+                discount_rate: cart?.order_discount?.discount_rate || 0.0,
                 cart_date: new Date(cart.cart_date),
                 cart_status: cart.cart_status,
                 cart_item: cart.cart_items.map((cartItem) => ({
@@ -120,7 +120,7 @@ export class CartService implements ICartService {
                     total_amount: cartItem.total_amount,
                     item: {
                         id: cartItem.item._id,
-                        discount_rate: cartItem.item.discount_rate,
+                        discount_rate: cartItem?.item?.discount_rate || 0.0,
                         item_type: cartItem.item.item_type,
                         meal_flavor: cartItem.item.meal_flavor,
                         meal_state: cartItem.item.meal_state,
@@ -226,7 +226,7 @@ export class CartService implements ICartService {
                         total_amount: cartItem.total_amount,
                         item: {
                             id: cartItem.item._id,
-                            discount_rate: cartItem.item.discount_rate,
+                            discount_rate: cartItem?.item?.discount_rate || 0.0,
                             item_type: cartItem.item.item_type,
                             meal_flavor: cartItem.item.meal_flavor,
                             meal_state: cartItem.item.meal_state,

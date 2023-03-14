@@ -1,17 +1,17 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsMongoId, IsNotEmpty, IsNumber, IsString, Max, Min } from "class-validator";
+import { IsDefined, IsMongoId, IsNotEmpty, IsNumber, IsString, Max, Min } from "class-validator";
 
 export class CartItemDto {
     @ApiProperty()
+    @IsDefined()
     @IsString()
-    @IsNotEmpty()
-    @IsMongoId()
+    @IsMongoId({ message: 'Must be a valid Id' })
     id: string;
 
     @ApiProperty()
     @Min(1)
     @Max(50)
-    @IsNotEmpty()
+    @IsDefined()
     @IsNumber()
     qty: number;
 }
