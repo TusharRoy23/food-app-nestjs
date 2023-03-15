@@ -33,7 +33,7 @@ export class PublicController {
         return this.publicService.getItemList(restaurantId);
     }
 
-    @Post('restaurant/search')
+    @Get('restaurant/search')
     @ApiQuery({ name: 'keyword', required: true })
     public async searchRestaurant(
         @Query('keyword') keyword: string
