@@ -11,7 +11,7 @@ describe('Public Controller (e2e)', () => {
     let app: INestApplication;
     let agent: any;
 
-    const registerDto: RegisterDto = {
+    const registerDto = {
         address: restaurants[0].address,
         email: 'tushar@gm.com',
         closing_time: restaurants[0].closing_time,
@@ -20,6 +20,8 @@ describe('Public Controller (e2e)', () => {
         restaurant_name: restaurants[0].name,
         name: restaurants[0].name
     }
+
+    const searchKey = 'westin';
 
     beforeAll(async () => {
         const moduleRef: TestingModule = await Test.createTestingModule({
@@ -71,6 +73,10 @@ describe('Public Controller (e2e)', () => {
         return agent.post('/public/restaurant/register').send(registerDto).then(response => {
             const message = response.text;
             expect(restaurantRegistrationMsg).toStrictEqual(message);
-        })
+        });
+    });
+
+    it('Search Restaurant GET 200', () => {
+        return agent.get(`/public/restaurant/search?keyword=${searchKey}`).expect(200);
     });
 });

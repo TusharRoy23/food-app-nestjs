@@ -6,7 +6,7 @@ const generateRestaurant = (object: any = {}) => {
     return {
         id: new mongoose.Types.ObjectId(faker.database.mongodbObjectId()),
         address: `${faker.address.street(), faker.address.zipCode(), faker.address.state()}`,
-        name: faker.company.name(),
+        name: faker.commerce.department(),
         opening_time: '08:08:08',
         closing_time: '12:00:00',
         current_status: 'active',
