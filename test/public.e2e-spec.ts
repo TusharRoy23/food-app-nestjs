@@ -11,7 +11,7 @@ describe('Public Controller (e2e)', () => {
     let app: INestApplication;
     let agent: any;
 
-    const registerDto = {
+    const registerDto: RegisterDto = {
         address: restaurants[0].address,
         email: 'tushar@gm.com',
         closing_time: restaurants[0].closing_time,
@@ -30,7 +30,7 @@ describe('Public Controller (e2e)', () => {
             ],
             providers: [
                 { provide: PUBLIC_SERVICE, useExisting: FakePublicService },
-                FakePublicService
+                FakePublicService,
             ]
         }).compile();
 
@@ -78,5 +78,13 @@ describe('Public Controller (e2e)', () => {
 
     it('Search Restaurant GET 200', () => {
         return agent.get(`/public/restaurant/search?keyword=${searchKey}`).expect(200);
+    });
+
+    it('Should return valid Restaurant list on search', async () => {
+        return agent.get(`/public/restaurant/search?keyword=${searchKey}`)
+            .then(response => {
+                const restaurantList = response.body;
+                expect(restaurantList).toBeInstanceOf(Array);
+            });
     });
 });
