@@ -1,21 +1,24 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { connectionName } from '../../shared/utils/enum';
-import { FakeSharedService, restaurantRegistrationMsg } from '../../../../test/utils/fake.service';
-import { REQUEST_SERVICE, SHARED_SERVICE } from '../../shared/interfaces';
+import { FakeElasticsearchService, FakeSharedService, restaurantRegistrationMsg } from '../../../../test/utils/fake.service';
+import { ELASTICSEARCH_SERVICE, REQUEST_SERVICE, SHARED_SERVICE } from '../../shared/interfaces';
 import { RequestService } from '../../shared/service';
 import { RestaurantService } from '../restaurant.service';
 import { Restaurant, RestaurantDocument, RestaurantItem } from '../schemas';
 import { Order, OrderDiscount, OrderDiscountDocument, OrderDocument } from '../../order/schemas';
 import { User, UserDocument } from '../../user/schemas/user.schema';
-import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { Model, Query } from 'mongoose';
-import { getRestaurantList, getUserList } from '../../../../test/utils/generate';
+import { getRawOrderResponseList, getRawRestaurantList, getRestaurantList, getUserInfo, getUserList } from '../../../../test/utils/generate';
 import { RegisterDto } from '../dto/register.dto';
 import { createMock } from "@golevelup/ts-jest";
+import { PaginationParams } from '../../shared/dto/pagination-params';
+import { PaginatedOrderResponse } from '../../shared/utils/response.utils';
+import { NotFoundException } from '@nestjs/common';
 
 describe('RestaurantService', () => {
   let restaurantService: RestaurantService;
+  let requestService: RequestService;
   const restaurentDoc = getModelToken(Restaurant.name, connectionName.MAIN_DB);
   const orderDoc = getModelToken(Order.name, connectionName.MAIN_DB);
   const userDoc = getModelToken(User.name, connectionName.MAIN_DB);
@@ -28,15 +31,23 @@ describe('RestaurantService', () => {
   let restuarantItemModel: Model<RestaurantDocument>;
   let orderDiscountModel: Model<OrderDiscountDocument>;
 
+  const rawOrderList = getRawOrderResponseList(10);
+  let userInfo = getUserInfo({ restaurant: getRawRestaurantList() });
+  userInfo = {
+    ...userInfo,
+    ...userInfo[0]
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RestaurantService,
-        ElasticsearchService,
         { provide: SHARED_SERVICE, useExisting: FakeSharedService },
         FakeSharedService,
         { provide: REQUEST_SERVICE, useExisting: RequestService },
         RequestService,
+        { provide: ELASTICSEARCH_SERVICE, useExisting: FakeElasticsearchService },
+        FakeElasticsearchService,
         {
           provide: restaurentDoc,
           useValue: {
@@ -45,7 +56,12 @@ describe('RestaurantService', () => {
         },
         {
           provide: orderDoc,
-          useValue: {}
+          useValue: {
+            find: jest.fn(),
+            exec: jest.fn(),
+            count: jest.fn(),
+            findOneAndUpdate: jest.fn()
+          }
         },
         {
           provide: userDoc,
@@ -61,19 +77,19 @@ describe('RestaurantService', () => {
         {
           provide: orderDiscountDoc,
           useValue: {}
-        },
-        {
-          provide: ElasticsearchService, useValue: {}
         }
       ],
     }).compile();
 
     restaurantService = module.get<RestaurantService>(RestaurantService);
+    requestService = module.get<RequestService>(RequestService);
     restaurantModel = module.get(restaurentDoc);
     orderModel = module.get(orderDoc);
     userModel = module.get<Model<UserDocument>>(userDoc);
     restuarantItemModel = module.get(restuarantItemDoc);
     orderDiscountModel = module.get(orderDiscountDoc);
+
+    requestService.setUserInfo(userInfo);
   });
 
   afterEach(() => {
@@ -105,4 +121,57 @@ describe('RestaurantService', () => {
     const createdUser = await restaurantService.register(registerDto);
     expect(createdUser).toEqual(restaurantRegistrationMsg);
   });
+
+  it('should return restaurant list', async () => {
+    const restaurantList = await restaurantService.getRestaurantList();
+    expect(restaurantList).toBeInstanceOf(Array);
+  });
+
+  it('should return order list', async () => {
+    const paginationParams: PaginationParams = {
+      startId: '',
+      page: 1,
+      pageSize: 10
+    };
+
+    jest.spyOn(orderModel, 'find').mockReturnValue({
+      and: jest.fn().mockReturnValue({
+        populate: jest.fn().mockReturnValue({
+          populate: jest.fn().mockReturnValue({
+            sort: jest.fn().mockReturnValue({
+              limit: jest.fn().mockReturnValue({
+                skip: jest.fn().mockReturnValue({}),
+                exec: jest.fn().mockResolvedValueOnce(rawOrderList)
+              })
+            })
+          })
+        })
+      })
+    } as any);
+    jest.spyOn(orderModel, 'count').mockReturnValue({
+      and: jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValueOnce(rawOrderList.length)
+      }),
+    } as any);
+
+    const orderList: PaginatedOrderResponse = await restaurantService.getOrderList(paginationParams);
+    expect(orderList).toHaveProperty('orders');
+    expect(orderList.orders[0]).toHaveProperty('id');
+  });
+
+  it('should release a order', async () => {
+    jest.spyOn(orderModel, 'findOneAndUpdate').mockReturnValueOnce(createMock<Query<OrderDocument, OrderDocument>>({
+      exec: jest.fn().mockResolvedValueOnce(rawOrderList[0])
+    }) as any);
+
+    const release = await restaurantService.releaseOrder(rawOrderList[0]._id.toString());
+    expect(release).toEqual('Order Released successfully');
+  });
+
+  it('should throw 404 on release order', async () => {
+    jest.spyOn(orderModel, 'findOneAndUpdate').mockReturnValueOnce(createMock<Query<OrderDocument, OrderDocument>>({
+      exec: jest.fn().mockResolvedValueOnce(null)
+    }) as any);
+    await expect(restaurantService.releaseOrder(rawOrderList[0]._id.toString())).rejects.toThrowError(new NotFoundException('Order not found'));
+  })
 });

@@ -1,10 +1,12 @@
 import { faker } from '@faker-js/faker';
 import mongoose from "mongoose";
-import { OrderStatus, PaidBy } from '../../src/modules/shared/utils/enum';
+import { Order } from '../../src/modules/order/schemas';
+import { OrderStatus, PaidBy, UserType } from '../../src/modules/shared/utils/enum';
 import { OrderItemResponse, OrderResponse, PaginatedOrderResponse } from '../../src/modules/shared/utils/response.utils';
 import { PaginatedData } from './generate';
 import { generateItemList } from './item-data';
 import { generateRestaurantList } from './restaurant-data';
+import { generateUserList } from './user-data';
 
 const getItemList = (n = 1, ...object) => generateItemList(n, object);
 const getRestaurantList = (n = 1, ...object) => generateRestaurantList(n, object);
@@ -61,4 +63,31 @@ export const generatePaginatedOrderResponse = (
         nextPage: nextPage,
         totalPages: totalPages
     } as PaginatedOrderResponse;
+}
+
+const generateRawOrderResponse = (object: any = {}) => {
+    return {
+        _id: new mongoose.Types.ObjectId(faker.database.mongodbObjectId()),
+        order_amount: +faker.commerce.price(),
+        total_amount: +faker.commerce.price(),
+        serial_number: `FA-${Date.now()}`,
+        rebate_amount: 0,
+        discount_rate: 0.0,
+        order_date: faker.date.between('2020-01-01T00:00:00.000Z', '2030-01-01T00:00:00.000Z'),
+        restaurant: getRestaurantList()[0],
+        order_status: OrderStatus.PAID,
+        paid_by: PaidBy.CASH_ON_DELIVERY,
+        order_items: generateOrderItemList(3),
+        user: generateUserList(1, { user_type: UserType.VISITOR })[0],
+        order_discount: {},
+        ...object
+    };
+}
+
+
+export const generateRawOrderResponseList = (n = 1, object: any = {}) => {
+    return Array.from(
+        { length: n },
+        (_, __) => generateRawOrderResponse({ ...object })
+    ) as Order[];
 }

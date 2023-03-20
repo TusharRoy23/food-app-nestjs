@@ -3,12 +3,13 @@ import mongoose from "mongoose";
 import { CurrentStatus } from '../../src/modules/shared/utils/enum';
 import { User } from "../../src/modules/user/schemas/user.schema";
 
-const generateUser = (object: any = {}) => {
+export const generateUser = (object: any = {}) => {
     return {
         _id: new mongoose.Types.ObjectId(faker.database.mongodbObjectId()),
         email: faker.internet.email(),
         name: faker.name.fullName(),
-        current_status: CurrentStatus.ACTIVE
+        current_status: CurrentStatus.ACTIVE,
+        ...object
     } as User
 };
 

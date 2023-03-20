@@ -7,7 +7,7 @@ import { OrderDiscount } from "../../src/modules/order/schemas";
 import { CreateOrderDiscountDto } from "../../src/modules/restaurant/dto/create-order-discount.dto";
 import { UpdateOrderDiscountDto } from "../../src/modules/restaurant/dto/update-order-discount.dto";
 import { PaginationParams } from "../../src/modules/shared/dto/pagination-params";
-import { ISharedService } from "../../src/modules/shared/interfaces";
+import { IElasticsearchService, IRequestService, ISharedService } from "../../src/modules/shared/interfaces";
 import { Cart } from "src/modules/cart/schemas";
 import { Item } from "src/modules/item/schemas/item.schema";
 import { RatingDto } from "src/modules/restaurant/dto/rating.dto";
@@ -99,5 +99,26 @@ export class FakeSharedService implements ISharedService {
     giveRating(user: User, ratingDto: RatingDto): Promise<String> {
         throw new Error("Method not implemented.");
     }
+}
 
+// export class FakeRequestService implements IRequestService {
+//     setUserInfo(user: User) {
+
+//     }
+//     getUserInfo(): User {
+//         throw new Error("Method not implemented.");
+//     }
+
+// }
+
+export class FakeElasticsearchService implements IElasticsearchService {
+    getRestaurantList(): Promise<RestaurantResponse[]> {
+        return Promise.resolve(restaurants);
+    }
+    searchRestaurant(keyword: string): Promise<RestaurantResponse[]> {
+        return Promise.resolve(restaurants);
+    }
+    indexRestaurant(restaurant: Restaurant): Promise<boolean> {
+        return Promise.resolve(true);
+    }
 }
