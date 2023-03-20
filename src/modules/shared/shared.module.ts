@@ -5,11 +5,12 @@ import { ItemModule } from "../item/item.module";
 import { OrderModule } from "../order/order.module";
 import { RestaurantModule } from "../restaurant/restaurant.module";
 import { UserModule } from "../user/user.module";
-import { REQUEST_SERVICE, SHARED_SERVICE } from "./interfaces";
-import { RequestService, SharedService } from "./service";
+import { REQUEST_SERVICE, SHARED_SERVICE, ELASTICSEARCH_SERVICE } from "./interfaces";
+import { RequestService, SharedService, CustomElasticService } from "./service";
 
 const sharedService = { provide: SHARED_SERVICE, useClass: SharedService };
 const requestService = { provide: REQUEST_SERVICE, useClass: RequestService };
+const elasticSearchService = { provide: ELASTICSEARCH_SERVICE, useClass: CustomElasticService };
 
 @Global()
 @Module({
@@ -31,11 +32,13 @@ const requestService = { provide: REQUEST_SERVICE, useClass: RequestService };
     ],
     providers: [
         sharedService,
-        requestService
+        requestService,
+        elasticSearchService
     ],
     exports: [
         sharedService,
         requestService,
+        elasticSearchService,
         ElasticsearchModule
     ]
 })
