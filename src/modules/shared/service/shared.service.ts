@@ -122,11 +122,11 @@ export class SharedService implements ISharedService {
                 .exec();
             if (rating == null) {
                 const restaurant: Restaurant = await this.getRestaurantInfo(ratingDto.restaurant_id);
-                const newRating: RestaurantRating = await new this.restaurantRatingModel({
+                const newRating: RestaurantRating = await this.restaurantRatingModel.create({
                     restaurant: restaurant,
                     star: ratingDto.star,
                     user
-                }).save();
+                });
 
                 if (newRating == null) {
                     throw new InternalServerErrorException('Rating unsuccessful');

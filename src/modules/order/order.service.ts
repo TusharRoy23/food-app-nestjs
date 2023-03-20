@@ -61,7 +61,7 @@ export class OrderService implements IOrderService {
                 order.order_discount = discountInfo;
             }
 
-            const orderInfo: Order = await new this.orderModel(order).save();
+            const orderInfo: Order = await this.orderModel.create(order);
             const orderResponse: OrderResponse = {
                 id: orderInfo._id,
                 order_amount: orderInfo.order_amount,
@@ -82,7 +82,7 @@ export class OrderService implements IOrderService {
 
             await Promise.all(
                 cartItems.map(async (cartItem) => {
-                    const orderItem: OrderItem = await new this.orderItemModel({
+                    const orderItem: OrderItem = await this.orderItemModel.create({
                         item_id: cartItem.item._id,
                         name: cartItem.item.name,
                         icon: cartItem.item.icon,
@@ -98,7 +98,7 @@ export class OrderService implements IOrderService {
                         qty: cartItem.qty,
                         total_amount: cartItem.total_amount,
                         order: orderInfo
-                    }).save();
+                    });
 
                     orderItems.push(orderItem);
                     orderResponse.order_item.push({
@@ -188,7 +188,7 @@ export class OrderService implements IOrderService {
                 });
             });
 
-            const total = await this.orderModel.count().and([{ user: user._id }]);
+            const total = await this.orderModel.count().and([{ user: user._id }]).exec();
             const paginatedData = getPaginationData({ total, page: +paginationPayload.currentPage, limit: +paginationPayload.limit });
 
             const paginatedOrderResponse: PaginatedOrderResponse = {

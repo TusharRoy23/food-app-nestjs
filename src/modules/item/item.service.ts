@@ -28,7 +28,7 @@ export class ItemService implements IItemService {
                 item[key] = payload[key];
             }
 
-            await new this.itemModel(item).save();
+            await this.itemModel.create(item);
             return ItemMessage.CREATED;
         } catch (error: any) {
             return throwException(error);

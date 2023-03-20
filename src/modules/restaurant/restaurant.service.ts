@@ -122,7 +122,7 @@ export class RestaurantService implements IRestaurantService {
 
             const total = await this.orderModel.count().and([
                 { restaurant: user.restaurant._id },
-            ]);
+            ]).exec();;
             const paginatedData = getPaginationData({ total, page: +paginationPayload.currentPage, limit: +paginationPayload.limit });
 
             const paginatedOrderResponse: PaginatedOrderResponse = {

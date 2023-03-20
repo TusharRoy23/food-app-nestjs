@@ -50,7 +50,7 @@ export class AuthService implements IAuthService {
                 password: await user.doPasswordHashing(signupDto.password),
                 role: UserRole.NONE
             };
-            await new this.userModel(payload).save();
+            await this.userModel.create(payload);
             return 'User successfully created !'
         } catch (error: any) {
             return throwException(error);
@@ -126,7 +126,7 @@ export class AuthService implements IAuthService {
         try {
             if (refreshToken) {
                 const hashedString = await hashString(refreshToken);
-                await this.userModel.findOneAndUpdate({ email: email }, { hashedRefreshToken: hashedString });
+                await this.userModel.findOneAndUpdate({ email: email }, { hashedRefreshToken: hashedString }).exec();
                 return;
             }
             throw new NotFoundException('No Refresh found.');

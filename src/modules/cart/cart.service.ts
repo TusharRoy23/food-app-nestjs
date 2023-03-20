@@ -52,7 +52,7 @@ export class CartService implements ICartService {
             }
 
             cart.cart_amount = cartAmount;
-            const cart_info = await new this.cartModel(cart).save();
+            const cart_info = await this.cartModel.create(cart);
 
             const result: CartReponse = {
                 id: cart_info._id,
@@ -65,13 +65,13 @@ export class CartService implements ICartService {
                 cart_item: []
             };
 
-            const cartItem: CartItem = await new this.cartItemModel({
+            const cartItem: CartItem = await this.cartItemModel.create({
                 item: itemInfo,
                 qty: cartItemDto.qty,
                 amount: cartAmount,
                 total_amount: itemTotalAmount,
                 cart: cart_info
-            }).save();
+            });
 
             await this.cartModel.findOneAndUpdate({ _id: cart_info._id }, { cart_items: [cartItem] }, { new: true }).exec();
 
