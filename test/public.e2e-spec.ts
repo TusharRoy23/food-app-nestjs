@@ -29,8 +29,7 @@ describe('Public Controller (e2e)', () => {
                 PublicController
             ],
             providers: [
-                { provide: PUBLIC_SERVICE, useExisting: FakePublicService },
-                FakePublicService,
+                { provide: PUBLIC_SERVICE, useClass: FakePublicService },
             ]
         }).compile();
 

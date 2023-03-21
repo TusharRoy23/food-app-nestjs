@@ -1,42 +1,89 @@
 import * as request from 'supertest';
-import { ClassSerializerInterceptor, INestApplication, ValidationPipe } from "@nestjs/common"
+import { APP_GUARD } from '@nestjs/core';
 import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication, ValidationPipe } from "@nestjs/common"
 import { RestaurantController } from '../src/modules/restaurant/restaurant.controller';
 import { RESTAURANT_SERVICE } from '../src/modules/restaurant/interfaces/IRestaurant.service';
-import { FakeRestaurantService } from './utils/fake.service';
-import { APP_GUARD, Reflector } from '@nestjs/core';
-import { JwtAuthGuard, RolesGuard } from '../src/modules/shared/guards';
-import { FakeJwtAuthGuard, FakeRoleGuard } from './utils/fake.guard';
-import { ResponseInterceptor } from '../src/modules/shared/interceptors/response.interceptor';
+import { FakeJwtService, FakeRestaurantService, OrderReleaseMsg } from './utils/fake.service';
+import { JwtAuthGuard, RolesGuard, UserTypeGuard } from '../src/modules/shared/guards';
+import { JwtStrategy } from '../src/modules/auth/strategy/jwt-strategy';
+import { FakeJwtStrategy } from './utils/fake-jwt-strategy';
+import { getRawOrderResponseList, getRestaurantList, getUserInfo } from './utils/generate';
+import { CurrentStatus, UserRole, UserType } from '../src/modules/shared/utils/enum';
 
 describe("Restaurant Controller (e2e)", () => {
     let app: INestApplication;
     let agent: any;
+    let bearerToken: string;
+    const userInfo = {
+        _id: getUserInfo()._id,
+        email: getUserInfo().email,
+        name: getUserInfo().name,
+        current_status: CurrentStatus.ACTIVE,
+        role: UserRole.EMPLOYEE,
+        user_type: UserType.RESTAURANT_USER,
+        restaurant: getRestaurantList()[0],
+        login_status: true,
+    };
+    const orderInfo = getRawOrderResponseList()[0];
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         const moduleRef: TestingModule = await Test.createTestingModule({
             imports: [],
             controllers: [RestaurantController],
             providers: [
-                { provide: RESTAURANT_SERVICE, useExisting: FakeRestaurantService },
-                FakeRestaurantService,
-                // { provide: APP_GUARD, useExisting: JwtAuthGuard },
-                // JwtAuthGuard
-                { provide: APP_GUARD, useExisting: RolesGuard },
-                RolesGuard
+                { provide: APP_GUARD, useClass: JwtAuthGuard },
+                { provide: APP_GUARD, useClass: RolesGuard },
+                { provide: APP_GUARD, useClass: UserTypeGuard },
+                { provide: JwtStrategy, useClass: FakeJwtStrategy },
+                { provide: RESTAURANT_SERVICE, useClass: FakeRestaurantService }
             ]
         })
-            .overrideGuard(RolesGuard)
-            .useClass(FakeRoleGuard)
             .compile();
         app = moduleRef.createNestApplication();
         app.useGlobalPipes(new ValidationPipe());
-        app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
         await app.init();
         agent = request(app.getHttpServer());
+        const fakeJwtService: FakeJwtService = new FakeJwtService();
+        bearerToken = await fakeJwtService.getAccessToken(userInfo as any);
+        bearerToken = `Bearer ${bearerToken}`;
+    });
+
+    afterAll(async () => {
+        jest.clearAllMocks();
     });
 
     it('Order list GET 200', () => {
-        return agent.get(`/restaurant/orders`).expect(200);
-    })
+        return agent.get(`/restaurant/orders?page=1&pageSize=10`).set('Authorization', bearerToken).expect(200);
+    });
+
+    it('Return valid order list', () => {
+        return agent.get(`/restaurant/orders?page=1&pageSize=10`)
+            .set('Authorization', bearerToken)
+            .then((response) => {
+                expect(response.body).toHaveProperty('orders');
+            })
+    });
+
+    it('Order release POST 201', () => {
+        return agent.post(`/restaurant/order/${orderInfo._id}/release/`)
+            .set('Authorization', bearerToken)
+            .expect(201)
+    });
+
+    it('Order successfully released', () => {
+        return agent.post(`/restaurant/order/${orderInfo._id}/release/`)
+            .set('Authorization', bearerToken)
+            .then((response) => {
+                expect(response.text).toStrictEqual(OrderReleaseMsg);
+            })
+    });
+
+    it('Status code 400 on Order release', () => {
+        return agent.post(`/restaurant/order/InvalidId/release/`)
+            .set('Authorization', bearerToken)
+            .then((response) => {
+                expect(response.statusCode).toStrictEqual(400);
+            })
+    });
 })

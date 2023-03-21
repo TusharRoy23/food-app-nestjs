@@ -13,6 +13,7 @@ import { Item } from "src/modules/item/schemas/item.schema";
 import { RatingDto } from "src/modules/restaurant/dto/rating.dto";
 import { Restaurant } from "src/modules/restaurant/schemas";
 import { User } from "src/modules/user/schemas/user.schema";
+import { JwtService } from "@nestjs/jwt";
 
 export const restaurants = getRestaurantList(4);
 export const items = getItemList(4);
@@ -110,5 +111,23 @@ export class FakeElasticsearchService implements IElasticsearchService {
     }
     indexRestaurant(restaurant: Restaurant): Promise<boolean> {
         return Promise.resolve(true);
+    }
+}
+
+export class FakeJwtService {
+    public async getAccessToken(payload: User): Promise<string> {
+        const jwt = new JwtService();
+        const accessToken = await jwt.sign({
+            email: payload.email,
+            name: payload.name,
+            user_type: payload.user_type,
+            role: payload.role,
+            current_status: payload.current_status,
+            restaurant: payload.restaurant
+        }, {
+            secret: 'JWT_access_Token',
+            expiresIn: '30m'
+        });
+        return accessToken;
     }
 }
