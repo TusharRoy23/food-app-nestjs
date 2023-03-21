@@ -7,7 +7,7 @@ import { OrderDiscount } from "../../src/modules/order/schemas";
 import { CreateOrderDiscountDto } from "../../src/modules/restaurant/dto/create-order-discount.dto";
 import { UpdateOrderDiscountDto } from "../../src/modules/restaurant/dto/update-order-discount.dto";
 import { PaginationParams } from "../../src/modules/shared/dto/pagination-params";
-import { IElasticsearchService, IRequestService, ISharedService } from "../../src/modules/shared/interfaces";
+import { IElasticsearchService, ISharedService } from "../../src/modules/shared/interfaces";
 import { Cart } from "src/modules/cart/schemas";
 import { Item } from "src/modules/item/schemas/item.schema";
 import { RatingDto } from "src/modules/restaurant/dto/rating.dto";
@@ -34,8 +34,8 @@ export class FakePublicService implements IPublicService {
 }
 
 export const paginatedOrderResponse = getPaginatedOrderResponse({}, { count: 10, currentPage: 1, nextPage: 0, totalPages: 1 });
-export const orderReleaseMsg = 'Order Released successfully';
-export const orderCompletemsg = 'Order completed';
+export const OrderReleaseMsg = 'Order Released successfully';
+export const OrderCompletemsg = 'Order completed';
 export class FakeRestaurantService implements IRestaurantService {
     register(registerDto: RegisterDto): Promise<string> {
         return Promise.resolve(restaurantRegistrationMsg);
@@ -47,10 +47,10 @@ export class FakeRestaurantService implements IRestaurantService {
         return Promise.resolve(paginatedOrderResponse);
     }
     releaseOrder(orderId: String): Promise<String> {
-        return Promise.resolve(orderReleaseMsg);
+        return Promise.resolve(OrderReleaseMsg);
     }
     completeOrder(orderId: String): Promise<String> {
-        return Promise.resolve(orderCompletemsg);
+        return Promise.resolve(OrderCompletemsg);
     }
     getOrderDiscount(): Promise<OrderDiscount[]> {
         throw new Error("Method not implemented.");
@@ -100,16 +100,6 @@ export class FakeSharedService implements ISharedService {
         throw new Error("Method not implemented.");
     }
 }
-
-// export class FakeRequestService implements IRequestService {
-//     setUserInfo(user: User) {
-
-//     }
-//     getUserInfo(): User {
-//         throw new Error("Method not implemented.");
-//     }
-
-// }
 
 export class FakeElasticsearchService implements IElasticsearchService {
     getRestaurantList(): Promise<RestaurantResponse[]> {

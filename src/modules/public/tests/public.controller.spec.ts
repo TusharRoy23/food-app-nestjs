@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRestaurantList } from '../../../../test/utils/generate';
 import { FakePublicService } from '../../../../test/utils/fake.service';
-import { RESTAURANT_SERVICE } from '../../restaurant/interfaces/IRestaurant.service';
-import { SHARED_SERVICE } from '../../shared/interfaces/IShared.service';
 import { PUBLIC_SERVICE } from '../interfaces/IPublic.service';
 import { PublicController } from '../public.controller';
+import { PublicService } from '../public.service';
 
 describe('PublicController', () => {
   let controller: PublicController;
+  let publicService: PublicService;
   const restaurants = getRestaurantList(4);
   const restaurant = restaurants[0];
 
@@ -15,21 +15,13 @@ describe('PublicController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PublicController],
       providers: [
-        { provide: PUBLIC_SERVICE, useExisting: FakePublicService },
-        FakePublicService
+        { provide: PUBLIC_SERVICE, useClass: FakePublicService }
       ]
     })
-      .useMocker((token) => {
-        if (token === RESTAURANT_SERVICE) {
-          return {};
-        }
-        if (token === SHARED_SERVICE) {
-          return {};
-        }
-      })
       .compile();
 
     controller = module.get<PublicController>(PublicController);
+    publicService = module.get<PublicService>(PUBLIC_SERVICE);
   });
 
   it('should be defined', () => {
@@ -57,6 +49,6 @@ describe('PublicController', () => {
   });
 
   it('should get searched Restaurant List', async () => {
-    expect(await controller.searchRestaurant({ keyword: 'westin' })).toBeInstanceOf(Array);
+    expect(await controller.searchRestaurant('westin')).toBeInstanceOf(Array);
   });
 });
