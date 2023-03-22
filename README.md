@@ -12,7 +12,10 @@ It's a simple food application on top of nestjs & mongodb. It can be used for le
 * Customers are allowed to give rating for restaurants.
 * Users are able to search restaurants.
 
-## What has been used?
+## ERD
+![Food App ERD](https://github.com/TusharRoy23/food-app-nestjs/blob/master/food-app-ERD.png)
+
+## What has been used by far?
 | Name        | version |
 | ------------|---------|
 | NestJS      | 9.2.1   |
@@ -43,13 +46,11 @@ $ docker exec mongoContainerName mongoexport --uri="mongodb://UN:PWD@mongoContai
 # Copy the file from mongo Container
 $ docker cp containerName:/collectionName.json destinationFolderPath
 ```
-
 ## Setup ELK
 ```bash
 # Set password for ELK
 $ docker exec -it elasticContainerName bin/elasticsearch-setup-passwords interactive
 ```
-
 ## Insert Mapping for restaurant in ES by using Kibana Dev tools
 ```bash
 PUT restaurants 
@@ -80,7 +81,6 @@ PUT restaurants
   }
 }
 ```
-
 ## Drop restaurants info to Elasticsearch (Executed in root path)
 ```bash
 # Prepare restaurants data according to ES Mapping
@@ -89,14 +89,11 @@ $ docker exec food-dev npx ts-node streamData.ts
 # Insert data to ES
 $ docker exec food-dev node_modules/elasticdump/bin/elasticdump --input=restaurant.json --output=http://esFood01:9200/
 ```
-
 ## Different URLs
 - Swagger URL - [http://localhost:4000/api/v1/](http://localhost:4000/api/v1/)
 - Mongo-express URL - [http://localhost:8082/](http://localhost:8082/)
 - Kibana - [http://localhost:5601/](http://localhost:5601/)
-
 ## Test
-
 ```bash
 # unit tests
 $ npm run test yourFolderPath/fileName.spec.ts
@@ -106,9 +103,7 @@ $ npm run test:e2e test/fileName.e2e-spec.ts
 
 # test coverage
 ```
-
 ## Stay in touch
-
 - Checkout my stories - [Medium](https://medium.com/@tushar-chy)
 - Connect with me - [LinkedIn](https://www.linkedin.com/in/tushar-roy-chy/)
 - Contact Me - chowdhurytusharroy@gmail.com
