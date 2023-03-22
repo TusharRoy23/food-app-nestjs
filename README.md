@@ -3,6 +3,15 @@
 ## What is this?
 It's a simple food application on top of nestjs & mongodb. It can be used for learning purpose & will be extended bit by bit.
 
+## What are the features till now?
+* Possible to register as a customer & restaurant user.
+* Role based authentications are available.
+* Restaurant user can perform CRUD operation on the items.
+* Restaurant user is also allowed to give discount on the item & total amount of order as well.
+* Customer can perform CRUD operation on carts & also request for the orders.
+* Customers are allowed to give rating for restaurants.
+* Users are able to search restaurants.
+
 ## What has been used?
 | Name        | version |
 | ------------|---------|
@@ -53,7 +62,7 @@ $ docker cp containerName:/collectionName.json destinationFolderPath
 $ npm run test yourFolderPath/fileName.spec.ts
 
 # e2e tests
-npm run test:e2e test/fileName.e2e-spec.ts
+$ npm run test:e2e test/fileName.e2e-spec.ts
 
 # test coverage
 ```
