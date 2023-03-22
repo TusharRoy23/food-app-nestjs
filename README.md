@@ -49,6 +49,14 @@ $ docker exec mongoContainerName mongoexport --uri="mongodb://UN:PWD@mongoContai
 # Copy the file from mongo Container
 $ docker cp containerName:/collectionName.json destinationFolderPath
 ```
+## Drop restaurants info to Elasticsearch (Executed in root path)
+```bash
+# Prepare restaurants data according to ES Mapping
+$ docker exec food-dev npx ts-node streamData.ts
+
+# Insert data to ES
+$ docker exec food-dev node_modules/elasticdump/bin/elasticdump --input=restaurant.json --output=http://esFood01:9200/
+```
 
 ## Different URLs
 - Swagger URL - [http://localhost:4000/api/v1/](http://localhost:4000/api/v1/)
