@@ -35,12 +35,6 @@ $ docker-compose -f docker-compose.dev.yml --env-file env/.dev.env up anyService
 
 # production mode
 ```
-## Setup ELK
-```bash
-# Set password for ELK
-$ docker exec -it elasticContainerName bin/elasticsearch-setup-passwords interactive
-```
-
 ## Mongo Export
 ```bash
 # Export results in a file
@@ -49,6 +43,44 @@ $ docker exec mongoContainerName mongoexport --uri="mongodb://UN:PWD@mongoContai
 # Copy the file from mongo Container
 $ docker cp containerName:/collectionName.json destinationFolderPath
 ```
+
+## Setup ELK
+```bash
+# Set password for ELK
+$ docker exec -it elasticContainerName bin/elasticsearch-setup-passwords interactive
+```
+
+## Insert Mapping for restaurant in ES by using Kibana Dev tools
+```bash
+PUT restaurants 
+{
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "keyword"
+      },
+      "name": {
+        "type": "text"
+      },
+      "address": {
+        "type": "text"
+      },
+      "opening_time": {
+        "type": "date",
+        "format": "HH:mm:ss"
+      },
+      "closing_time": {
+        "type": "date",
+        "format": "HH:mm:ss"
+      },
+      "current_status": {
+        "type": "text"
+      }
+    }
+  }
+}
+```
+
 ## Drop restaurants info to Elasticsearch (Executed in root path)
 ```bash
 # Prepare restaurants data according to ES Mapping
