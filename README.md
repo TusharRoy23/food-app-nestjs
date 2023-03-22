@@ -17,12 +17,12 @@ It's a simple food application on top of nestjs & mongodb. It can be used for le
 
 ```bash
 # development (To start all the service)
-$ docker-compose -f docker-compose.dev.yml --env-file env/.dev.env up
 $ docker-compose -f docker-compose.dev.yml --env-file env/.dev.env build --no-cache
+$ docker-compose -f docker-compose.dev.yml --env-file env/.dev.env up
 
 # development (To start any service)
-$ docker-compose -f docker-compose.dev.yml --env-file env/.dev.env up anyServiceName
 $ docker-compose -f docker-compose.dev.yml --env-file env/.dev.env build --no-cache anyServiceName
+$ docker-compose -f docker-compose.dev.yml --env-file env/.dev.env up anyServiceName
 
 # production mode
 ```
@@ -50,8 +50,10 @@ $ docker cp containerName:/collectionName.json destinationFolderPath
 
 ```bash
 # unit tests
+$ npm run test yourFolderPath/fileName.spec.ts
 
 # e2e tests
+npm run test:e2e test/fileName.e2e-spec.ts
 
 # test coverage
 ```
