@@ -122,7 +122,8 @@ export class RestaurantService implements IRestaurantService {
 
             const total = await this.orderModel.count().and([
                 { restaurant: user.restaurant._id },
-            ]).exec();;
+            ]).exec();
+
             const paginatedData = getPaginationData({ total, page: +paginationPayload.currentPage, limit: +paginationPayload.limit });
 
             const paginatedOrderResponse: PaginatedOrderResponse = {
@@ -207,7 +208,7 @@ export class RestaurantService implements IRestaurantService {
                 { restaurant: user.restaurant._id },
                 { start_date: { $lte: new Date(orderDiscountDto.start_date) } },
                 { end_date: { $gte: new Date(orderDiscountDto.end_date) } }
-            ]);
+            ]).exec();
 
             if (orderDis.length) {
                 throw new BadRequestException('Already exists.');
