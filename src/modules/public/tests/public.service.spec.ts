@@ -1,33 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRestaurantList } from '../../../../test/utils/generate';
-import { FakePublicService } from '../../../../test/utils/fake.service';
+import { FakeRestaurantService, FakeSharedService } from '../../../../test/utils/fake.service';
 import { RESTAURANT_SERVICE } from '../../restaurant/interfaces/IRestaurant.service';
 import { SHARED_SERVICE } from '../../shared/interfaces';
-import { IPublicService, PUBLIC_SERVICE } from '../interfaces/IPublic.service';
+import { PublicService } from '../public.service';
 
 describe('PublicService', () => {
-  let service: IPublicService;
+  let service: PublicService;
   const restaurants = getRestaurantList(4);
   const restaurant = restaurants[0];
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        { provide: PUBLIC_SERVICE, useExisting: FakePublicService },
-        FakePublicService
+        PublicService,
+        { provide: SHARED_SERVICE, useClass: FakeSharedService },
+        FakeSharedService,
+        { provide: RESTAURANT_SERVICE, useClass: FakeRestaurantService },
+        FakeRestaurantService
       ],
     })
-      .useMocker((token) => {
-        if (token === RESTAURANT_SERVICE) {
-          return {};
-        }
-        if (token === SHARED_SERVICE) {
-          return {};
-        }
-      })
       .compile();
 
-    service = module.get<IPublicService>(FakePublicService);
+    service = module.get<PublicService>(PublicService);
   });
 
   it('should be defined', () => {
@@ -50,11 +45,11 @@ describe('PublicService', () => {
     expect(await service.getRestaurantList()).toBeInstanceOf(Array);
   });
 
-  it('should get Item List', async () => {
-    expect(await service.getItemList(restaurant.id.toString())).toBeInstanceOf(Array);
-  });
-
   it('should get searched Restaurant List', async () => {
     expect(await service.searchRestaurant('westin')).toBeInstanceOf(Array);
+  });
+
+  it('should get Item List', async () => {
+    expect(await service.getItemList(restaurant.id.toString())).toBeInstanceOf(Array);
   });
 });

@@ -86,7 +86,7 @@ export class FakeSharedService implements ISharedService {
         throw new Error("Method not implemented.");
     }
     getItemList(restaurantId: string): Promise<Item[]> {
-        throw new Error("Method not implemented.");
+        return Promise.resolve(items);
     }
     getOrderDiscount(restaurantId: any): Promise<OrderDiscount> {
         throw new Error("Method not implemented.");

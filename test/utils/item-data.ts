@@ -13,12 +13,12 @@ const generateItem = (object: any = {}) => {
         meal_type: '',
         discount_rate: 0,
         ...object
-    } as ItemReponse;
+    } as ItemReponse as any;
 }
 
 export const generateItemList = (n = 1, object = {}) => {
     return Array.from(
         { length: n },
         (_, __) => generateItem({ ...object })
-    ) as ItemReponse[];
+    ) as ItemReponse[] as any[];
 }
