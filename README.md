@@ -5,7 +5,7 @@ It's a simple food application on top of nestjs & mongodb. It can be used for le
 
 ## What are the features till now?
 * Possible to register as a customer & restaurant user.
-* Role based authentications are available.
+* JWT token & Role based authentications are available.
 * Restaurant user can perform CRUD operation on the items.
 * Restaurant user is also allowed to give discount on the item & total amount of order as well.
 * Customer can perform CRUD operation on carts & also request for the orders.
@@ -43,8 +43,8 @@ $ docker-compose -f docker-compose.dev.yml --env-file env/.dev.env up anyService
 # Export results in a file
 $ docker exec mongoContainerName mongoexport --uri="mongodb://UN:PWD@mongoContainerName:27017/DBName" --collection=CollectionName --type=json --fields=field1,field2 --out collectionName.json
 
-# Copy the file from mongo Container
-$ docker cp containerName:/collectionName.json destinationFolderPath
+# Copy the file from DB Container
+$ docker cp DBcontainerName:/collectionName.json destinationFolderPath
 ```
 ## Setup ELK
 ```bash
