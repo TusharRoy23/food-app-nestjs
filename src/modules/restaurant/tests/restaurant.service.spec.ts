@@ -8,10 +8,9 @@ import { RestaurantService } from '../restaurant.service';
 import { Restaurant, RestaurantDocument, RestaurantItem } from '../schemas';
 import { Order, OrderDiscount, OrderDiscountDocument, OrderDocument } from '../../order/schemas';
 import { User, UserDocument } from '../../user/schemas/user.schema';
-import { Model, Query } from 'mongoose';
+import { Model } from 'mongoose';
 import { getRawOrderResponseList, getRawRestaurantList, getRestaurantList, getUserInfo, getUserList } from '../../../../test/utils/generate';
 import { RegisterDto } from '../dto/register.dto';
-import { createMock } from "@golevelup/ts-jest";
 import { PaginationParams } from '../../shared/dto/pagination-params';
 import { PaginatedOrderResponse } from '../../shared/utils/response.utils';
 import { NotFoundException } from '@nestjs/common';
@@ -114,9 +113,9 @@ describe('RestaurantService', () => {
     };
     jest.spyOn(userModel, 'create').mockImplementationOnce(() => Promise.resolve(user));
     jest.spyOn(restaurantModel, 'create').mockImplementationOnce(() => Promise.resolve(restaurant));
-    jest.spyOn(userModel, 'findOneAndUpdate').mockReturnValueOnce(createMock<Query<UserDocument, UserDocument>>({
+    jest.spyOn(userModel, 'findOneAndUpdate').mockReturnValueOnce({
       exec: jest.fn().mockResolvedValueOnce(restaurant)
-    }) as any);
+    } as any);
 
     const createdUser = await restaurantService.register(registerDto);
     expect(createdUser).toEqual(restaurantRegistrationMsg);
@@ -148,6 +147,7 @@ describe('RestaurantService', () => {
         })
       })
     } as any);
+
     jest.spyOn(orderModel, 'count').mockReturnValue({
       and: jest.fn().mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(rawOrderList.length)
@@ -160,18 +160,18 @@ describe('RestaurantService', () => {
   });
 
   it('should release a order', async () => {
-    jest.spyOn(orderModel, 'findOneAndUpdate').mockReturnValueOnce(createMock<Query<OrderDocument, OrderDocument>>({
+    jest.spyOn(orderModel, 'findOneAndUpdate').mockReturnValueOnce({
       exec: jest.fn().mockResolvedValueOnce(rawOrderList[0])
-    }) as any);
+    } as any);
 
     const release = await restaurantService.releaseOrder(rawOrderList[0]._id.toString());
     expect(release).toEqual('Order Released successfully');
   });
 
   it('should throw 404 on release order', async () => {
-    jest.spyOn(orderModel, 'findOneAndUpdate').mockReturnValueOnce(createMock<Query<OrderDocument, OrderDocument>>({
-      exec: jest.fn().mockResolvedValueOnce(null)
-    }) as any);
+    jest.spyOn(orderModel, 'findOneAndUpdate').mockReturnValueOnce({
+      exec: jest.fn()
+    } as any);
     await expect(restaurantService.releaseOrder(rawOrderList[0]._id.toString())).rejects.toThrowError(new NotFoundException('Order not found'));
   })
 });
