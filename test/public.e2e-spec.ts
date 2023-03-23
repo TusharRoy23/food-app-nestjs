@@ -1,11 +1,12 @@
 import * as request from 'supertest';
-import { INestApplication, ValidationPipe } from "@nestjs/common";
+import { INestApplication, ValidationError, ValidationPipe } from "@nestjs/common";
 import mongoose from "mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
 import { FakePublicService, restaurants, items, restaurantRegistrationMsg } from './utils/fake.service';
 import { PUBLIC_SERVICE } from '../src/modules/public/interfaces/IPublic.service';
 import { PublicController } from '../src/modules/public/public.controller';
 import { RegisterDto } from '../src/modules/restaurant/dto/register.dto';
+import { ValidationException, ValidationFilter } from '../src/modules/shared/filters/validation.filter';
 
 describe('Public Controller (e2e)', () => {
     let app: INestApplication;
@@ -34,7 +35,17 @@ describe('Public Controller (e2e)', () => {
         }).compile();
 
         app = moduleRef.createNestApplication();
-        app.useGlobalPipes(new ValidationPipe());
+        app.useGlobalFilters(new ValidationFilter());
+        app.useGlobalPipes(new ValidationPipe({
+            skipMissingProperties: false,
+            exceptionFactory: (errors: ValidationError[]) => {
+                const errMsg = {};
+                errors.forEach(err => {
+                    errMsg[err.property] = [...Object.values(err.constraints)];
+                });
+                return new ValidationException(errMsg);
+            }
+        }));
         await app.init();
         agent = request(app.getHttpServer());
     });

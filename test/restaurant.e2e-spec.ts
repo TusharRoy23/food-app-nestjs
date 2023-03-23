@@ -1,7 +1,7 @@
 import * as request from 'supertest';
 import { APP_GUARD } from '@nestjs/core';
 import { Test, TestingModule } from "@nestjs/testing";
-import { INestApplication, ValidationPipe } from "@nestjs/common"
+import { INestApplication, ValidationError, ValidationPipe } from "@nestjs/common"
 import { RestaurantController } from '../src/modules/restaurant/restaurant.controller';
 import { RESTAURANT_SERVICE } from '../src/modules/restaurant/interfaces/IRestaurant.service';
 import { FakeJwtService, FakeRestaurantService, OrderReleaseMsg } from './utils/fake.service';
@@ -10,6 +10,7 @@ import { JwtStrategy } from '../src/modules/auth/strategy/jwt-strategy';
 import { FakeJwtStrategy } from './utils/fake-jwt-strategy';
 import { getRawOrderResponseList, getRestaurantList, getUserInfo } from './utils/generate';
 import { CurrentStatus, UserRole, UserType } from '../src/modules/shared/utils/enum';
+import { ValidationException, ValidationFilter } from '../src/modules/shared/filters/validation.filter';
 
 describe("Restaurant Controller (e2e)", () => {
     let app: INestApplication;
@@ -41,7 +42,17 @@ describe("Restaurant Controller (e2e)", () => {
         })
             .compile();
         app = moduleRef.createNestApplication();
-        app.useGlobalPipes(new ValidationPipe());
+        app.useGlobalFilters(new ValidationFilter());
+        app.useGlobalPipes(new ValidationPipe({
+            skipMissingProperties: false,
+            exceptionFactory: (errors: ValidationError[]) => {
+                const errMsg = {};
+                errors.forEach(err => {
+                    errMsg[err.property] = [...Object.values(err.constraints)];
+                });
+                return new ValidationException(errMsg);
+            }
+        }));
         await app.init();
         agent = request(app.getHttpServer());
         const fakeJwtService: FakeJwtService = new FakeJwtService();
