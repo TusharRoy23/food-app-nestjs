@@ -8,7 +8,7 @@ fs.readFile('./restaurants.json', 'utf-8', (err, jsonStr) => {
     try {
         const restaurants = JSON.parse(jsonStr);
         let newData = '';
-        restaurants.forEach(element => {
+        restaurants?.forEach(element => {
             const obj = {
                 _index: 'restaurants',
                 _id: element._id.$oid,

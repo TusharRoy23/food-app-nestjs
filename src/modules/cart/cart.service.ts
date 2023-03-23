@@ -215,28 +215,26 @@ export class CartService implements ICartService {
             let cartAmount = 0;
             let totalAmount = 0;
 
-            if (cartItems != null) {
-                cartItems.forEach(cartItem => {
-                    cartAmount += cartItem.amount;
-                    totalAmount += cartItem.total_amount;
-                    cartItemResponse.push({
-                        id: cartItem._id,
-                        amount: cartItem.amount,
-                        qty: cartItem.qty,
-                        total_amount: cartItem.total_amount,
-                        item: {
-                            id: cartItem.item._id,
-                            discount_rate: cartItem?.item?.discount_rate || 0.0,
-                            item_type: cartItem.item.item_type,
-                            meal_flavor: cartItem.item.meal_flavor,
-                            meal_state: cartItem.item.meal_state,
-                            meal_type: cartItem.item.meal_state,
-                            name: cartItem.item.name,
-                            price: cartItem.item.price
-                        }
-                    })
-                });
-            }
+            cartItems?.forEach(cartItem => {
+                cartAmount += cartItem.amount;
+                totalAmount += cartItem.total_amount;
+                cartItemResponse.push({
+                    id: cartItem._id,
+                    amount: cartItem.amount,
+                    qty: cartItem.qty,
+                    total_amount: cartItem.total_amount,
+                    item: {
+                        id: cartItem.item._id,
+                        discount_rate: cartItem?.item?.discount_rate || 0.0,
+                        item_type: cartItem.item.item_type,
+                        meal_flavor: cartItem.item.meal_flavor,
+                        meal_state: cartItem.item.meal_state,
+                        meal_type: cartItem.item.meal_state,
+                        name: cartItem.item.name,
+                        price: cartItem.item.price
+                    }
+                })
+            });
 
             let rebate_amount = 0;
 

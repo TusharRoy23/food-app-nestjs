@@ -31,7 +31,7 @@ export class OrderService implements IOrderService {
             const orderItems: OrderItem[] = [];
             let orderAmount: number = 0.0;
 
-            cart?.cart_items.forEach((cartItem) => {
+            cart?.cart_items?.forEach((cartItem) => {
                 const discountRate = cartItem.item?.discount_rate > 0 ? cartItem.item.discount_rate / 100 : 1;
                 const amount = cartItem.qty * (cartItem.item.price * discountRate);
                 orderAmount += amount;
@@ -151,7 +151,7 @@ export class OrderService implements IOrderService {
             const orders: Order[] = await query.exec();
 
             const orderResponses: OrderResponse[] = [];
-            orders.forEach((order) => {
+            orders?.forEach((order) => {
                 orderResponses.push({
                     id: order._id,
                     order_amount: order.order_amount,

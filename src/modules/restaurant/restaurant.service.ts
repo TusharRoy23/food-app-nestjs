@@ -88,7 +88,7 @@ export class RestaurantService implements IRestaurantService {
             const orders: Order[] = await query.exec();
 
             const orderResponses: OrderResponse[] = [];
-            orders.forEach((order) => {
+            orders?.forEach((order) => {
                 orderResponses.push({
                     id: order._id,
                     order_amount: order.order_amount,
