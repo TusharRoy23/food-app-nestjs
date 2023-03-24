@@ -3,7 +3,7 @@
 ## What is this?
 It's a simple food application on top of nestjs & mongodb. It can be used for learning purpose & will be extended bit by bit.
 
-## What are the features till now?
+## What are the features so far?
 * Possible to register as a customer & restaurant user.
 * JWT token & Role based authentications are available.
 * Restaurant user can perform CRUD operation on the items.
@@ -28,7 +28,7 @@ It's a simple food application on top of nestjs & mongodb. It can be used for le
 ## Running the app using docker
 
 ```bash
-# development (To start all the service)
+# development (To start all the services)
 $ docker-compose -f docker-compose.dev.yml --env-file env/.dev.env build --no-cache
 $ docker-compose -f docker-compose.dev.yml --env-file env/.dev.env up
 
@@ -81,7 +81,7 @@ PUT restaurants
   }
 }
 ```
-## Drop restaurants info to Elasticsearch (Executed in root path)
+## Add restaurants info to Elasticsearch (Executed in root path)
 ```bash
 # Prepare restaurants data according to ES Mapping
 $ docker exec food-dev npx ts-node streamData.ts
