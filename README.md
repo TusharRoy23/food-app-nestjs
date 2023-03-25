@@ -23,6 +23,7 @@ It's a simple food application on top of nestjs & mongodb. It can be used for le
 | Mongo-express | latest|
 | Elasticsearch | 7.17.9|
 | Kibana      | 7.17.9  |
+| @nestjs/swagger| 6.2.1|
 
 
 ## Running the app using docker
