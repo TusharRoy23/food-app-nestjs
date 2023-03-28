@@ -5,6 +5,7 @@
 /esFoodData01
 /restaurants.json
 /redis-data
+.prod.env
 
 # Logs
 logs

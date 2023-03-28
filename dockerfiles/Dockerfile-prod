@@ -1,0 +1,24 @@
+# stage 1
+FROM node:18-alpine as devModules
+WORKDIR /app
+COPY ./package*.json ./
+RUN npm ci --only=development
+COPY . .
+
+# Stage 2
+FROM node:18-alpine as productionBuild
+WORKDIR /app
+COPY ./package*.json ./
+COPY env/.prod.env ./.env
+COPY --from=devModules /app/node_modules ./node_modules
+COPY . .
+RUN npm run build .
+ENV NODE_ENV=production
+RUN npm ci --only=production
+
+# Stage 3
+FROM node:18-alpine as production
+WORKDIR /app
+COPY --from=productionBuild /app /app
+
+CMD npm run start:prod

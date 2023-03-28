@@ -1,4 +1,6 @@
-FROM node:16.18.1-bullseye-slim
+FROM node:18-alpine
+
+ENV NODE_ENV development
 
 WORKDIR /app
 
@@ -7,7 +9,7 @@ COPY env/.dev.env ./.env
 
 COPY . .
 
-RUN npm install --verbose
+RUN npm ci
 
 EXPOSE 4000
 CMD npm run start:dev
