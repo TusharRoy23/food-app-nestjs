@@ -3,6 +3,7 @@
 /node_modules
 /restaurant.json
 /esFoodData01
+/esProdFoodData01
 /restaurants.json
 /redis-data
 .prod.env
