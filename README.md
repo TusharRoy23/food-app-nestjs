@@ -48,7 +48,7 @@ $ docker exec mongoContainerName mongoexport --uri="mongodb://UN:PWD@mongoContai
 $ docker cp DBcontainerName:/collectionName.json destinationFolderPath
 ```
 ## Setup ELK
-This command will only work during the initial configuration of the Elasticsearch security features.For More Info - [Elasticsearch Doc](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/setup-passwords.html#setup-passwords-parameters). Otherwise, possible to use kibana to change the password for that user. Go to Management > Stack Management > Security > Users
+This command will only work during the initial configuration of the Elasticsearch security features.For More Info - [Elasticsearch Doc](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/setup-passwords.html#setup-passwords-parameters). On the other hand, by using kibana password can be changed for the user. Go to **Management** > **Stack Management** > **Security** > **Users**
 ```bash
 # Set password for ELK
 $ docker exec -it elasticContainerName bin/elasticsearch-setup-passwords interactive
