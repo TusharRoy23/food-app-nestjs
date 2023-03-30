@@ -60,7 +60,7 @@ services:
     ports:
       - ${KIBANA_HOST_PORT}:5601
     depends_on:
-      esFood01:
+      esProdFood01:
         condition: service_started
     networks:
       - food_prod_api
