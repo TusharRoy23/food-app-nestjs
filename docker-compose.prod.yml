@@ -50,6 +50,20 @@ services:
         hard: -1
     networks:
       - food_prod_api
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:${ELK_VERSION}
+    environment:
+      - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_NODE}
+      - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME}
+      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
+    ports:
+      - ${KIBANA_HOST_PORT}:5601
+    depends_on:
+      esFood01:
+        condition: service_started
+    networks:
+      - food_prod_api
 networks:
   food_prod_api:
     driver: bridge

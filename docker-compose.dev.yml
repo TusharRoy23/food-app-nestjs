@@ -102,5 +102,4 @@ networks:
 
 volumes:
   mongodb:
-  esFoodData01:
-  redis-data:
+  esFoodData01: # redis-data:
