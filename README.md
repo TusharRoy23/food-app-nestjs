@@ -93,7 +93,7 @@ $ docker exec food-dev node_modules/elasticdump/bin/elasticdump --input=restaura
 ```
 ## Different URLs
 - Swagger URL - [http://localhost:4000/api/v1/](http://localhost:4000/api/v1/)
-- Mongo-express URL - [http://localhost:8082/](http://localhost:8082/)
+- Mongo-express URL - [http://localhost:8082/admin/](http://localhost:8082/admin/)
 - Kibana - [http://localhost:5601/](http://localhost:5601/)
 ## Test
 ```bash
