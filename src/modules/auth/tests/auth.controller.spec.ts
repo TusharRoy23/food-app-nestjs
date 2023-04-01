@@ -14,10 +14,9 @@ describe('AuthController', () => {
       providers: [
         { useExisting: AuthService, provide: AUTH_SERVICE },
         JwtStrategy,
-        JwtRefreshStrategy
-      ]
-    })
-      .compile();
+        JwtRefreshStrategy,
+      ],
+    }).compile();
 
     controller = module.get<AuthController>(AuthController);
   });

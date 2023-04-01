@@ -1,16 +1,30 @@
-import { PaginationDataResponse, PaginationPayload } from "./response.utils";
+import { PaginationDataResponse, PaginationPayload } from './response.utils';
 
-export const pagination = ({ page = 1, size = 10 }: { page: number, size: number }): PaginationPayload => {
-    const limit = size;
-    const offset = (page - 1) * limit;
+export const pagination = ({
+  page = 1,
+  size = 10,
+}: {
+  page: number;
+  size: number;
+}): PaginationPayload => {
+  const limit = size;
+  const offset = (page - 1) * limit;
 
-    return { limit, offset, currentPage: page };
-}
+  return { limit, offset, currentPage: page };
+};
 
-export const getPaginationData = ({ total, page = 1, limit = 10 }: { total: number, page: number, limit: number }): PaginationDataResponse => {
-    const currentPage: number = page;
-    const totalPages = Math.ceil(total / limit);
-    const nextPage = totalPages <= currentPage ? 0 : currentPage + 1;
+export const getPaginationData = ({
+  total,
+  page = 1,
+  limit = 10,
+}: {
+  total: number;
+  page: number;
+  limit: number;
+}): PaginationDataResponse => {
+  const currentPage: number = page;
+  const totalPages = Math.ceil(total / limit);
+  const nextPage = totalPages <= currentPage ? 0 : currentPage + 1;
 
-    return { count: total, currentPage, totalPages, nextPage };
-}
+  return { count: total, currentPage, totalPages, nextPage };
+};

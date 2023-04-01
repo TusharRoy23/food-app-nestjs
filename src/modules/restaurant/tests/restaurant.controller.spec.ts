@@ -3,7 +3,11 @@ import { RESTAURANT_SERVICE } from '../interfaces/IRestaurant.service';
 import { RestaurantController } from '../restaurant.controller';
 import { RestaurantService } from '../restaurant.service';
 import { PaginationParams } from '../../shared/dto/pagination-params';
-import { FakeRestaurantService, OrderCompletemsg, OrderReleaseMsg } from '../../../../test/utils/fake.service';
+import {
+  FakeRestaurantService,
+  OrderCompletemsg,
+  OrderReleaseMsg,
+} from '../../../../test/utils/fake.service';
 import { getRawOrderResponseList } from '../../../../test/utils/generate';
 
 describe('RestaurantController', () => {
@@ -17,9 +21,9 @@ describe('RestaurantController', () => {
       providers: [
         {
           provide: RESTAURANT_SERVICE,
-          useClass: FakeRestaurantService
+          useClass: FakeRestaurantService,
         },
-      ]
+      ],
     }).compile();
 
     controller = module.get<RestaurantController>(RestaurantController);
@@ -38,8 +42,8 @@ describe('RestaurantController', () => {
     const paginationParams: PaginationParams = {
       startId: '',
       page: 1,
-      pageSize: 10
-    }
+      pageSize: 10,
+    };
 
     const orders = await controller.getOrderList(paginationParams);
     expect(orders).toHaveProperty('orders');
@@ -51,7 +55,9 @@ describe('RestaurantController', () => {
   });
 
   it('should complete a order', async () => {
-    jest.spyOn(restaurantService, 'completeOrder').mockResolvedValueOnce(OrderCompletemsg);
+    jest
+      .spyOn(restaurantService, 'completeOrder')
+      .mockResolvedValueOnce(OrderCompletemsg);
     const complete = await controller.completeOrder(orderInfo._id.toString());
     expect(complete).toStrictEqual(OrderCompletemsg);
   });

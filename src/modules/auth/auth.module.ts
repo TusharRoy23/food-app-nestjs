@@ -19,8 +19,8 @@ import { AUTH_SERVICE } from './interfaces/IAuth.service';
   providers: [
     { useClass: AuthService, provide: AUTH_SERVICE },
     JwtStrategy,
-    JwtRefreshStrategy
+    JwtRefreshStrategy,
   ],
   controllers: [AuthController],
 })
-export class AuthModule { }
+export class AuthModule {}

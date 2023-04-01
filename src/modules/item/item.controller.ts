@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from '../shared/decorator/public.decorator';
 import { ResponseMessage } from '../shared/decorator/response-msg.decorator';
@@ -15,38 +24,34 @@ import { IItemService, ITEM_SERVICE } from './interfaces/IItem.interface';
 @IsPublic(false)
 @Roles(UserRole.OWNER)
 export class ItemController {
-    constructor(
-        @Inject(ITEM_SERVICE) private readonly itemService: IItemService
-    ) { }
+  constructor(
+    @Inject(ITEM_SERVICE) private readonly itemService: IItemService,
+  ) {}
 
-    @Post('/')
-    @ResponseMessage(ItemMessage.CREATED)
-    public async create(
-        @Body() body: CreateItemDto
-    ) {
-        return await this.itemService.create(body);
-    }
+  @Post('/')
+  @ResponseMessage(ItemMessage.CREATED)
+  public async create(@Body() body: CreateItemDto) {
+    return await this.itemService.create(body);
+  }
 
-    @Get('/')
-    @ResponseMessage(ItemMessage.RETRIVED)
-    public async retrive() {
-        return await this.itemService.retrive();
-    }
+  @Get('/')
+  @ResponseMessage(ItemMessage.RETRIVED)
+  public async retrive() {
+    return await this.itemService.retrive();
+  }
 
-    @Delete('/:id')
-    @ResponseMessage(ItemMessage.DELETED)
-    public async delete(
-        @Param('id', ParseObjectIDPipe) id: string
-    ) {
-        return await this.itemService.delete(id);
-    }
+  @Delete('/:id')
+  @ResponseMessage(ItemMessage.DELETED)
+  public async delete(@Param('id', ParseObjectIDPipe) id: string) {
+    return await this.itemService.delete(id);
+  }
 
-    @Put('/:id')
-    @ResponseMessage(ItemMessage.UPDATED)
-    public async update(
-        @Body() body: UpdateItemDto,
-        @Param('id', ParseObjectIDPipe) id: string
-    ) {
-        return await this.itemService.update(body, id);
-    }
+  @Put('/:id')
+  @ResponseMessage(ItemMessage.UPDATED)
+  public async update(
+    @Body() body: UpdateItemDto,
+    @Param('id', ParseObjectIDPipe) id: string,
+  ) {
+    return await this.itemService.update(body, id);
+  }
 }

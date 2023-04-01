@@ -7,15 +7,14 @@ import { ItemService } from './item.service';
 import { ITEM_SERVICE } from './interfaces/IItem.interface';
 
 @Module({
-    imports: [
-        MongooseModule.forFeature([
-            { name: Item.name, schema: ItemSchema }
-        ], connectionName.MAIN_DB)
-    ],
-    controllers: [ItemController],
-    providers: [
-        { useClass: ItemService, provide: ITEM_SERVICE }
-    ],
-    exports: [MongooseModule]
+  imports: [
+    MongooseModule.forFeature(
+      [{ name: Item.name, schema: ItemSchema }],
+      connectionName.MAIN_DB,
+    ),
+  ],
+  controllers: [ItemController],
+  providers: [{ useClass: ItemService, provide: ITEM_SERVICE }],
+  exports: [MongooseModule],
 })
-export class ItemModule { }
+export class ItemModule {}

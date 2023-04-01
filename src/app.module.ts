@@ -8,14 +8,18 @@ import { ItemModule } from './modules/item/item.module';
 import { CartModule } from './modules/cart/cart.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PublicModule } from './modules/public/public.module';
-import { JwtAuthGuard, RolesGuard, UserTypeGuard } from './modules/shared/guards/index';
+import {
+  JwtAuthGuard,
+  RolesGuard,
+  UserTypeGuard,
+} from './modules/shared/guards/index';
 import { APP_GUARD } from '@nestjs/core';
 import { SharedModule } from './modules/shared/shared.module';
 
 @Module({
   imports: [
     MongooseModule.forRoot(`${process.env.MONGODB_URL}`, {
-      connectionName: connectionName.MAIN_DB
+      connectionName: connectionName.MAIN_DB,
     }),
     UserModule,
     RestaurantModule,
@@ -24,13 +28,13 @@ import { SharedModule } from './modules/shared/shared.module';
     CartModule,
     AuthModule,
     PublicModule,
-    SharedModule
+    SharedModule,
   ],
   controllers: [],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
-    { provide: APP_GUARD, useClass: UserTypeGuard }
-  ]
+    { provide: APP_GUARD, useClass: UserTypeGuard },
+  ],
 })
-export class AppModule { }
+export class AppModule {}

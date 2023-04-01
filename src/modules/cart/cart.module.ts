@@ -7,18 +7,17 @@ import { CartService } from './cart.service';
 import { CART_SERVICE } from './interfaces/ICart.interface';
 
 @Module({
-    imports: [
-        MongooseModule.forFeature([
-            { name: Cart.name, schema: CartSchema },
-            { name: CartItem.name, schema: CartItemSchema }
-        ], connectionName.MAIN_DB),
-    ],
-    controllers: [CartController],
-    providers: [
-        { useClass: CartService, provide: CART_SERVICE }
-    ],
-    exports: [
-        MongooseModule
-    ]
+  imports: [
+    MongooseModule.forFeature(
+      [
+        { name: Cart.name, schema: CartSchema },
+        { name: CartItem.name, schema: CartItemSchema },
+      ],
+      connectionName.MAIN_DB,
+    ),
+  ],
+  controllers: [CartController],
+  providers: [{ useClass: CartService, provide: CART_SERVICE }],
+  exports: [MongooseModule],
 })
-export class CartModule { }
+export class CartModule {}

@@ -1,30 +1,31 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import mongoose, { HydratedDocument } from "mongoose";
-import { Item } from "../../item/schemas/item.schema";
-import { Restaurant } from "./restaurant.schema";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { Item } from '../../item/schemas/item.schema';
+import { Restaurant } from './restaurant.schema';
 
 @Schema({
-    toJSON: {
-        getters: true,
-        transform(doc, ret, options) {
-            delete ret._id;
-            delete ret.__v;
-            return ret;
-        },
+  toJSON: {
+    getters: true,
+    transform(_, ret, __) {
+      delete ret._id;
+      delete ret.__v;
+      return ret;
     },
+  },
 })
 export class RestaurantItem {
-    _id: mongoose.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
 
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' })
-    restaurant: Restaurant;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' })
+  restaurant: Restaurant;
 
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Item' })
-    item: Item;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Item' })
+  item: Item;
 
-    @Prop({ type: 'Number', default: 0 })
-    sell_count: number;
+  @Prop({ type: 'Number', default: 0 })
+  sell_count: number;
 }
 
-export const RestaurantItemSchema = SchemaFactory.createForClass(RestaurantItem);
+export const RestaurantItemSchema =
+  SchemaFactory.createForClass(RestaurantItem);
 export type RestaurantItemDocument = HydratedDocument<RestaurantItem>;

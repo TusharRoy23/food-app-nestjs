@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Inject, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { RatingDto } from '../restaurant/dto/rating.dto';
 import { IsPublic } from '../shared/decorator/public.decorator';
@@ -16,28 +24,22 @@ import { IOrderService, ORDER_SERVICE } from './interfaces/IOrder.service';
 @Roles(UserRole.NONE)
 @TypeOfUsers(UserType.VISITOR)
 export class OrderController {
-    constructor(
-        @Inject(ORDER_SERVICE) private readonly orderService: IOrderService
-    ) { }
+  constructor(
+    @Inject(ORDER_SERVICE) private readonly orderService: IOrderService,
+  ) {}
 
-    @Post('/:cartId')
-    public async create(
-        @Param('cartId', ParseObjectIDPipe) cartId: string
-    ) {
-        return this.orderService.submitOrder(cartId);
-    }
+  @Post('/:cartId')
+  public async create(@Param('cartId', ParseObjectIDPipe) cartId: string) {
+    return this.orderService.submitOrder(cartId);
+  }
 
-    @Get('/list')
-    public async retrieve(
-        @Query() paginationParams: PaginationParams
-    ) {
-        return this.orderService.getOrdersByUser(paginationParams);
-    }
+  @Get('/list')
+  public async retrieve(@Query() paginationParams: PaginationParams) {
+    return this.orderService.getOrdersByUser(paginationParams);
+  }
 
-    @Post('restaurant/rating')
-    public async giveRating(
-        @Body() ratingDto: RatingDto
-    ) {
-        return this.orderService.giveRating(ratingDto);
-    }
+  @Post('restaurant/rating')
+  public async giveRating(@Body() ratingDto: RatingDto) {
+    return this.orderService.giveRating(ratingDto);
+  }
 }
