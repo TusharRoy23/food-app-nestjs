@@ -12,7 +12,7 @@ import {
 @Schema({
   toJSON: {
     getters: true,
-    transform(_, ret, __) {
+    transform(_, ret) {
       delete ret._id;
       delete ret.__v;
       return ret;

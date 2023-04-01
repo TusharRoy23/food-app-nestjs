@@ -9,7 +9,7 @@ import { OrderItem } from './order-item.schemas';
 @Schema({
   toJSON: {
     getters: true,
-    transform(doc, ret, options) {
+    transform(_, ret) {
       delete ret._id;
       delete ret.__v;
       return ret;
