@@ -25,7 +25,7 @@ export const getPaginatedOrderResponse = (
 ) => generatePaginatedOrderResponse(itemObject, paginatedData);
 export const getUserList = (n = 1, ...object) => generateUserList(n, object);
 export const getUserInfo = (...object) => generateUser(object);
-export const getRawRestaurantList = (n = 1, ...object) =>
+export const getRawRestaurantList = (...object) =>
   generateRawRestaurant(object);
 export const getRawOrderResponseList = (n = 1, ...object) =>
   generateRawOrderResponseList(n, object);

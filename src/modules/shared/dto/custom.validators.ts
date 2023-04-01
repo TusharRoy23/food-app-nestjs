@@ -9,7 +9,7 @@ export const isTime = (
   property: string,
   validationOptions?: ValidationOptions,
 ) => {
-  return (object: Object, propertyName: string) => {
+  return (object: object, propertyName: string) => {
     registerDecorator({
       name: 'isTime',
       target: object.constructor,
@@ -17,13 +17,13 @@ export const isTime = (
       constraints: [property],
       options: validationOptions,
       validator: {
-        validate(value: string, args: ValidationArguments) {
+        validate(value: string) {
           return (
             typeof value === 'string' &&
             moment(value, 'HH:mm:ss', true).isValid()
           );
         },
-        defaultMessage(validationArguments?: ValidationArguments) {
+        defaultMessage() {
           return 'Not a valid time';
         },
       },
@@ -36,7 +36,7 @@ export const isValidNumber = (
   canBeEmpty = false,
   validationOptions?: ValidationOptions,
 ) => {
-  return (object: Object, propertyName: string) => {
+  return (object: object, propertyName: string) => {
     registerDecorator({
       name: 'isValidNumber',
       target: object.constructor,
@@ -44,12 +44,12 @@ export const isValidNumber = (
       constraints: [property],
       options: validationOptions,
       validator: {
-        validate(value: number, args: ValidationArguments) {
+        validate(value: number) {
           if (canBeEmpty) return true;
           const regex = /^[0-9]*(\.[0-9]{0,2})?$/;
           return typeof value === 'number' && regex.test(value.toString());
         },
-        defaultMessage(validationArguments?: ValidationArguments) {
+        defaultMessage() {
           return 'Max two decimal places allowed';
         },
       },
@@ -62,7 +62,7 @@ export const isValidDate = (
   canBeEmpty = false,
   validationOptions?: ValidationOptions,
 ) => {
-  return (object: Object, propertyName: string) => {
+  return (object: object, propertyName: string) => {
     registerDecorator({
       name: 'isValidDate',
       target: object.constructor,
@@ -70,14 +70,14 @@ export const isValidDate = (
       constraints: [property],
       options: validationOptions,
       validator: {
-        validate(value: string, args: ValidationArguments) {
+        validate(value: string) {
           if (canBeEmpty) return true;
           return (
             typeof value === 'string' &&
             moment(value, 'YYYY-MM-DD HH:mm:ss', true).isValid()
           );
         },
-        defaultMessage(validationArguments?: ValidationArguments) {
+        defaultMessage() {
           return 'Not a valid date';
         },
       },
@@ -90,7 +90,7 @@ export const isValidDateRange = (
   canBeEmpty = false,
   validationOptions?: ValidationOptions,
 ) => {
-  return (object: Object, propertyName: string) => {
+  return (object: object, propertyName: string) => {
     registerDecorator({
       name: 'isValidDateRange',
       target: object.constructor,
@@ -104,7 +104,7 @@ export const isValidDateRange = (
           const relatedValue = (args.object as any)[relatedPropertyName];
           return moment(value, 'YYYY-MM-DD HH:mm:ss').isAfter(relatedValue);
         },
-        defaultMessage(validationArguments?: ValidationArguments) {
+        defaultMessage() {
           return 'end date must be greater than start date';
         },
       },
@@ -117,7 +117,7 @@ export const isValidNumberRange = (
   canBeEmpty = false,
   validationOptions?: ValidationOptions,
 ) => {
-  return (object: Object, propertyName: string) => {
+  return (object: object, propertyName: string) => {
     registerDecorator({
       name: 'isValidNumberRange',
       target: object.constructor,
@@ -131,7 +131,7 @@ export const isValidNumberRange = (
           const relatedValue = (args.object as any)[relatedPropertyName];
           return +value < +relatedValue;
         },
-        defaultMessage(validationArguments?: ValidationArguments) {
+        defaultMessage() {
           return 'min value should not be greater than max value';
         },
       },
@@ -144,7 +144,7 @@ export const isValidEnum = (
   enumType: any,
   validationOptions?: ValidationOptions,
 ) => {
-  return (object: Object, propertyName: string) => {
+  return (object: object, propertyName: string) => {
     registerDecorator({
       name: 'isValidEnum',
       target: object.constructor,
@@ -152,12 +152,12 @@ export const isValidEnum = (
       constraints: [property],
       options: validationOptions,
       validator: {
-        validate(value: string, args: ValidationArguments) {
+        validate(value: string) {
           return (
             typeof value === 'string' && Object.values(enumType).includes(value)
           );
         },
-        defaultMessage(validationArguments?: ValidationArguments) {
+        defaultMessage() {
           return 'Not a valid string';
         },
       },

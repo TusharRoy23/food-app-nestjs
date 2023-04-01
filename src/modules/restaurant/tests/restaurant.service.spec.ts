@@ -14,12 +14,7 @@ import {
 import { RequestService } from '../../shared/service';
 import { RestaurantService } from '../restaurant.service';
 import { Restaurant, RestaurantDocument, RestaurantItem } from '../schemas';
-import {
-  Order,
-  OrderDiscount,
-  OrderDiscountDocument,
-  OrderDocument,
-} from '../../order/schemas';
+import { Order, OrderDiscount, OrderDocument } from '../../order/schemas';
 import { User, UserDocument } from '../../user/schemas/user.schema';
 import { Model } from 'mongoose';
 import {
@@ -52,8 +47,6 @@ describe('RestaurantService', () => {
   let restaurantModel: Model<RestaurantDocument>;
   let orderModel: Model<OrderDocument>;
   let userModel: Model<UserDocument>;
-  let restuarantItemModel: Model<RestaurantDocument>;
-  let orderDiscountModel: Model<OrderDiscountDocument>;
 
   const rawOrderList = getRawOrderResponseList(10);
   let userInfo = getUserInfo({ restaurant: getRawRestaurantList() });
@@ -113,8 +106,6 @@ describe('RestaurantService', () => {
     restaurantModel = module.get(restaurentDoc);
     orderModel = module.get(orderDoc);
     userModel = module.get<Model<UserDocument>>(userDoc);
-    restuarantItemModel = module.get(restuarantItemDoc);
-    orderDiscountModel = module.get(orderDiscountDoc);
 
     requestService.setUserInfo(userInfo);
   });

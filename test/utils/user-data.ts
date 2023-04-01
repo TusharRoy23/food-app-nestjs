@@ -14,7 +14,7 @@ export const generateUser = (object: any = {}) => {
 };
 
 export const generateUserList = (n = 1, object = {}) => {
-  return Array.from({ length: n }, (_, __) =>
+  return Array.from({ length: n }, () =>
     generateUser({ ...object }),
   ) as Array<User>;
 };

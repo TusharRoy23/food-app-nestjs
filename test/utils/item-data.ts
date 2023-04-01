@@ -17,7 +17,7 @@ const generateItem = (object: any = {}) => {
 };
 
 export const generateItemList = (n = 1, object = {}) => {
-  return Array.from({ length: n }, (_, __) =>
+  return Array.from({ length: n }, () =>
     generateItem({ ...object }),
   ) as ItemReponse[] as any[];
 };

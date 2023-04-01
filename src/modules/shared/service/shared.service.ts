@@ -56,7 +56,7 @@ export class SharedService implements ISharedService {
     }
   }
 
-  async getCartInfo(cartId: string, user: User): Promise<Cart> {
+  async getCartInfo(cartId: string): Promise<Cart> {
     try {
       const cart: Cart = await this.cartModel
         .findOne({ _id: cartId, cart_status: CartStatus.SAVED })

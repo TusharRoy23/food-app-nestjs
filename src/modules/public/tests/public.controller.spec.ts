@@ -3,11 +3,9 @@ import { getRestaurantList } from '../../../../test/utils/generate';
 import { FakePublicService } from '../../../../test/utils/fake.service';
 import { PUBLIC_SERVICE } from '../interfaces/IPublic.service';
 import { PublicController } from '../public.controller';
-import { PublicService } from '../public.service';
 
 describe('PublicController', () => {
   let controller: PublicController;
-  let publicService: PublicService;
   const restaurants = getRestaurantList(4);
   const restaurant = restaurants[0];
 
@@ -18,7 +16,6 @@ describe('PublicController', () => {
     }).compile();
 
     controller = module.get<PublicController>(PublicController);
-    publicService = module.get<PublicService>(PUBLIC_SERVICE);
   });
 
   it('should be defined', () => {

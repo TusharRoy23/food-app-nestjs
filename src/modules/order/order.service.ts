@@ -39,12 +39,12 @@ export class OrderService implements IOrderService {
     private orderItemModel: Model<OrderItemDocument>,
     @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
-  ) {}
+  ) { }
 
   async submitOrder(cartId: string): Promise<OrderResponse> {
     try {
       const user: User = this.getUserDetailsFromRequest();
-      const cart: Cart = await this.sharedService.getCartInfo(cartId, user);
+      const cart: Cart = await this.sharedService.getCartInfo(cartId);
       const cartItems: {
         item: Item;
         amount: number;

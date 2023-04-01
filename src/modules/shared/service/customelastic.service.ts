@@ -35,7 +35,7 @@ export class CustomElasticService implements IElasticsearchService {
           const hits = response.body.hits.hits;
           return hits.map((restaurant) => restaurant._source);
         })
-        .catch((error) => {
+        .catch(() => {
           throw new InternalServerErrorException('Error on search');
         });
     } catch (error) {
@@ -75,7 +75,7 @@ export class CustomElasticService implements IElasticsearchService {
           const hits = response.body.hits.hits;
           return hits.map((restaurant) => restaurant._source);
         })
-        .catch((error) => {
+        .catch(() => {
           throw new InternalServerErrorException('Error on search');
         });
     } catch (error: any) {
@@ -98,10 +98,10 @@ export class CustomElasticService implements IElasticsearchService {
             current_status: restaurant.current_status,
           },
         })
-        .then((_) => {
+        .then(() => {
           return true;
         })
-        .catch((_) => {
+        .catch(() => {
           throw new InternalServerErrorException('Error on indexing');
         });
     } catch (error: any) {

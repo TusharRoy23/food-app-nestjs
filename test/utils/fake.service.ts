@@ -91,7 +91,7 @@ export class FakeRestaurantService implements IRestaurantService {
   }
 }
 
-export const rawRestaurants = getRawRestaurantList(4);
+export const rawRestaurants = getRawRestaurantList();
 export class FakeSharedService implements ISharedService {
   getRestaurantInfo(restaurantId: string): Promise<Restaurant> {
     return Promise.resolve(rawRestaurants[0]);
@@ -114,7 +114,7 @@ export class FakeSharedService implements ISharedService {
   getOrderDiscount(restaurantId: any): Promise<OrderDiscount> {
     throw new Error('Method not implemented.');
   }
-  getCartInfo(cartId: string, user: User): Promise<Cart> {
+  getCartInfo(cartId: string): Promise<Cart> {
     throw new Error('Method not implemented.');
   }
   updateCartInfo(conditions: any, payload: any): Promise<Cart> {

@@ -32,7 +32,7 @@ const generateOrderItem = (object: any = {}) => {
 };
 
 const generateOrderItemList = (n = 1, object = {}) => {
-  return Array.from({ length: n }, (_, __) =>
+  return Array.from({ length: n }, () =>
     generateOrderItem({ ...object }),
   ) as OrderItemResponse[];
 };
@@ -58,7 +58,7 @@ const generateOrderResponse = (object: any = {}) => {
 };
 
 const generateOrderResponseList = (n = 1, object: any = {}) => {
-  return Array.from({ length: n }, (_, __) =>
+  return Array.from({ length: n }, () =>
     generateOrderResponse({ ...object }),
   ) as OrderResponse[];
 };
@@ -99,7 +99,7 @@ const generateRawOrderResponse = (object: any = {}) => {
 };
 
 export const generateRawOrderResponseList = (n = 1, object: any = {}) => {
-  return Array.from({ length: n }, (_, __) =>
+  return Array.from({ length: n }, () =>
     generateRawOrderResponse({ ...object }),
   ) as Order[];
 };

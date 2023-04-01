@@ -24,7 +24,7 @@ export const generateRestaurantList = (n = 1, object = {}) => {
     {
       length: n,
     },
-    (_, __) => generateRestaurant({ ...object }),
+    () => generateRestaurant({ ...object }),
   ) as RestaurantResponse[];
 };
 
@@ -40,5 +40,6 @@ export const generateRawRestaurant = (object: any = {}) => {
     current_status: 'active',
     profile_img: '',
     users: generateUserList(2, { user_type: UserType.VISITOR }),
+    ...object,
   } as Restaurant;
 };

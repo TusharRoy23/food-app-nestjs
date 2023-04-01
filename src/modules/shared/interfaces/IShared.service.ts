@@ -16,7 +16,7 @@ export interface ISharedService {
   getItemInfo(itemId: string, restaurantId: any): Promise<Item>;
   getItemList(restaurantId: string): Promise<Item[]>;
   getOrderDiscount(restaurantId: any): Promise<OrderDiscount>;
-  getCartInfo(cartId: string, user: User): Promise<Cart>;
+  getCartInfo(cartId: string): Promise<Cart>;
   updateCartInfo(conditions: any, payload: any): Promise<Cart>;
   giveRating(user: User, ratingDto: RatingDto): Promise<string>;
 }

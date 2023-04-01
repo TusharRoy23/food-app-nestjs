@@ -8,7 +8,7 @@ import { hashString, isStringMatched } from '../../shared/utils/hashing.utils';
 @Schema({
   toJSON: {
     getters: true,
-    transform(_, ret, __) {
+    transform(_, ret) {
       delete ret._id;
       delete ret.password;
       delete ret.hashedRefreshToken;
