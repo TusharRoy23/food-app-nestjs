@@ -19,7 +19,7 @@ export class PublicService implements IPublicService {
     @Inject(RESTAURANT_SERVICE)
     private readonly restaurantService: IRestaurantService,
     @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
-  ) { }
+  ) {}
 
   async getItemList(restaurantId: string): Promise<ItemReponse[]> {
     try {

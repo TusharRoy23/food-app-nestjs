@@ -10,7 +10,7 @@ import { RestaurantResponse } from '../utils/response.utils';
 @Injectable()
 export class CustomElasticService implements IElasticsearchService {
   private restaurantIdx = 'restaurants';
-  constructor(private readonly elasticSearchService: ElasticsearchService) { }
+  constructor(private readonly elasticSearchService: ElasticsearchService) {}
 
   async getRestaurantList(): Promise<RestaurantResponse[]> {
     try {
