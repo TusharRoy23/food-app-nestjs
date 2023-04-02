@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CartStatus, connectionName } from '../shared/utils/enum';
 import { throwException } from '../shared/errors/all.exception';
 import {
+  OrderItemResponse,
   OrderResponse,
   PaginatedOrderResponse,
   PaginationPayload,
@@ -134,24 +135,7 @@ export class OrderService implements IOrderService {
           });
 
           orderItems.push(orderItem);
-          orderResponse.order_item.push({
-            id: orderItem._id,
-            qty: orderItem.qty,
-            amount: orderItem.amount,
-            total_amount: orderItem.total_amount,
-            item: {
-              id: orderItem.item_id,
-              item_type: orderItem.item_type,
-              meal_flavor: orderItem.meal_flavor,
-              meal_state: orderItem.meal_state,
-              meal_type: orderItem.meal_type,
-              name: orderItem.name,
-              price: orderItem.price,
-              discount_rate: orderItem?.discount_rate || 0,
-              icon: orderItem.icon,
-              image: orderItem.image,
-            },
-          });
+          orderResponse.order_item.push(this.orderItemResponse(orderItem));
         }),
       );
 
@@ -213,24 +197,7 @@ export class OrderService implements IOrderService {
             name: order.restaurant.name,
             address: order.restaurant.address,
           },
-          order_item: order.order_items.map((orderItem) => ({
-            id: orderItem._id,
-            amount: orderItem.amount,
-            qty: orderItem.qty,
-            total_amount: orderItem.total_amount,
-            item: {
-              id: orderItem.item_id,
-              item_type: orderItem.item_type,
-              meal_flavor: orderItem.meal_flavor,
-              meal_state: orderItem.meal_state,
-              meal_type: orderItem.meal_type,
-              name: orderItem.name,
-              price: orderItem.price,
-              discount_rate: orderItem.discount_rate,
-              icon: orderItem.icon,
-              image: orderItem.image,
-            },
-          })),
+          order_item: order.order_items.map((orderItem) => (this.orderItemResponse(orderItem)))
         });
       });
 
@@ -269,6 +236,27 @@ export class OrderService implements IOrderService {
     } catch (error) {
       return throwException(error);
     }
+  }
+
+  private orderItemResponse(orderItem: OrderItem): OrderItemResponse {
+    return {
+      id: orderItem._id,
+      amount: orderItem.amount,
+      qty: orderItem.qty,
+      total_amount: orderItem.total_amount,
+      item: {
+        id: orderItem.item_id,
+        item_type: orderItem.item_type,
+        meal_flavor: orderItem.meal_flavor,
+        meal_state: orderItem.meal_state,
+        meal_type: orderItem.meal_type,
+        name: orderItem.name,
+        price: orderItem.price,
+        discount_rate: orderItem.discount_rate,
+        icon: orderItem.icon,
+        image: orderItem.image,
+      },
+    };
   }
 
   private getUserDetailsFromRequest(): User {

@@ -10,34 +10,19 @@ import { RestaurantResponse } from '../utils/response.utils';
 @Injectable()
 export class CustomElasticService implements IElasticsearchService {
   private restaurantIdx = 'restaurants';
-  constructor(private readonly elasticSearchService: ElasticsearchService) {}
+  constructor(private readonly elasticSearchService: ElasticsearchService) { }
 
   async getRestaurantList(): Promise<RestaurantResponse[]> {
     try {
-      return await this.elasticSearchService
-        .search<IRestaurantSearchResult>({
-          index: this.restaurantIdx,
-          body: {
-            query: {
-              bool: {
-                must: [
-                  {
-                    term: {
-                      current_status: CurrentStatus.ACTIVE,
-                    },
-                  },
-                ],
-              },
+      return await this.querySearchResult({
+        must: [
+          {
+            term: {
+              current_status: CurrentStatus.ACTIVE,
             },
           },
-        })
-        .then((response) => {
-          const hits = response.body.hits.hits;
-          return hits.map((restaurant) => restaurant._source);
-        })
-        .catch(() => {
-          throw new InternalServerErrorException('Error on search');
-        });
+        ],
+      });
     } catch (error) {
       return throwException(error);
     }
@@ -45,39 +30,24 @@ export class CustomElasticService implements IElasticsearchService {
 
   async searchRestaurant(keyword: string): Promise<RestaurantResponse[]> {
     try {
-      return await this.elasticSearchService
-        .search<IRestaurantSearchResult>({
-          index: this.restaurantIdx,
-          body: {
-            query: {
-              bool: {
-                must: [
-                  {
-                    term: {
-                      current_status: CurrentStatus.ACTIVE,
-                    },
-                  },
-                ],
-                should: [
-                  {
-                    query_string: {
-                      fields: ['name', 'address'],
-                      query: `${keyword}*`,
-                    },
-                  },
-                ],
-                minimum_should_match: 1,
-              },
+      return await this.querySearchResult({
+        must: [
+          {
+            term: {
+              current_status: CurrentStatus.ACTIVE,
             },
           },
-        })
-        .then((response) => {
-          const hits = response.body.hits.hits;
-          return hits.map((restaurant) => restaurant._source);
-        })
-        .catch(() => {
-          throw new InternalServerErrorException('Error on search');
-        });
+        ],
+        should: [
+          {
+            query_string: {
+              fields: ['name', 'address'],
+              query: `${keyword}*`,
+            },
+          },
+        ],
+        minimum_should_match: 1,
+      });
     } catch (error: any) {
       return throwException(error);
     }
@@ -105,6 +75,29 @@ export class CustomElasticService implements IElasticsearchService {
           throw new InternalServerErrorException('Error on indexing');
         });
     } catch (error: any) {
+      return throwException(error);
+    }
+  }
+
+  private async querySearchResult(searchQuery: any): Promise<RestaurantResponse[]> {
+    try {
+      return await this.elasticSearchService
+        .search<IRestaurantSearchResult>({
+          index: this.restaurantIdx,
+          body: {
+            query: {
+              bool: searchQuery,
+            },
+          },
+        })
+        .then((response) => {
+          const hits = response.body.hits.hits;
+          return hits.map((restaurant) => restaurant._source);
+        })
+        .catch(() => {
+          throw new InternalServerErrorException('Error on search');
+        });
+    } catch (error) {
       return throwException(error);
     }
   }
