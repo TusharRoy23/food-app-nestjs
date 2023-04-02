@@ -31,7 +31,7 @@ export class CartService implements ICartService {
     private cartItemModel: Model<CartItemDocument>,
     @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
-  ) {}
+  ) { }
 
   async create(
     cartItemDto: CartItemDto,
@@ -46,16 +46,7 @@ export class CartService implements ICartService {
         restaurantId,
       );
 
-      if (
-        (typeof itemInfo.max_order_qty === 'number' &&
-          itemInfo.max_order_qty < cartItemDto.qty) ||
-        (typeof itemInfo.min_order_qty === 'number' &&
-          itemInfo.min_order_qty > cartItemDto.qty)
-      ) {
-        throw new BadRequestException(
-          `order qty should be between ${itemInfo.min_order_qty} To ${itemInfo.max_order_qty}`,
-        );
-      }
+      await this.checkOrderQtyLimit(itemInfo, cartItemDto);
 
       const cart = new Cart();
       cart.restaurant = restaurantInfo;
@@ -141,34 +132,7 @@ export class CartService implements ICartService {
   async retrieve(cartId: string): Promise<CartReponse> {
     try {
       const user: User = this.getUserDetailsFromRequest();
-      const cart: Cart = await this.getCartInfo(cartId, user);
-      const result: CartReponse = {
-        id: cart._id,
-        cart_amount: cart.cart_amount,
-        total_amount: cart.total_amount,
-        rebate_amount: cart.rebate_amount,
-        discount_rate: cart?.order_discount?.discount_rate || 0.0,
-        cart_date: new Date(cart.cart_date),
-        cart_status: cart.cart_status,
-        cart_item: cart.cart_items.map((cartItem) => ({
-          amount: cartItem.amount,
-          id: cartItem._id,
-          qty: cartItem.qty,
-          total_amount: cartItem.total_amount,
-          item: {
-            id: cartItem.item._id,
-            discount_rate: cartItem?.item?.discount_rate || 0.0,
-            item_type: cartItem.item.item_type,
-            meal_flavor: cartItem.item.meal_flavor,
-            meal_state: cartItem.item.meal_state,
-            meal_type: cartItem.item.meal_state,
-            name: cartItem.item.name,
-            price: cartItem.item.price,
-          },
-        })),
-      };
-      this.getCartResponse(cartId, user);
-      return result;
+      return await this.getCartResponse(cartId, user);
     } catch (error: any) {
       return throwException(error);
     }
@@ -186,16 +150,7 @@ export class CartService implements ICartService {
         throw new NotFoundException('Item not found');
       }
 
-      if (
-        (typeof itemInfo.max_order_qty === 'number' &&
-          itemInfo.max_order_qty < cartItemDto.qty) ||
-        (typeof itemInfo.min_order_qty === 'number' &&
-          itemInfo.min_order_qty > cartItemDto.qty)
-      ) {
-        throw new BadRequestException(
-          `order qty should be between ${itemInfo.min_order_qty} To ${itemInfo.max_order_qty}`,
-        );
-      }
+      await this.checkOrderQtyLimit(itemInfo, cartItemDto);
 
       const cartItemInfo: CartItem = await this.cartItemModel
         .findOne({ item: cartItemDto.id, cart: cart._id })
@@ -274,10 +229,18 @@ export class CartService implements ICartService {
         cart_status: CartStatus.SAVED,
         user: user,
       });
+
+      if (!cart && !Object.keys(cart).length) {
+        throw new NotFoundException('Cart not found');
+      }
       const cartItems: CartItem[] = await this.cartItemModel
         .find({ cart: cartId })
         .populate('item')
         .exec();
+
+      if (!cartItems && !Object.keys(cartItems).length) {
+        throw new BadRequestException('Cart is empty');
+      }
 
       const cartItemResponse: CartItemResponse[] = [];
       let cartAmount = 0;
@@ -347,6 +310,23 @@ export class CartService implements ICartService {
       };
 
       return result;
+    } catch (error: any) {
+      return throwException(error);
+    }
+  }
+
+  private async checkOrderQtyLimit(itemInfo: Item, cartItemDto: CartItemDto) {
+    try {
+      if (
+        (typeof itemInfo.max_order_qty === 'number' &&
+          itemInfo.max_order_qty < cartItemDto.qty) ||
+        (typeof itemInfo.min_order_qty === 'number' &&
+          itemInfo.min_order_qty > cartItemDto.qty)
+      ) {
+        throw new BadRequestException(
+          `order qty should be between ${itemInfo.min_order_qty} To ${itemInfo.max_order_qty}`,
+        );
+      }
     } catch (error: any) {
       return throwException(error);
     }
