@@ -16,5 +16,5 @@ jobs:
           DEFAULT_BRANCH: master
           VALIDATE_TYPESCRIPT_ES: true
           LINTER_RULES_PATH: /
-          TYPESCRIPT_ES_CONFIG_FILE: .eslintrc.js
+          TYPESCRIPT_ES_CONFIG_FILE: .eslintrc.json
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
