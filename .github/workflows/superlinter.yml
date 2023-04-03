@@ -15,5 +15,5 @@ jobs:
         env:
           DEFAULT_BRANCH: master
           FILTER_REGEX_INCLUDE: .*src/.*
-          TYPESCRIPT_ES_CONFIG_FILE: .eslintrc.js
+          TYPESCRIPT_ES_CONFIG_FILE: ../../.eslintrc.js
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
