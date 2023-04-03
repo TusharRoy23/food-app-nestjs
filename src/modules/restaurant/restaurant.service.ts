@@ -68,7 +68,7 @@ export class RestaurantService implements IRestaurantService {
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
     @Inject(ELASTICSEARCH_SERVICE)
     private readonly elasticSearchService: IElasticsearchService,
-  ) {}
+  ) { }
 
   async register(registerDto: RegisterDto): Promise<string> {
     try {
@@ -202,7 +202,7 @@ export class RestaurantService implements IRestaurantService {
         },
         { order_status: OrderStatus.RELEASED },
         orderId,
-      );
+      )
 
       return 'Order Released successfully';
     } catch (error: any) {
