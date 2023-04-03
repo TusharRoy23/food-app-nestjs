@@ -28,7 +28,7 @@ export class AuthService implements IAuthService {
     @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
     private jwtService: JwtService,
-  ) { }
+  ) {}
 
   async signIn(payload: SignInCredentialsDto): Promise<UserResponse> {
     try {
@@ -38,8 +38,8 @@ export class AuthService implements IAuthService {
       const user = new User();
       const isPasswordMatched = await user.validatePasswords(
         userData.password,
-        payload.password
-      )
+        payload.password,
+      );
       if (!isPasswordMatched) {
         throw new NotFoundException('Username/Password not matched');
       }
