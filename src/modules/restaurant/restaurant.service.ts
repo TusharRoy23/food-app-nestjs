@@ -196,21 +196,14 @@ export class RestaurantService implements IRestaurantService {
 
   async releaseOrder(orderId: string): Promise<string> {
     try {
-      const user: User = this.getUserDetailsFromRequest();
-      const order: Order = await this.orderModel
-        .findOneAndUpdate(
-          {
-            _id: orderId,
-            restaurant: user.restaurant,
-            order_status: OrderStatus.PENDING,
-          },
-          { order_status: OrderStatus.RELEASED },
-          { new: true },
-        )
-        .exec();
-      if (order == null) {
-        throw new NotFoundException('Order not found');
-      }
+      await this.updateOrderStatus(
+        {
+          order_status: OrderStatus.PENDING,
+        },
+        { order_status: OrderStatus.RELEASED },
+        orderId,
+      );
+
       return 'Order Released successfully';
     } catch (error: any) {
       return throwException(error);
@@ -220,23 +213,13 @@ export class RestaurantService implements IRestaurantService {
   async completeOrder(orderId: string): Promise<string> {
     try {
       const user: User = this.getUserDetailsFromRequest();
-      const order: Order = await this.orderModel
-        .findOneAndUpdate(
-          {
-            _id: orderId,
-            restaurant: user.restaurant,
-            order_status: OrderStatus.RELEASED,
-          },
-          { order_status: OrderStatus.PAID },
-          { new: true },
-        )
-        .populate({ path: 'order_items', populate: 'item' })
-        .populate('order_discount')
-        .exec();
-
-      if (order == null) {
-        throw new NotFoundException('Order not found');
-      }
+      const order: Order = await this.updateOrderStatus(
+        {
+          order_status: OrderStatus.RELEASED,
+        },
+        { order_status: OrderStatus.PAID },
+        orderId,
+      );
 
       await Promise.all(
         order.order_items.map(async (orderItem) => {
@@ -381,6 +364,36 @@ export class RestaurantService implements IRestaurantService {
   private async indexRestaurant(restaurant: Restaurant): Promise<boolean> {
     try {
       return this.elasticSearchService.indexRestaurant(restaurant);
+    } catch (error: any) {
+      return throwException(error);
+    }
+  }
+
+  private async updateOrderStatus(
+    conditions: any,
+    updatedValue: any,
+    orderId,
+  ): Promise<Order> {
+    try {
+      const user: User = this.getUserDetailsFromRequest();
+      const query = this.orderModel.findOneAndUpdate(
+        {
+          _id: orderId,
+          restaurant: user.restaurant,
+          ...conditions,
+        },
+        updatedValue,
+        { new: true },
+      );
+      if (updatedValue?.order_status === OrderStatus.PAID) {
+        // complete order
+        query.populate('order_items');
+      }
+      const order: Order = await query.exec();
+      if (order == null) {
+        throw new NotFoundException('Order not found');
+      }
+      return order;
     } catch (error: any) {
       return throwException(error);
     }

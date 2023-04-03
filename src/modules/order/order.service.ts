@@ -40,7 +40,7 @@ export class OrderService implements IOrderService {
     private orderItemModel: Model<OrderItemDocument>,
     @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
-  ) { }
+  ) {}
 
   async submitOrder(cartId: string): Promise<OrderResponse> {
     try {
@@ -197,7 +197,9 @@ export class OrderService implements IOrderService {
             name: order.restaurant.name,
             address: order.restaurant.address,
           },
-          order_item: order.order_items.map((orderItem) => (this.orderItemResponse(orderItem)))
+          order_item: order.order_items.map((orderItem) =>
+            this.orderItemResponse(orderItem),
+          ),
         });
       });
 

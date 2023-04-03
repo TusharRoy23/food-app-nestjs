@@ -31,7 +31,7 @@ export class CartService implements ICartService {
     private cartItemModel: Model<CartItemDocument>,
     @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
-  ) { }
+  ) {}
 
   async create(
     cartItemDto: CartItemDto,
