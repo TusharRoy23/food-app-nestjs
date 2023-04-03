@@ -202,7 +202,7 @@ export class RestaurantService implements IRestaurantService {
         },
         { order_status: OrderStatus.RELEASED },
         orderId,
-      )
+      );
 
       return 'Order Released successfully';
     } catch (error: any) {

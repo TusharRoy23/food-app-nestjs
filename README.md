@@ -86,7 +86,7 @@ PUT restaurants
 ## Add restaurants info to Elasticsearch (Executed in root path)
 ```bash
 # Prepare restaurants data according to ES Mapping
-$ docker exec food-dev npx ts-node streamData.ts
+$ docker exec food-dev npx ts-node streamData.js
 
 # Insert data to ES
 $ docker exec food-dev node_modules/elasticdump/bin/elasticdump --input=restaurant.json --output=http://esFood01:9200/
