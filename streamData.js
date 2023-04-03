@@ -5,6 +5,10 @@ fs.readFile('./restaurants.json', 'utf-8', (err, jsonStr) => {
         console.log('Error occured on read file');
         return;
     }
+    if (!jsonStr) {
+        console.log('File is empty');
+        return;
+    }
     try {
         const restaurants = JSON.parse(jsonStr);
         let newData = '';

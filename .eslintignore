@@ -1,2 +1,6 @@
 .eslintrc.js
-./init-dem-mongo.js
+./init-dev-mongo.js
+./test
+**/*.js
+./dist
+**/*.spec.ts
