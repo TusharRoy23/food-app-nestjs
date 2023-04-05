@@ -27,8 +27,8 @@ describe('PublicController', () => {
       await controller.register({
         address: restaurant.address,
         email: 'tushar@gm.com',
-        closing_time: restaurant.closing_time,
-        opening_time: restaurant.opening_time,
+        closing_time: restaurant.closing_time || '00:00:00',
+        opening_time: restaurant.opening_time || '08:08:08',
         password: 'tushar',
         restaurant_name: restaurant.name,
         name: restaurant.name,
