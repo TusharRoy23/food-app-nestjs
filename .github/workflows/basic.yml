@@ -1,9 +1,6 @@
 name: Basic CI
 
-on:
-  push:
-    branches:
-      - continuous-*
+on: workflow_dispatch
 
 jobs:
   linting:
