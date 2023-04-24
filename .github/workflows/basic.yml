@@ -23,3 +23,5 @@ jobs:
         run: npm ci
       - name: Lint Code
         run: npm run test
+      - name: e2e test
+        run: npm run test:e2e
