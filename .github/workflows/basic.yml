@@ -1,0 +1,24 @@
+name: Basic CI
+
+on: workflow_dispatch
+
+jobs:
+  linting:
+    name: Linting the code base
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Lint Code
+        run: npm run test
+      - name: e2e test
+        run: npm run test:e2e
