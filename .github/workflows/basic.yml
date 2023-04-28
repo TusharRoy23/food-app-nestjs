@@ -9,16 +9,33 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Cache dependencies
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: node-modules-${{ hashFiles('**/package-lock.json') }}
-      - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
+      - name: Load & Cache dependencies
+        uses: ./.github/actions/cached-dependencies
       - name: Lint Code
+        run: npm run lint
+  test:
+    name: Unit & e2e test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Load & Cache dependencies
+        uses: ./.github/actions/cached-dependencies
+      - name: unit test
+        id: unit-test
         run: npm run test
+      - name: upload unit test report
+        if: failure() && steps.unit-test.outcome == 'failure'
+        uses: actions/upload-artifacts@v3
+        with:
+          name: unit-test-report
+          path: unit-test.json
       - name: e2e test
+        id: e2e-test
         run: npm run test:e2e
+      - name: upload e2e test report
+        if: failure() && steps.e2e-test.outcome == 'failure'
+        uses: actions/upload-artifacts@v3
+        with:
+          name: e2e-test-report
+          path: e2e-test.json
