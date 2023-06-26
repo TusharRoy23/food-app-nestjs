@@ -2,3 +2,4 @@
 /dist
 /dockerfiles
 /.vscode
+./Dockerfile

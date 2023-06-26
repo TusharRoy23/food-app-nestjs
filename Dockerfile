@@ -9,6 +9,7 @@ COPY . .
 FROM node:18-alpine as stagingBuild
 WORKDIR /usr/src/app
 COPY ./package*.json ./
+COPY env/.staging.env ./.env
 COPY --from=devModules /usr/src/app ./
 COPY . .
 RUN npm run build

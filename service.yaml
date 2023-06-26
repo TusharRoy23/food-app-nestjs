@@ -1,0 +1,44 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+    run.googleapis.com/operation-id: a80262c0-f46b-4421-9ab9-c565b08d2195
+  labels:
+    cloud.googleapis.com/location: us-central1
+  name: stag-food
+  namespace: '202811085646'
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '100'
+        run.googleapis.com/client-name: cloud-console
+      labels:
+        run.googleapis.com/startupProbeType: Default
+    spec:
+      containerConcurrency: 80
+      containers:
+      - image: us-central1-docker.pkg.dev/mythic-method-388505/cloud-run-source-deploy/stag-food@sha256:7f0012ed7860a5fa0a9abc4abd90e3190fbb062d6e81da37830dab9dd72cd9d0
+        ports:
+        - containerPort: 4000
+          name: http1
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+        volumeMounts:
+          - name: app
+            mountPath: 
+        startupProbe:
+          failureThreshold: 1
+          periodSeconds: 240
+          tcpSocket:
+            port: 8080
+          timeoutSeconds: 240
+      serviceAccountName: 202811085646-compute@developer.gserviceaccount.com
+      timeoutSeconds: 300
+  traffic:
+  - latestRevision: true
+    percent: 100

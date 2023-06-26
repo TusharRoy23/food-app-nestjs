@@ -35,9 +35,9 @@ services:
       - /usr/src/app/node_modules # anonymus/unnamed volumn in container
     ports:
       - "${APP_PORT}:${APP_PORT}"
-    depends_on:
-      esStagingFood01:
-        condition: service_started
+    # depends_on:
+    #   esStagingFood01:
+    #     condition: service_started
     restart: unless-stopped
     networks:
       - food_staging_api
@@ -79,3 +79,4 @@ networks:
 
 volumes:
   esStagingFoodData01:
+  stagingtest:
