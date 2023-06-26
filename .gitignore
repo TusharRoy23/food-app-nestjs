@@ -4,9 +4,12 @@
 /restaurant.json
 /esFoodData01
 /esProdFoodData01
+/esStagingFoodData01
 /restaurants.json
 /redis-data
 .prod.env
+.staging
+/.vscode
 
 # Logs
 logs
