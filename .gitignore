@@ -8,7 +8,7 @@
 /restaurants.json
 /redis-data
 .prod.env
-.staging
+.staging.env
 /.vscode
 
 # Logs
