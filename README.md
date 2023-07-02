@@ -42,7 +42,7 @@ $ docker-compose -f docker-compose.dev.yml --env-file env/.dev.env up anyService
 ## Mongo Export
 ```bash
 # Export results in a file
-$ docker exec mongoContainerName mongoexport --uri="mongodb://UN:PWD@mongoContainerName:27017/DBName" --collection=CollectionName --type=json --fields=field1,field2 --out collectionName.json
+$ docker exec mongoContainerName mongoexport --uri="mongodb://UN:PWD@mongoContainerName:27017/DBName" --collection=CollectionName --type=json --fields=field1,field2 --out=collectionName.json --jsonArray 
 
 # Copy the file from DB Container
 $ docker cp DBcontainerName:/collectionName.json destinationFolderPath

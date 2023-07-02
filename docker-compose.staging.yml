@@ -1,0 +1,82 @@
+version: '3.1'
+services:
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: unless-stopped
+    ports:
+      - ${MONGO_EXPRESS_PORT}:8081
+    environment:
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=${MONGODB_ENABLE_ADMIN}
+      - ME_CONFIG_MONGODB_AUTH_DATABASE=${MONGODB_DATABASE}
+      - ME_CONFIG_MONGODB_AUTH_USERNAME=${MONGODB_ROOT_USERNAME}
+      - ME_CONFIG_MONGODB_AUTH_PASSWORD=${MONGODB_ROOT_PASSWORD}
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGO_EXPRESS_USERNAME}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_EXPRESS_PASSWORD}
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGODB_ROOT_USERNAME}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGODB_ROOT_PASSWORD}
+      - ME_CONFIG_MONGODB_SERVER=${MONGODB_SERVER}
+      - ME_CONFIG_SITE_BASEURL=${MONGO_EXPRESS_SITE_BASEURL}
+      # - ME_CONFIG_SITE_SSL_ENABLED=true
+      # - ME_CONFIG_MONGODB_SSLVALIDATE=false
+      - ME_CONFIG_MONGODB_URL=${MONGODB_URL}
+    networks:
+      - food_staging_api
+  foodstaging:
+    container_name: food-staging
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile-staging
+    image: food-staging-api
+    env_file:
+      - ./env/.staging.env
+    volumes:
+      - .:/usr/src/app # create volumn in current directory of container
+      - /usr/src/app/node_modules # anonymus/unnamed volumn in container
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    # depends_on:
+    #   esStagingFood01:
+    #     condition: service_started
+    restart: unless-stopped
+    networks:
+      - food_staging_api
+  esStagingFood01:
+    container_name: esStagingFood01
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
+    env_file:
+      - ./env/.staging.env
+    volumes:
+      - ./esStagingFoodData01:/usr/share/elasticsearch/data
+    ports:
+      - ${ES_HOST_PORT}:9200
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - food_staging_api
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:${ELK_VERSION}
+    environment:
+      - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_HOSTS}
+      - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME}
+      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
+      - SERVER_PUBLICBASEURL=${KIBANA_PUBLICBASEURL}
+      - SERVER_BASEPATH=${KIBANA_BASEPATH}
+      - SERVER_REWRITEBASEPATH=${KIBANA_REWRITEBASEPATH}
+    ports:
+      - ${KIBANA_HOST_PORT}:5601
+    depends_on:
+      esStagingFood01:
+        condition: service_started
+    networks:
+      - food_staging_api
+networks:
+  food_staging_api:
+    driver: bridge
+
+volumes:
+  esStagingFoodData01:
+  stagingtest:
