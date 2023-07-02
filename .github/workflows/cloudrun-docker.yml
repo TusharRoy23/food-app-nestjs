@@ -1,9 +1,10 @@
 name: Build and Deploy to Google Cloud run
 
-on: 
-    push:
-        branches:
-            - master
+# on: 
+#     push:
+#         branches:
+#             - master
+on: workflow_dispatch
 
 jobs:
     deploy:
