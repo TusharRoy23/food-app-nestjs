@@ -15,34 +15,34 @@ jobs:
         steps:
           - name: Checkout Code
             uses: actions/checkout@v3
-          - name: Show Secrets
-            run: echo ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
           - name: Google Auth
             id: auth
             uses: google-github-actions/auth@v0
             with:
               token_format: 'access_token'
-              workload_identity_provider: '${{ secrets.WIF_PROVIDER }}'
-              service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'
+              workload_identity_provider: '${{ vars.WIF_PROVIDER }}'
+              service_account: '${{ vars.WIF_SERVICE_ACCOUNT }}'
+
           - name: Login to GAR
             uses: docker/login-action@v2.1.0
             with:
               username: 'oauth2accesstoken'
               password: '${{ steps.auth.outputs.access_token }}'
-              registry: '${{ secrets.GAR_LOCATION }}-docker.pkg.dev'
+              registry: '${{ vars.GAR_LOCATION }}-docker.pkg.dev'
 
           - name: Build and Push Container
             run: |-
-              docker build -t "${{ secrets.GAR_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REPOSITORY }}/${{ secrets.SERVICE }}:${{ github.sha }}" ./
-              docker push "${{ secrets.GAR_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REPOSITORY }}/${{ secrets.SERVICE }}:${{ github.sha }}"
+              docker build -t "${{ vars.GAR_LOCATION }}-docker.pkg.dev/${{ vars.PROJECT_ID }}/${{ vars.REPOSITORY }}/${{ vars.SERVICE }}:${{ github.sha }}" ./
+              docker push "${{ vars.GAR_LOCATION }}-docker.pkg.dev/${{ vars.PROJECT_ID }}/${{ vars.REPOSITORY }}/${{ vars.SERVICE }}:${{ github.sha }}"
 
           - name: Deploy to Cloud Run
             id: deploy
             uses: google-github-actions/deploy-cloudrun@v0
             with:
-              service: ${{ secrets.SERVICE }}
-              region: ${{ secrets.REGION }}
-              image: ${{ secrets.GAR_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REPOSITORY }}/${{ secrets.SERVICE }}:${{ github.sha }}
+              service: ${{ vars.SERVICE }}
+              region: ${{ vars.REGION }}
+              image: ${{ vars.GAR_LOCATION }}-docker.pkg.dev/${{ vars.PROJECT_ID }}/${{ vars.REPOSITORY }}/${{ vars.SERVICE }}:${{ github.sha }}
             
           - name: Show Output
             run: echo ${{ steps.deploy.outputs.url }}
