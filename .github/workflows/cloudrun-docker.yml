@@ -15,7 +15,8 @@ jobs:
         steps:
           - name: Checkout Code
             uses: actions/checkout@v3
-
+          - name: Show Vars
+            run: echo ${{ vars.WIF_PROVIDER }}
           - name: Google Auth
             id: auth
             uses: google-github-actions/auth@v0
