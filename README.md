@@ -105,6 +105,8 @@ $ npm run test:e2e test/fileName.e2e-spec.ts
 
 # test coverage
 ```
+## CI/CD integration
+- Checkout Medium - [CD with Google Cloud Run, GitHub Actions, Artifact Registry, & WIF](https://tushar-chy.medium.com/cd-with-google-cloud-run-github-actions-artifact-registry-workload-identity-federation-fcc8e317b327)
 ## Stay in touch
 - Checkout my stories - [Medium](https://medium.com/@tushar-chy)
 - Connect with me - [LinkedIn](https://www.linkedin.com/in/tushar-roy-chy/)
