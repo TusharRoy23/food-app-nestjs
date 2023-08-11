@@ -17,7 +17,7 @@ RUN npm ci --only=production
 
 # Stage 3
 FROM node:18-alpine as production
-COPY --from=stagingBuild /usr/src/app/node_modules ./node_modules
-COPY --from=stagingBuild /usr/src/app/dist ./dist
+COPY --from=productionBuild /usr/src/app/node_modules ./node_modules
+COPY --from=productionBuild /usr/src/app/dist ./dist
 
 CMD [ "node", "dist/main.js" ]
