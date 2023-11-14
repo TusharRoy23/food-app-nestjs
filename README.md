@@ -26,7 +26,7 @@ It's a simple food application on top of nestjs & mongodb. It can be used for le
 | @nestjs/swagger| 6.2.1|
 
 
-## Running the app using docker
+## Run the app using docker
 
 ```bash
 # development (To start all the services)
