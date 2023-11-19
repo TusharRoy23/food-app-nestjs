@@ -12,12 +12,12 @@ import {
 @Schema({
   toJSON: {
     getters: true,
+    versionKey: false,
     transform(_, ret) {
-      delete ret._id;
-      delete ret.__v;
       return ret;
     },
   },
+  id: false
 })
 export class Item {
   _id: mongoose.Types.ObjectId;
@@ -27,7 +27,7 @@ export class Item {
     maxlength: 13,
     minlength: 1,
     required: true,
-    lowercase: true,
+    lowercase: true
   })
   name: string;
 

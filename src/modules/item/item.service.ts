@@ -16,7 +16,7 @@ export class ItemService implements IItemService {
     @InjectModel(Item.name, connectionName.MAIN_DB)
     private itemModel: Model<ItemDocuement>,
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
-  ) {}
+  ) { }
 
   async create(payload: CreateItemDto): Promise<string> {
     try {

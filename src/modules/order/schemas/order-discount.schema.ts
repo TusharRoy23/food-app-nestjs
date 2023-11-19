@@ -5,12 +5,9 @@ import { Restaurant } from '../../restaurant/schemas';
 @Schema({
   toJSON: {
     getters: true,
-    transform(_, ret) {
-      delete ret._id;
-      delete ret.__v;
-      return ret;
-    },
+    versionKey: false
   },
+  id: false
 })
 export class OrderDiscount {
   _id: mongoose.Types.ObjectId;
