@@ -10,6 +10,7 @@
 .prod.env
 .staging.env
 /.vscode
+/.adminjs
 
 # Logs
 logs

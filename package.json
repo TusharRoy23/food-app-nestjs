@@ -26,6 +26,7 @@
     "@adminjs/express": "^5.0.1",
     "@adminjs/mongoose": "^3.0.3",
     "@adminjs/nestjs": "^5.0.1",
+    "@adminjs/passwords": "^3.0.1",
     "@elastic/elasticsearch": "^7.17.0",
     "@nestjs/common": "^9.2.1",
     "@nestjs/core": "^9.2.1",
