@@ -13,6 +13,7 @@ import { IRestaurant } from '../interfaces/IRestaurant.model';
       return ret;
     },
   },
+  id: false
 })
 export class Restaurant implements IRestaurant {
   _id: mongoose.Types.ObjectId;

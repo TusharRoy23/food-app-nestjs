@@ -27,7 +27,7 @@ export class Item implements IItem {
     maxlength: 13,
     minlength: 1,
     required: true,
-    lowercase: true,
+    lowercase: true
   })
   name: string;
 

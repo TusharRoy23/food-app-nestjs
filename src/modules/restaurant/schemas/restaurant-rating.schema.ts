@@ -7,12 +7,9 @@ import { IRestaurantRating } from '../interfaces/IRestaurant.model';
 @Schema({
   toJSON: {
     getters: true,
-    transform(_, ret) {
-      delete ret._id;
-      delete ret.__v;
-      return ret;
-    },
+    versionKey: false
   },
+  id: false
 })
 export class RestaurantRating implements IRestaurantRating {
   _id: mongoose.Types.ObjectId;

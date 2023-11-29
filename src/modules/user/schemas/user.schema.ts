@@ -8,14 +8,14 @@ import { hashString, isStringMatched } from '../../shared/utils/hashing.utils';
 @Schema({
   toJSON: {
     getters: true,
+    versionKey: false,
     transform(_, ret) {
-      delete ret._id;
       delete ret.password;
       delete ret.hashedRefreshToken;
-      delete ret.__v;
       return ret;
     },
   },
+  id: false
 })
 export class User {
   _id: mongoose.Types.ObjectId;

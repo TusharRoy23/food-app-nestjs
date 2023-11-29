@@ -14,6 +14,7 @@ import { IOrderItem } from '../interfaces/IOrder.model';
     getters: true,
     versionKey: false
   },
+  id: false
 })
 export class OrderItem implements IOrderItem {
   _id: mongoose.Types.ObjectId;
