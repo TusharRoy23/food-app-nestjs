@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { Item } from '../../item/schemas/item.schema';
 import { Restaurant } from './restaurant.schema';
+import { IRestaurantItem } from '../interfaces/IRestaurant.model';
 
 @Schema({
   toJSON: {
@@ -13,7 +14,7 @@ import { Restaurant } from './restaurant.schema';
     },
   },
 })
-export class RestaurantItem {
+export class RestaurantItem implements IRestaurantItem {
   _id: mongoose.Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' })

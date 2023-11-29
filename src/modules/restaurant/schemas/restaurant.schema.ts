@@ -2,19 +2,19 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { User } from '../../user/schemas/user.schema';
 import { CurrentStatus } from '../../shared/utils/enum';
+import { IRestaurant } from '../interfaces/IRestaurant.model';
 
 @Schema({
   toJSON: {
     getters: true,
+    versionKey: false,
     transform(_, ret) {
-      delete ret._id;
-      delete ret.__v;
       delete ret.user;
       return ret;
     },
   },
 })
-export class Restaurant {
+export class Restaurant implements IRestaurant {
   _id: mongoose.Types.ObjectId;
 
   @Prop({

@@ -7,7 +7,7 @@ import {
   Param,
   Patch,
   Post,
-  Query,
+  Query
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from '../shared/decorator/public.decorator';
@@ -35,7 +35,7 @@ export class RestaurantController {
   constructor(
     @Inject(RESTAURANT_SERVICE)
     private readonly restaurantService: IRestaurantService,
-  ) {}
+  ) { }
 
   @Get('/orders')
   public async getOrderList(@Query() paginationParams: PaginationParams) {

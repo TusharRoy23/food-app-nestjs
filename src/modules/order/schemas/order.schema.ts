@@ -5,18 +5,15 @@ import { Restaurant } from '../../restaurant/schemas';
 import { User } from '../../user/schemas/user.schema';
 import { OrderDiscount } from './order-discount.schema';
 import { OrderItem } from './order-item.schemas';
+import { IOrder } from '../interfaces/IOrder.model';
 
 @Schema({
   toJSON: {
     getters: true,
-    transform(_, ret) {
-      delete ret._id;
-      delete ret.__v;
-      return ret;
-    },
+    versionKey: false
   },
 })
-export class Order {
+export class Order implements IOrder {
   _id: mongoose.Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
