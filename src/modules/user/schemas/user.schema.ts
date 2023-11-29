@@ -4,6 +4,7 @@ import mongoose, { HydratedDocument } from 'mongoose';
 import { Restaurant } from '../../restaurant/schemas';
 import { CurrentStatus, UserRole, UserType } from '../../shared/utils/enum';
 import { hashString, isStringMatched } from '../../shared/utils/hashing.utils';
+import { IUser } from '../interfaces/IUser.model';
 
 @Schema({
   toJSON: {
@@ -17,7 +18,7 @@ import { hashString, isStringMatched } from '../../shared/utils/hashing.utils';
     },
   },
 })
-export class User {
+export class User implements IUser {
   _id: mongoose.Types.ObjectId;
 
   @Prop({ type: 'String', required: true, unique: true, lowercase: true })
