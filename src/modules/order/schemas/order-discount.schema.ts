@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { Restaurant } from '../../restaurant/schemas';
+import { IOrderDiscount } from '../interfaces/IOrder.model';
 
 @Schema({
   toJSON: {
@@ -12,7 +13,7 @@ import { Restaurant } from '../../restaurant/schemas';
     },
   },
 })
-export class OrderDiscount {
+export class OrderDiscount implements IOrderDiscount {
   _id: mongoose.Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' })

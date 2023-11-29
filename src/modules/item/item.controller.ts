@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  SerializeOptions
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from '../shared/decorator/public.decorator';
@@ -23,10 +24,13 @@ import { IItemService, ITEM_SERVICE } from './interfaces/IItem.interface';
 @Controller('item')
 @IsPublic(false)
 @Roles(UserRole.OWNER)
+@SerializeOptions({
+  excludePrefixes: ['_']
+})
 export class ItemController {
   constructor(
     @Inject(ITEM_SERVICE) private readonly itemService: IItemService,
-  ) {}
+  ) { }
 
   @Post('/')
   @ResponseMessage(ItemMessage.CREATED)
