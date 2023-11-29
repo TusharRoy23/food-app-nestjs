@@ -15,6 +15,7 @@ import {
 } from './modules/shared/guards/index';
 import { APP_GUARD } from '@nestjs/core';
 import { SharedModule } from './modules/shared/shared.module';
+import { MailModule } from './modules/mail/mail.module';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { SharedModule } from './modules/shared/shared.module';
     CartModule,
     AuthModule,
     PublicModule,
-    SharedModule,
+    MailModule,
+    SharedModule
   ],
   controllers: [],
   providers: [
@@ -37,4 +39,4 @@ import { SharedModule } from './modules/shared/shared.module';
     { provide: APP_GUARD, useClass: UserTypeGuard },
   ],
 })
-export class AppModule {}
+export class AppModule { }

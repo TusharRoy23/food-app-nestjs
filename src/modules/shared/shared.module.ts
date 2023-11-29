@@ -45,4 +45,4 @@ const elasticSearchService = {
     ElasticsearchModule,
   ],
 })
-export class SharedModule {}
+export class SharedModule { }

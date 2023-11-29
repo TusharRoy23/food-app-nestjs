@@ -19,6 +19,7 @@ import {
   SHARED_SERVICE,
 } from '../shared/interfaces/IShared.service';
 import { IRequestService, REQUEST_SERVICE } from '../shared/interfaces';
+import { IMailService, MAIL_SERVICE } from '../mail/interfaces/IMail.service';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -27,8 +28,9 @@ export class AuthService implements IAuthService {
     private userModel: Model<UserDocument>,
     @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
+    @Inject(MAIL_SERVICE) private readonly mailService: IMailService,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async signIn(payload: SignInCredentialsDto): Promise<UserResponse> {
     try {
@@ -64,7 +66,12 @@ export class AuthService implements IAuthService {
         password: await user.doPasswordHashing(signupDto.password),
         role: UserRole.NONE,
       };
-      await this.userModel.create(payload);
+      const newUser = await this.userModel.create(payload);
+      this.mailService.sendRegistrationMail(newUser.email, {
+        name: 'Tushar',
+        url: 'https://google.com',
+      })
+      console.log('newUser: ', newUser);
       return 'User successfully created !';
     } catch (error: any) {
       return throwException(error);
