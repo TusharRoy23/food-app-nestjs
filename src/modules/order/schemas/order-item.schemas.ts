@@ -7,6 +7,7 @@ import {
   MealFlavor,
 } from '../../shared/utils/enum';
 import { Order } from './order.schema';
+import { IOrderItem } from '../interfaces/IOrder.model';
 
 @Schema({
   toJSON: {
@@ -15,7 +16,7 @@ import { Order } from './order.schema';
   },
   id: false
 })
-export class OrderItem {
+export class OrderItem implements IOrderItem {
   _id: mongoose.Types.ObjectId;
 
   @Prop({ type: 'ObjectId', required: true })

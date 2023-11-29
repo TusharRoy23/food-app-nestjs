@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { User } from '../../user/schemas/user.schema';
 import { CurrentStatus } from '../../shared/utils/enum';
+import { IRestaurant } from '../interfaces/IRestaurant.model';
 
 @Schema({
   toJSON: {
@@ -14,7 +15,7 @@ import { CurrentStatus } from '../../shared/utils/enum';
   },
   id: false
 })
-export class Restaurant {
+export class Restaurant implements IRestaurant {
   _id: mongoose.Types.ObjectId;
 
   @Prop({

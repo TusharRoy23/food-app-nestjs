@@ -8,6 +8,7 @@ import {
   MealState,
   MealType,
 } from '../../shared/utils/enum';
+import { IItem } from "../interfaces/IItem.model";
 
 @Schema({
   toJSON: {
@@ -16,10 +17,9 @@ import {
     transform(_, ret) {
       return ret;
     },
-  },
-  id: false
+  }
 })
-export class Item {
+export class Item implements IItem {
   _id: mongoose.Types.ObjectId;
 
   @Prop({

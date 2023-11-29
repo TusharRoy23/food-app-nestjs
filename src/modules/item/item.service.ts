@@ -5,7 +5,7 @@ import { throwException } from '../shared/errors/all.exception';
 import { connectionName, ItemStatus } from '../shared/utils/enum';
 import { CreateItemDto, UpdateItemDto } from './dto/index.dto';
 import { IItemService } from './interfaces/IItem.interface';
-import { Item, ItemDocuement } from './schemas/item.schema';
+import { IItem, Item, ItemDocuement } from './schemas/item.schema';
 import { ItemMessage } from './constants/enum';
 import { User } from '../user/schemas/user.schema';
 import { IRequestService, REQUEST_SERVICE } from '../shared/interfaces';
@@ -35,7 +35,7 @@ export class ItemService implements IItemService {
     }
   }
 
-  async retrive(): Promise<Item[]> {
+  async retrive(): Promise<IItem[]> {
     try {
       const user: User = this.getUserDetailsFromRequest();
       return await this.itemModel
@@ -46,7 +46,7 @@ export class ItemService implements IItemService {
     }
   }
 
-  async update(payload: UpdateItemDto, id: string): Promise<Item> {
+  async update(payload: UpdateItemDto, id: string): Promise<IItem> {
     try {
       const user: User = this.getUserDetailsFromRequest();
       return await this.itemModel

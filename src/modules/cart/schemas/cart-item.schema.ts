@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { Item } from '../../item/schemas/item.schema';
 import { Cart } from './cart.schema';
+import { ICartItem } from '../interfaces/ICart.model';
 
 @Schema({
   toJSON: {
@@ -10,7 +11,7 @@ import { Cart } from './cart.schema';
   },
   id: false
 })
-export class CartItem {
+export class CartItem implements ICartItem {
   _id: mongoose.Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Item' })

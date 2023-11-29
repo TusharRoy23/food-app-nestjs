@@ -5,6 +5,7 @@ import { Restaurant } from '../../restaurant/schemas';
 import { User } from '../../user/schemas/user.schema';
 import { OrderDiscount } from './order-discount.schema';
 import { OrderItem } from './order-item.schemas';
+import { IOrder } from '../interfaces/IOrder.model';
 
 @Schema({
   toJSON: {
@@ -13,7 +14,7 @@ import { OrderItem } from './order-item.schemas';
   },
   id: false
 })
-export class Order {
+export class Order implements IOrder {
   _id: mongoose.Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
