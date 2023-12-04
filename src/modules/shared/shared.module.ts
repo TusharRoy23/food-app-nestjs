@@ -11,8 +11,6 @@ import {
   ELASTICSEARCH_SERVICE,
 } from './interfaces';
 import { RequestService, SharedService, CustomElasticService } from './service';
-import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
 
 const sharedService = { provide: SHARED_SERVICE, useClass: SharedService };
 const requestService = { provide: REQUEST_SERVICE, useClass: RequestService };
@@ -29,8 +27,6 @@ const elasticSearchService = {
     ItemModule,
     OrderModule,
     CartModule,
-    JwtModule.register({}),
-    PassportModule.register({}),
     ElasticsearchModule.registerAsync({
       useFactory: async () => ({
         node: process.env.ELASTICSEARCH_NODE,
