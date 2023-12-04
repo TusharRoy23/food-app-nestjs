@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { IMailService } from './interfaces/IMail.service';
+import { throwException } from '../shared/errors/all.exception';
+import { IUser } from '../user/interfaces/IUser.model';
 
 @Injectable()
 export class MailService implements IMailService {
@@ -8,21 +10,19 @@ export class MailService implements IMailService {
         private readonly mailerService: MailerService
     ) { }
 
-    async sendRegistrationMail(email: string, context: any): Promise<string> {
-        await this.mailerService.sendMail({
-            to: email,
-            from: process.env.MAIL_USERNAME,
-            subject: 'Welcome to Food App! Confirm your Email',
-            template: __dirname + '/templates/confirmation',
-            context: context,
-        }).then(res => {
-            console.log('res: ', res);
+    async sendUserConfirmationMail(email: string, context: { subject: string, data: any }): Promise<string> {
+        try {
+            await this.mailerService.sendMail({
+                to: email,
+                subject: context.subject,
+                template: __dirname + '/templates/confirmation',
+                context: context.data,
+            });
+            return Promise.resolve('Mail Sent! ')
+        } catch (error: any) {
+            return throwException(error);
+        }
 
-        }).catch(error => {
-            console.log('email error: ', error);
-
-        })
-        return Promise.resolve('Mail Sent! ')
     }
 
 }

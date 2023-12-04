@@ -13,8 +13,7 @@ const mailService = { useClass: MailService, provide: MAIL_SERVICE }
             useFactory: () => ({
                 transport: {
                     host: process.env.MAIL_HOST,
-                    port: 1025,
-                    ignoreTLS: true,
+                    port: process.env.SMTP_PORT,
                     secure: false,
                     auth: {
                         user: process.env.MAIL_USERNAME,
@@ -22,7 +21,7 @@ const mailService = { useClass: MailService, provide: MAIL_SERVICE }
                     }
                 },
                 defaults: {
-                    from: `"No Reply" <${process.env.MAIL_USERNAME}>`
+                    from: `"Food App" <${process.env.MAIL_USERNAME}>`
                 },
                 template: {
                     dir: __dirname + "/templates",

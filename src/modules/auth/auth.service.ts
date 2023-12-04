@@ -1,15 +1,17 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { v4 as uuidv4 } from 'uuid';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { hashString } from '../shared/utils/hashing.utils';
 import { throwException } from '../shared/errors/all.exception';
-import { connectionName, UserRole } from '../shared/utils/enum';
+import { connectionName, CurrentStatus, UserRole } from '../shared/utils/enum';
 import { UserResponse, TokenResponse } from '../shared/utils/response.utils';
 import { User, UserDocument } from '../user/schemas/user.schema';
 import { SignInCredentialsDto, SignUpCredentialsDto } from './dto';
@@ -20,12 +22,16 @@ import {
 } from '../shared/interfaces/IShared.service';
 import { IRequestService, REQUEST_SERVICE } from '../shared/interfaces';
 import { IMailService, MAIL_SERVICE } from '../mail/interfaces/IMail.service';
+import { IUser } from '../user/interfaces/IUser.model';
+import { UserVerificationLogger, UserVerificationLoggerDocuement } from './schemas/user-verification-logger.schema';
 
 @Injectable()
 export class AuthService implements IAuthService {
   constructor(
     @InjectModel(User.name, connectionName.MAIN_DB)
     private userModel: Model<UserDocument>,
+    @InjectModel(UserVerificationLogger.name, connectionName.MAIN_DB)
+    private userVerificationLoggerModel: Model<UserVerificationLoggerDocuement>,
     @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
     @Inject(MAIL_SERVICE) private readonly mailService: IMailService,
@@ -37,6 +43,9 @@ export class AuthService implements IAuthService {
       const userData: User = await this.sharedService.getUserInfo(
         payload.email,
       );
+      if (CurrentStatus.NOT_VERIFIED || CurrentStatus.INACTIVE) {
+        throw new ForbiddenException({ message: 'User Not Found!' });
+      }
       const user = new User();
       const isPasswordMatched = await user.validatePasswords(
         userData.password,
@@ -45,7 +54,7 @@ export class AuthService implements IAuthService {
       if (!isPasswordMatched) {
         throw new NotFoundException('Username/Password not matched');
       }
-      await this.updateLoginStatus(userData, true);
+      await this.updateUserStatus(userData, { login_status: true });
       const refreshToken = await this.getRefreshToken(userData);
       await this.updateRefreshToken(refreshToken, payload.email);
 
@@ -58,6 +67,7 @@ export class AuthService implements IAuthService {
       return throwException(error);
     }
   }
+
   async createUser(signupDto: SignUpCredentialsDto): Promise<string> {
     try {
       const user = new User();
@@ -66,12 +76,8 @@ export class AuthService implements IAuthService {
         password: await user.doPasswordHashing(signupDto.password),
         role: UserRole.NONE,
       };
-      const newUser = await this.userModel.create(payload);
-      this.mailService.sendRegistrationMail(newUser.email, {
-        name: 'Tushar',
-        url: 'https://google.com',
-      })
-      console.log('newUser: ', newUser);
+      const newUser: IUser = await this.userModel.create(payload);
+      await this.sendEmailVerificationLink(newUser.email);
       return 'User successfully created !';
     } catch (error: any) {
       return throwException(error);
@@ -107,10 +113,127 @@ export class AuthService implements IAuthService {
       if (!updated) {
         throw new ForbiddenException('Not allowed');
       }
-      await this.updateLoginStatus(user, false);
+      await this.updateUserStatus(user, { login_status: false });
       return true;
     } catch (error) {
       return throwException(error);
+    }
+  }
+
+  async sendEmailVerificationLink(email: string): Promise<string> {
+    try {
+      const userInfo = await this.sharedService.getUserInfo(email);
+      if (userInfo.current_status !== CurrentStatus.NOT_VERIFIED) {
+        throw new BadRequestException({ message: 'User is already verified.' });
+      }
+      const result = await this.generateValidationToken(email);
+      this.sendUserConfirmationMail(email, 'Welcome to Food App!', {
+        name: userInfo.name,
+        url: `${process.env.APP_HOST}${result.validation_token}/`
+      });
+      return Promise.resolve('Mail Sent !');
+    } catch (error: any) {
+      return throwException(error);
+    }
+  }
+
+  async mailValidation(token: string): Promise<string> {
+    try {
+      const logResult: UserVerificationLogger = await this.userVerificationLoggerModel.findOne({ verified_email_uuid: token }).exec();
+      console.log('logResult: ', logResult);
+      if (!logResult) {
+        throw new BadRequestException({ message: 'Invalid Token.' });
+      }
+
+      const userInfo: User = await this.sharedService.getUserInfo(logResult.email);
+      if (userInfo.current_status !== CurrentStatus.NOT_VERIFIED) {
+        throw new BadRequestException({ message: 'User is already verified.' });
+      }
+
+      const isExpired = await this.checkTokenValidity(logResult.verified_email_token, { secret: process.env.JWT_GENERATE_ACCOUNT_VERIFY_SECRET });
+      if (isExpired) {
+        throw new BadRequestException({ message: 'Token is expired.' });
+      }
+
+      await this.updateUserStatus(userInfo, { current_status: CurrentStatus.VERIFIED });
+      return Promise.resolve('User has been verified.');
+    } catch (error: any) {
+      return throwException(error);
+    }
+  }
+
+  private async generateValidationToken(email: string): Promise<{ validation_token: string }> {
+    try {
+      const logResult: UserVerificationLogger = await this.userVerificationLoggerModel.findOne({ email }).exec();
+      if (logResult?._id && logResult?.email_verify_token) {
+        const isExpired = await this.checkTokenValidity(logResult.email_verify_token, {
+          secret: process.env.JWT_GENERATE_ACCOUNT_VERIFY_EMAIL_LINK_SECRET
+        })
+        if (!isExpired) {
+          throw new BadRequestException({ message: 'please wait a bit.' });
+        }
+      }
+
+      // re-send email token
+      const mailToken = await this.generateToken({
+        email: email,
+        timer: Date.now()
+      }, {
+        secret: process.env.JWT_GENERATE_ACCOUNT_VERIFY_EMAIL_LINK_SECRET,
+        expiresIn: process.env.JWT_GENERATE_ACCOUNT_VERIFY_EMAIL_LINK_DURATION,
+      });
+
+      // email validation link token
+      const validationToken = await this.generateToken({
+        email: email,
+        timer: Date.now()
+      }, {
+        secret: process.env.JWT_GENERATE_ACCOUNT_VERIFY_SECRET,
+        expiresIn: process.env.JWT_GENERATE_ACCOUNT_VERIFY_DURATION,
+      });
+
+      const result: UserVerificationLogger = await this.userVerificationLoggerModel.findOneAndUpdate({ email: email }, {
+        email_verify_token: mailToken,
+        verified_email_token: validationToken,
+        verified_email_uuid: uuidv4()
+      }, {
+        upsert: true,
+        new: true
+      }).exec();
+
+      return {
+        validation_token: result.verified_email_uuid
+      }
+    } catch (error: any) {
+      return throwException(error);
+    }
+  }
+
+  private async sendUserConfirmationMail(email: string, subject: string, content: any) {
+    try {
+      await this.mailService.sendUserConfirmationMail(email, {
+        subject: subject,
+        data: content
+      });
+    } catch (error: any) {
+      return throwException(error);
+    }
+  }
+
+  private async generateToken(payload: any, options: JwtSignOptions): Promise<string> {
+    try {
+      return await this.jwtService.sign(payload, options);
+    } catch (error: any) {
+      return throwException(error);
+    }
+  }
+
+  private async checkTokenValidity(token: string, options: JwtSignOptions): Promise<boolean> {
+    try {
+      await this.jwtService.verify(token, options);
+      return false;
+    } catch (error: any) {
+      return true;
     }
   }
 
@@ -168,18 +291,21 @@ export class AuthService implements IAuthService {
     }
   }
 
-  private async updateLoginStatus(
+  private async updateUserStatus(
     user: User,
-    status: boolean,
-  ): Promise<boolean> {
-    const updated = await this.userModel
-      .findOneAndUpdate(
-        { _id: user._id },
-        { login_status: status },
-        { new: true },
-      )
-      .exec();
-    return updated == null ? false : true;
+    payload: { current_status?: string, login_status?: boolean },
+  ): Promise<User> {
+    try {
+      return await this.userModel
+        .findOneAndUpdate(
+          { _id: user._id },
+          payload,
+          { new: true },
+        )
+        .exec();
+    } catch (error: any) {
+      return throwException(error);
+    }
   }
 
   private getUserDetailsFromRequest(): User {

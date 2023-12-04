@@ -8,6 +8,9 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategy/jwt-strategy';
 import { JwtRefreshStrategy } from './strategy/jwt-refresh-strategy';
 import { AUTH_SERVICE } from './interfaces/IAuth.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { UserVerificationLogger, UserVerificationLoggerSchema } from './schemas/user-verification-logger.schema';
+import { connectionName } from '../shared/utils/enum';
 
 @Module({
   imports: [
@@ -15,6 +18,10 @@ import { AUTH_SERVICE } from './interfaces/IAuth.service';
     RestaurantModule,
     JwtModule.register({}),
     PassportModule.register({}),
+    MongooseModule.forFeature(
+      [{ name: UserVerificationLogger.name, schema: UserVerificationLoggerSchema }],
+      connectionName.MAIN_DB
+    ),
   ],
   providers: [
     { useClass: AuthService, provide: AUTH_SERVICE },
@@ -22,5 +29,6 @@ import { AUTH_SERVICE } from './interfaces/IAuth.service';
     JwtRefreshStrategy,
   ],
   controllers: [AuthController],
+  exports: [MongooseModule]
 })
-export class AuthModule {}
+export class AuthModule { }

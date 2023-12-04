@@ -51,7 +51,7 @@ export class User implements IUser {
     type: 'String',
     required: true,
     enum: CurrentStatus,
-    default: CurrentStatus.ACTIVE,
+    default: CurrentStatus.NOT_VERIFIED,
   })
   current_status: string;
 
