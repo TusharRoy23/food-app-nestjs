@@ -43,7 +43,7 @@ export class AuthService implements IAuthService {
       const userData: User = await this.sharedService.getUserInfo(
         payload.email,
       );
-      if (CurrentStatus.NOT_VERIFIED || CurrentStatus.INACTIVE) {
+      if (userData.current_status == CurrentStatus.NOT_VERIFIED || userData.current_status == CurrentStatus.INACTIVE) {
         throw new ForbiddenException({ message: 'User Not Found!' });
       }
       const user = new User();
