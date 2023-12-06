@@ -1,16 +1,17 @@
 
 
 ## What is this?
-It's a simple food application on top of nestjs & mongodb. It can be used for learning purpose & will be extended bit by bit.
+It's a simple food application on top of Nestjs & MongoDB. It can be used for learning purposes & will be extended bit by bit.
 
 ## What are the features so far?
 * Possible to register as a customer & restaurant user.
-* JWT token & Role based authentications are available.
-* Restaurant user can perform CRUD operation on the items.
+* Get verification link & verified by mail.
+* JWT token and role-based authentications are available.
+* Restaurant users can perform CRUD operations on the items.
 * Restaurant user is also allowed to give discount on the item & total amount of order as well.
 * Customer can perform CRUD operation on carts & also request for the orders.
-* Customers are allowed to give rating for restaurants.
-* Users are able to search restaurants.
+* Customers are allowed to give ratings for restaurants.
+* Users can search restaurants.
 
 ## ERD
 ![Food App ERD](https://github.com/TusharRoy23/food-app-nestjs/blob/master/food-app-ERD.png)
@@ -47,6 +48,14 @@ $ docker exec mongoContainerName mongoexport --uri="mongodb://UN:PWD@mongoContai
 # Copy the file from DB Container
 $ docker cp DBcontainerName:/collectionName.json destinationFolderPath
 ```
+## Mongo Shell
+```bash
+# Get inside the DB container
+$ docker exec -it dbContainerName bash
+# Use mongosh shell
+$ mongosh -u username -p password dbName
+```
+More on - [Mongosh shell doc](https://www.mongodb.com/docs/mongodb-shell/crud/)
 ## Setup ELK
 This command will only work during the initial configuration of the Elasticsearch security features.For More Info - [Elasticsearch Doc](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/setup-passwords.html#setup-passwords-parameters). On the other hand, by using kibana password can be changed for the user. Go to **Management** > **Stack Management** > **Security** > **Users**
 ```bash
