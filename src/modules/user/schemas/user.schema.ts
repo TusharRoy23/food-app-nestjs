@@ -10,12 +10,11 @@ import { IUser } from '../interfaces/IUser.model';
   toJSON: {
     getters: true,
     transform(_, ret) {
-      delete ret._id;
       delete ret.password;
       delete ret.hashedRefreshToken;
-      delete ret.__v;
       return ret;
     },
+    versionKey: false
   },
 })
 export class User implements IUser {

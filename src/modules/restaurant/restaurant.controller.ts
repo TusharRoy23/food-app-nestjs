@@ -7,7 +7,8 @@ import {
   Param,
   Patch,
   Post,
-  Query
+  Query,
+  SerializeOptions
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from '../shared/decorator/public.decorator';
@@ -31,6 +32,9 @@ import {
 @IsPublic(false)
 @Roles(UserRole.EMPLOYEE, UserRole.OWNER)
 @TypeOfUsers(UserType.RESTAURANT_USER)
+@SerializeOptions({
+  excludePrefixes: ['_']
+})
 export class RestaurantController {
   constructor(
     @Inject(RESTAURANT_SERVICE)

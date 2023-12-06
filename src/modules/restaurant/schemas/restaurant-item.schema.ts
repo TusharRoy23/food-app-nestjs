@@ -4,16 +4,7 @@ import { Item } from '../../item/schemas/item.schema';
 import { Restaurant } from './restaurant.schema';
 import { IRestaurantItem } from '../interfaces/IRestaurant.model';
 
-@Schema({
-  toJSON: {
-    getters: true,
-    transform(_, ret) {
-      delete ret._id;
-      delete ret.__v;
-      return ret;
-    },
-  },
-})
+@Schema()
 export class RestaurantItem implements IRestaurantItem {
   _id: mongoose.Types.ObjectId;
 

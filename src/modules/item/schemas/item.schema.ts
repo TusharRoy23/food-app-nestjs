@@ -13,10 +13,7 @@ import { IItem } from "../interfaces/IItem.model";
 @Schema({
   toJSON: {
     getters: true,
-    versionKey: false,
-    transform(_, ret) {
-      return ret;
-    },
+    versionKey: false
   }
 })
 export class Item implements IItem {

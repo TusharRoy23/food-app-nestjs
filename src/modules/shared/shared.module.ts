@@ -35,7 +35,7 @@ const elasticSearchService = {
           password: process.env.ELASTICSEARCH_PASSWORD,
         },
       }),
-    }),
+    })
   ],
   providers: [sharedService, requestService, elasticSearchService],
   exports: [

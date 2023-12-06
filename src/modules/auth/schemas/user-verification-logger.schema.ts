@@ -4,14 +4,7 @@ import { Prop, SchemaFactory, Schema } from "@nestjs/mongoose";
 import { IUserVerificationLogger } from "../interfaces/IUser-verification-logger.model";
 import { hashString, isStringMatched } from "../../shared/utils/hashing.utils";
 
-@Schema({
-    toJSON: {
-        getters: true,
-        transform(_, ret) {
-            return ret;
-        },
-    },
-})
+@Schema()
 export class UserVerificationLogger implements IUserVerificationLogger {
     _id: mongoose.Types.ObjectId;
 

@@ -9,12 +9,7 @@ import {
 import { Order } from './order.schema';
 import { IOrderItem } from '../interfaces/IOrder.model';
 
-@Schema({
-  toJSON: {
-    getters: true,
-    versionKey: false
-  },
-})
+@Schema()
 export class OrderItem implements IOrderItem {
   _id: mongoose.Types.ObjectId;
 
