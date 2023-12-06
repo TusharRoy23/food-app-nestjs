@@ -10,12 +10,7 @@ import {
 } from '../../shared/utils/enum';
 import { IItem } from "../interfaces/IItem.model";
 
-@Schema({
-  toJSON: {
-    getters: true,
-    versionKey: false
-  }
-})
+@Schema()
 export class Item implements IItem {
   _id: mongoose.Types.ObjectId;
 
