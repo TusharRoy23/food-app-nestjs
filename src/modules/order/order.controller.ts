@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Query,
+  SerializeOptions,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { RatingDto } from '../restaurant/dto/rating.dto';
@@ -23,10 +24,13 @@ import { IOrderService, ORDER_SERVICE } from './interfaces/IOrder.service';
 @IsPublic(false)
 @Roles(UserRole.NONE)
 @TypeOfUsers(UserType.VISITOR)
+@SerializeOptions({
+  excludePrefixes: ['_']
+})
 export class OrderController {
   constructor(
     @Inject(ORDER_SERVICE) private readonly orderService: IOrderService,
-  ) {}
+  ) { }
 
   @Post('/:cartId')
   public async create(@Param('cartId', ParseObjectIDPipe) cartId: string) {

@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, ParseUUIDPipe, Post, SerializeOptions, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from '../shared/decorator/public.decorator';
 import { ResponseMessage } from '../shared/decorator/response-msg.decorator';
@@ -10,13 +10,17 @@ import {
   SignUpCredentialsDto,
 } from './dto';
 import { AUTH_SERVICE, IAuthService } from './interfaces/IAuth.service';
+import { ValidationMailDto } from './dto/validation-mail.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
+@SerializeOptions({
+  excludePrefixes: ['_']
+})
 export class AuthController {
   constructor(
     @Inject(AUTH_SERVICE) private readonly authService: IAuthService,
-  ) {}
+  ) { }
 
   @IsPublic(true)
   @Post('/signin')
@@ -47,5 +51,18 @@ export class AuthController {
   @ResponseMessage('Logout successfully')
   public async logout() {
     return this.authService.logout();
+  }
+
+  @IsPublic(true)
+  @Post('/send-validation-mail')
+  @ResponseMessage('Mail Sent')
+  public async resendValidationMail(@Body() validationMailDto: ValidationMailDto) {
+    return this.authService.sendEmailVerificationLink(validationMailDto.email);
+  }
+
+  @IsPublic(true)
+  @Get('/email-validation/:token')
+  public async mailValidation(@Param('token', ParseUUIDPipe) token: string) {
+    return this.authService.mailValidation(token);
   }
 }

@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Query,
+  SerializeOptions,
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -17,10 +18,13 @@ import { ParseObjectIDPipe } from '../shared/pipe/parse-objectid.pipe';
 @ApiTags('Public')
 @Controller('public')
 @IsPublic(true)
+@SerializeOptions({
+  excludePrefixes: ['_']
+})
 export class PublicController {
   constructor(
     @Inject(PUBLIC_SERVICE) private readonly publicService: IPublicService,
-  ) {}
+  ) { }
 
   @Post('restaurant/register')
   public async register(

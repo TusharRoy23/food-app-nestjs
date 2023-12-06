@@ -4,16 +4,7 @@ import { Item } from '../../item/schemas/item.schema';
 import { Cart } from './cart.schema';
 import { ICartItem } from '../interfaces/ICart.model';
 
-@Schema({
-  toJSON: {
-    getters: true,
-    transform(_, ret) {
-      delete ret._id;
-      delete ret.__v;
-      return ret;
-    },
-  },
-})
+@Schema()
 export class CartItem implements ICartItem {
   _id: mongoose.Types.ObjectId;
 

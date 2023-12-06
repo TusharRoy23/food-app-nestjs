@@ -50,6 +50,7 @@ import {
   IElasticsearchService,
   ELASTICSEARCH_SERVICE,
 } from '../shared/interfaces';
+import { AUTH_SERVICE, IAuthService } from '../auth/interfaces/IAuth.service';
 
 @Injectable()
 export class RestaurantService implements IRestaurantService {
@@ -68,7 +69,8 @@ export class RestaurantService implements IRestaurantService {
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
     @Inject(ELASTICSEARCH_SERVICE)
     private readonly elasticSearchService: IElasticsearchService,
-  ) {}
+    @Inject(AUTH_SERVICE) private readonly authService: IAuthService
+  ) { }
 
   async register(registerDto: RegisterDto): Promise<string> {
     try {
@@ -98,6 +100,7 @@ export class RestaurantService implements IRestaurantService {
           { new: true },
         )
         .exec();
+      await this.authService.sendEmailVerificationLink(createdUser.email);
       this.indexRestaurant(createdRestaurant);
       return Promise.resolve('Restaurant Successfully Created!');
     } catch (error: any) {
@@ -363,7 +366,7 @@ export class RestaurantService implements IRestaurantService {
 
   private async indexRestaurant(restaurant: Restaurant): Promise<boolean> {
     try {
-      return this.elasticSearchService.indexRestaurant(restaurant);
+      return await this.elasticSearchService.indexRestaurant(restaurant);
     } catch (error: any) {
       return throwException(error);
     }

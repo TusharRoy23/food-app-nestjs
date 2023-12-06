@@ -8,4 +8,6 @@ export interface IAuthService {
   createUser(signupDto: SignUpCredentialsDto): Promise<string>;
   getNewAccessAndRefreshToken(): Promise<TokenResponse>;
   logout(): Promise<boolean>;
+  sendEmailVerificationLink(email: string): Promise<string>;
+  mailValidation(token: string): Promise<string>;
 }

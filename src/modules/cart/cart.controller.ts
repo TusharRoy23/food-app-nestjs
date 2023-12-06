@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  SerializeOptions,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from '../shared/decorator/public.decorator';
@@ -23,10 +24,13 @@ import { CART_SERVICE, ICartService } from './interfaces/ICart.interface';
 @IsPublic(false)
 @Roles(UserRole.NONE)
 @TypeOfUsers(UserType.VISITOR)
+@SerializeOptions({
+  excludePrefixes: ['_']
+})
 export class CartController {
   constructor(
     @Inject(CART_SERVICE) private readonly cartService: ICartService,
-  ) {}
+  ) { }
 
   @Post('/:restaurantId')
   public async create(

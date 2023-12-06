@@ -3,16 +3,7 @@ import mongoose, { HydratedDocument } from 'mongoose';
 import { Restaurant } from '../../restaurant/schemas';
 import { IOrderDiscount } from '../interfaces/IOrder.model';
 
-@Schema({
-  toJSON: {
-    getters: true,
-    transform(_, ret) {
-      delete ret._id;
-      delete ret.__v;
-      return ret;
-    },
-  },
-})
+@Schema()
 export class OrderDiscount implements IOrderDiscount {
   _id: mongoose.Types.ObjectId;
 

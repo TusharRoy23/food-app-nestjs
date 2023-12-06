@@ -39,8 +39,8 @@ export class SharedService implements ISharedService {
     @InjectModel(OrderDiscount.name, connectionName.MAIN_DB)
     private readonly orderDiscountModel: Model<OrderDiscountDocument>,
     @InjectModel(Cart.name, connectionName.MAIN_DB)
-    private cartModel: Model<CartDocument>,
-  ) {}
+    private cartModel: Model<CartDocument>
+  ) { }
 
   async updateCartInfo(conditions: any, payload: any): Promise<Cart> {
     try {

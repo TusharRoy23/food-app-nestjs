@@ -14,6 +14,7 @@ import { RestaurantService } from './restaurant.service';
 import { UserModule } from '../user/user.module';
 import { RESTAURANT_SERVICE } from './interfaces/IRestaurant.service';
 import { OrderModule } from '../order/order.module';
+import { AuthModule } from '../auth/auth.module';
 
 const restaurantService = {
   useClass: RestaurantService,
@@ -32,9 +33,10 @@ const restaurantService = {
     ),
     UserModule,
     OrderModule,
+    AuthModule
   ],
   controllers: [RestaurantController],
   providers: [restaurantService],
   exports: [MongooseModule, restaurantService],
 })
-export class RestaurantModule {}
+export class RestaurantModule { }
