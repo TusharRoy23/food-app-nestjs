@@ -12,4 +12,7 @@ export interface IUser {
     restaurant: Restaurant;
     hashedRefreshToken: string;
     login_status: boolean;
+    doPasswordHashing(password: string): Promise<string>;
+    validatePasswords(hashedPassword: string, password: string): Promise<boolean>;
+    validateRefreshToken(hashedToken: string, token: string): Promise<boolean>;
 }

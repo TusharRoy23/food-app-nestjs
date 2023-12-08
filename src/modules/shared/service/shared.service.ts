@@ -24,6 +24,11 @@ import {
 import { OrderDiscount, OrderDiscountDocument } from '../../order/schemas';
 import { Cart, CartDocument } from '../../cart/schemas';
 import { RatingDto } from '../../restaurant/dto/index.dto';
+import { IItem } from '../../item/interfaces/IItem.model';
+import { IRestaurant } from '../../restaurant/interfaces/IRestaurant.model';
+import { IUser } from '../../user/interfaces/IUser.model';
+import { ICart } from '../../cart/interfaces/ICart.model';
+import { IOrderDiscount } from '../../order/interfaces/IOrder.model';
 
 @Injectable()
 export class SharedService implements ISharedService {
@@ -42,7 +47,7 @@ export class SharedService implements ISharedService {
     private cartModel: Model<CartDocument>
   ) { }
 
-  async updateCartInfo(conditions: any, payload: any): Promise<Cart> {
+  async updateCartInfo(conditions: any, payload: any): Promise<ICart> {
     try {
       const cart: Cart = await this.cartModel
         .findOneAndUpdate(conditions, payload, { new: true })
@@ -56,7 +61,7 @@ export class SharedService implements ISharedService {
     }
   }
 
-  async getCartInfo(cartId: string): Promise<Cart> {
+  async getCartInfo(cartId: string): Promise<ICart> {
     try {
       const cart: Cart = await this.cartModel
         .findOne({ _id: cartId, cart_status: CartStatus.SAVED })
@@ -71,7 +76,7 @@ export class SharedService implements ISharedService {
     }
   }
 
-  async getUserInfo(email: string): Promise<User> {
+  async getUserInfo(email: string): Promise<IUser> {
     try {
       const user = await this.userModel
         .findOne({ email: email })
@@ -98,9 +103,9 @@ export class SharedService implements ISharedService {
     }
   }
 
-  async getRestaurantInfo(restaurantId: string): Promise<Restaurant> {
+  async getRestaurantInfo(restaurantId: string): Promise<IRestaurant> {
     try {
-      const restaurant = await this.restaurantModel
+      const restaurant: Restaurant = await this.restaurantModel
         .findOne({ _id: restaurantId, current_status: CurrentStatus.ACTIVE })
         .exec();
       if (restaurant == null) {
@@ -112,7 +117,7 @@ export class SharedService implements ISharedService {
     }
   }
 
-  async getItemInfo(itemId: string, restaurantId: any): Promise<Item> {
+  async getItemInfo(itemId: string, restaurantId: any): Promise<IItem> {
     try {
       const item: Item = await this.itemModel
         .findOne({
@@ -130,7 +135,7 @@ export class SharedService implements ISharedService {
     }
   }
 
-  async getItemList(restaurantId: string): Promise<Item[]> {
+  async getItemList(restaurantId: string): Promise<IItem[]> {
     try {
       return await this.itemModel
         .find({ restaurant: restaurantId, item_status: ItemStatus.ACTIVE })
@@ -140,7 +145,7 @@ export class SharedService implements ISharedService {
     }
   }
 
-  async getOrderDiscount(restaurantId: any): Promise<OrderDiscount> {
+  async getOrderDiscount(restaurantId: any): Promise<IOrderDiscount> {
     try {
       const currentDate = new Date().toISOString();
       return await this.orderDiscountModel

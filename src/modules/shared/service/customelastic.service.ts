@@ -1,18 +1,17 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
-import { IRestaurantSearchResult } from '../../restaurant/interfaces/IRestaurant-search';
 import { Restaurant } from '../../restaurant/schemas';
 import { throwException } from '../errors/all.exception';
 import { IElasticsearchService } from '../interfaces';
 import { CurrentStatus } from '../utils/enum';
-import { RestaurantResponse } from '../utils/response.utils';
+import { IRestaurantResponse } from '../utils/response.utils';
 
 @Injectable()
 export class CustomElasticService implements IElasticsearchService {
   private restaurantIdx = 'restaurants';
-  constructor(private readonly elasticSearchService: ElasticsearchService) {}
+  constructor(private readonly elasticSearchService: ElasticsearchService) { }
 
-  async getRestaurantList(): Promise<RestaurantResponse[]> {
+  async getRestaurantList(): Promise<IRestaurantResponse[]> {
     try {
       return await this.querySearchResult({
         must: [
@@ -28,7 +27,7 @@ export class CustomElasticService implements IElasticsearchService {
     }
   }
 
-  async searchRestaurant(keyword: string): Promise<RestaurantResponse[]> {
+  async searchRestaurant(keyword: string): Promise<IRestaurantResponse[]> {
     try {
       return await this.querySearchResult({
         must: [
@@ -56,10 +55,10 @@ export class CustomElasticService implements IElasticsearchService {
   async indexRestaurant(restaurant: Restaurant): Promise<boolean> {
     try {
       return this.elasticSearchService
-        .index<IRestaurantSearchResult, RestaurantResponse>({
+        .index<IRestaurantResponse>({
           index: this.restaurantIdx,
           id: restaurant._id.toString(),
-          body: {
+          document: {
             id: restaurant._id,
             name: restaurant.name,
             address: restaurant.address,
@@ -81,21 +80,16 @@ export class CustomElasticService implements IElasticsearchService {
 
   private async querySearchResult(
     searchQuery: any,
-  ): Promise<RestaurantResponse[]> {
+  ): Promise<IRestaurantResponse[]> {
     try {
       return await this.elasticSearchService
-        .search<IRestaurantSearchResult>({
+        .search<IRestaurantResponse>({
           index: this.restaurantIdx,
-          body: {
-            query: {
-              bool: searchQuery,
-            },
-          },
+          query: {
+            bool: searchQuery,
+          }
         })
-        .then((response) => {
-          const hits = response.body.hits.hits;
-          return hits.map((restaurant) => restaurant._source);
-        })
+        .then((response) => response.hits.hits.map((restaurant) => restaurant._source))
         .catch(() => {
           throw new InternalServerErrorException('Error on search');
         });

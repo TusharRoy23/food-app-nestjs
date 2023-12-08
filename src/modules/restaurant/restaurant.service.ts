@@ -14,10 +14,10 @@ import {
   UserType,
 } from '../shared/utils/enum';
 import {
-  PaginationPayload,
-  PaginatedOrderResponse,
-  OrderResponse,
-  RestaurantResponse,
+  IPaginationPayload,
+  IPaginatedOrderResponse,
+  IOrderResponse,
+  IRestaurantResponse,
 } from '../shared/utils/response.utils';
 import {
   Order,
@@ -107,7 +107,7 @@ export class RestaurantService implements IRestaurantService {
       return throwException(error);
     }
   }
-  async getRestaurantList(): Promise<RestaurantResponse[]> {
+  async getRestaurantList(): Promise<IRestaurantResponse[]> {
     try {
       return await this.elasticSearchService.getRestaurantList();
     } catch (error) {
@@ -116,10 +116,10 @@ export class RestaurantService implements IRestaurantService {
   }
   async getOrderList(
     paginationParams: PaginationParams,
-  ): Promise<PaginatedOrderResponse> {
+  ): Promise<IPaginatedOrderResponse> {
     try {
       const user: User = this.getUserDetailsFromRequest();
-      const paginationPayload: PaginationPayload = pagination({
+      const paginationPayload: IPaginationPayload = pagination({
         page: paginationParams.page,
         size: paginationParams.pageSize,
       });
@@ -139,7 +139,7 @@ export class RestaurantService implements IRestaurantService {
 
       const orders: Order[] = await query.exec();
 
-      const orderResponses: OrderResponse[] = [];
+      const orderResponses: IOrderResponse[] = [];
       orders?.forEach((order) => {
         orderResponses.push({
           id: order._id,
@@ -173,7 +173,7 @@ export class RestaurantService implements IRestaurantService {
       });
 
       const total = await this.orderModel
-        .count()
+        .countDocuments()
         .and([{ restaurant: user.restaurant._id }])
         .exec();
 
@@ -183,7 +183,7 @@ export class RestaurantService implements IRestaurantService {
         limit: +paginationPayload.limit,
       });
 
-      const paginatedOrderResponse: PaginatedOrderResponse = {
+      const paginatedOrderResponse: IPaginatedOrderResponse = {
         orders: orderResponses,
         count: total,
         currentPage: paginatedData.currentPage,
@@ -345,7 +345,7 @@ export class RestaurantService implements IRestaurantService {
     }
   }
 
-  async searchRestaurant(keyword: string): Promise<RestaurantResponse[]> {
+  async searchRestaurant(keyword: string): Promise<IRestaurantResponse[]> {
     try {
       return await this.elasticSearchService.searchRestaurant(keyword);
     } catch (error: any) {

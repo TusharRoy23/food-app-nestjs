@@ -4,7 +4,11 @@ import { User } from '../../user/schemas/user.schema';
 import { Restaurant } from './restaurant.schema';
 import { IRestaurantRating } from '../interfaces/IRestaurant.model';
 
-@Schema()
+@Schema({
+  toJSON: {
+    virtuals: true
+  }
+})
 export class RestaurantRating implements IRestaurantRating {
   _id: mongoose.Types.ObjectId;
 

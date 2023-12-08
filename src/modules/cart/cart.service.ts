@@ -7,7 +7,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { throwException } from '../shared/errors/all.exception';
-import { CartItemResponse, CartReponse } from '../shared/utils/response.utils';
+import { ICartItemResponse, ICartResponse } from '../shared/utils/response.utils';
 import { CartStatus, connectionName } from '../shared/utils/enum';
 import { Item } from '../item/schemas/item.schema';
 import { Restaurant } from '../restaurant/schemas';
@@ -31,12 +31,12 @@ export class CartService implements ICartService {
     private cartItemModel: Model<CartItemDocument>,
     @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
-  ) {}
+  ) { }
 
   async create(
     cartItemDto: CartItemDto,
     restaurantId: string,
-  ): Promise<CartReponse> {
+  ): Promise<ICartResponse> {
     try {
       const user: User = this.getUserDetailsFromRequest();
       const restaurantInfo: Restaurant =
@@ -76,7 +76,7 @@ export class CartService implements ICartService {
       cart.cart_amount = cartAmount;
       const cart_info = await this.cartModel.create(cart);
 
-      const result: CartReponse = {
+      const result: ICartResponse = {
         id: cart_info._id,
         cart_amount: cart_info.cart_amount,
         total_amount: cart_info.total_amount,
@@ -124,12 +124,12 @@ export class CartService implements ICartService {
           },
         },
       });
-      return result as CartReponse;
+      return result as ICartResponse;
     } catch (error: any) {
       return throwException(error);
     }
   }
-  async retrieve(cartId: string): Promise<CartReponse> {
+  async retrieve(cartId: string): Promise<ICartResponse> {
     try {
       const user: User = this.getUserDetailsFromRequest();
       return await this.getCartResponse(cartId, user);
@@ -138,7 +138,7 @@ export class CartService implements ICartService {
     }
   }
 
-  async update(cartItemDto: CartItemDto, cartId: string): Promise<CartReponse> {
+  async update(cartItemDto: CartItemDto, cartId: string): Promise<ICartResponse> {
     try {
       const user: User = this.getUserDetailsFromRequest();
       const cart: Cart = await this.getCartInfo(cartId, user);
@@ -187,7 +187,7 @@ export class CartService implements ICartService {
     }
   }
 
-  async delete(cartItemId: string, cartId: string): Promise<CartReponse> {
+  async delete(cartItemId: string, cartId: string): Promise<ICartResponse> {
     try {
       const user: User = this.getUserDetailsFromRequest();
       const cartItem: CartItem = await this.cartItemModel
@@ -222,7 +222,7 @@ export class CartService implements ICartService {
   private async getCartResponse(
     cartId: string,
     user: User,
-  ): Promise<CartReponse> {
+  ): Promise<ICartResponse> {
     try {
       const cart: Cart = await this.cartModel.findOne({
         _id: cartId,
@@ -242,7 +242,7 @@ export class CartService implements ICartService {
         throw new BadRequestException('Cart is empty');
       }
 
-      const cartItemResponse: CartItemResponse[] = [];
+      const cartItemResponse: ICartItemResponse[] = [];
       let cartAmount = 0;
       let totalAmount = 0;
 
@@ -298,7 +298,7 @@ export class CartService implements ICartService {
         .findOneAndUpdate({ _id: cart._id, user: user }, payload, { new: true })
         .exec();
 
-      const result: CartReponse = {
+      const result: ICartResponse = {
         id: cart._id,
         cart_amount: updatedCart.cart_amount,
         total_amount: updatedCart.total_amount,

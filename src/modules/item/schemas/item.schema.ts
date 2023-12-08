@@ -10,7 +10,11 @@ import {
 } from '../../shared/utils/enum';
 import { IItem } from "../interfaces/IItem.model";
 
-@Schema()
+@Schema({
+  toJSON: {
+    virtuals: true
+  }
+})
 export class Item implements IItem {
   _id: mongoose.Types.ObjectId;
 

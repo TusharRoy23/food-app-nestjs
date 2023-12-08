@@ -26,7 +26,7 @@ import {
 } from '../../../../test/utils/generate';
 import { RegisterDto } from '../dto/register.dto';
 import { PaginationParams } from '../../shared/dto/pagination-params';
-import { PaginatedOrderResponse } from '../../shared/utils/response.utils';
+import { IPaginatedOrderResponse } from '../../shared/utils/response.utils';
 import { NotFoundException } from '@nestjs/common';
 
 describe('RestaurantService', () => {
@@ -171,13 +171,13 @@ describe('RestaurantService', () => {
       }),
     } as any);
 
-    jest.spyOn(orderModel, 'count').mockReturnValue({
+    jest.spyOn(orderModel, 'countDocuments').mockReturnValue({
       and: jest.fn().mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(rawOrderList.length),
       }),
     } as any);
 
-    const orderList: PaginatedOrderResponse =
+    const orderList: IPaginatedOrderResponse =
       await restaurantService.getOrderList(paginationParams);
     expect(orderList).toHaveProperty('orders');
     expect(orderList.orders[0]).toHaveProperty('id');

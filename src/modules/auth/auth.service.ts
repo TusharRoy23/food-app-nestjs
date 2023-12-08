@@ -11,7 +11,7 @@ import { Model } from 'mongoose';
 import { hashString } from '../shared/utils/hashing.utils';
 import { throwException } from '../shared/errors/all.exception';
 import { connectionName, CurrentStatus, UserRole } from '../shared/utils/enum';
-import { UserResponse, TokenResponse } from '../shared/utils/response.utils';
+import { IUserResponse, ITokenResponse } from '../shared/utils/response.utils';
 import { User, UserDocument } from '../user/schemas/user.schema';
 import { SignInCredentialsDto, SignUpCredentialsDto } from './dto';
 import { IAuthService } from './interfaces/IAuth.service';
@@ -38,9 +38,9 @@ export class AuthService implements IAuthService {
     @Inject(TOKEN_SERVICE) private readonly tokenService: ITokenService
   ) { }
 
-  async signIn(payload: SignInCredentialsDto): Promise<UserResponse> {
+  async signIn(payload: SignInCredentialsDto): Promise<IUserResponse> {
     try {
-      const userData: User = await this.sharedService.getUserInfo(
+      const userData: IUser = await this.sharedService.getUserInfo(
         payload.email,
       );
       if (userData.current_status == CurrentStatus.NOT_VERIFIED || userData.current_status == CurrentStatus.INACTIVE) {
@@ -84,10 +84,10 @@ export class AuthService implements IAuthService {
     }
   }
 
-  async getNewAccessAndRefreshToken(): Promise<TokenResponse> {
+  async getNewAccessAndRefreshToken(): Promise<ITokenResponse> {
     try {
       const user: User = this.getUserDetailsFromRequest();
-      const userData: User = await this.sharedService.getUserInfo(user.email);
+      const userData: IUser = await this.sharedService.getUserInfo(user.email);
       const refreshToken = await this.getRefreshToken(userData);
       await this.updateRefreshToken(refreshToken, user.email);
 
@@ -144,7 +144,7 @@ export class AuthService implements IAuthService {
         throw new BadRequestException({ message: 'Invalid Token.' });
       }
 
-      const userInfo: User = await this.sharedService.getUserInfo(logResult.email);
+      const userInfo: IUser = await this.sharedService.getUserInfo(logResult.email);
       if (userInfo.current_status !== CurrentStatus.NOT_VERIFIED) {
         throw new BadRequestException({ message: 'User is already verified.' });
       }
@@ -194,7 +194,8 @@ export class AuthService implements IAuthService {
       const result: UserVerificationLogger = await this.userVerificationLoggerModel.findOneAndUpdate({ email: email }, {
         email_verify_token: mailToken,
         verified_email_token: validationToken,
-        verified_email_uuid: uuidv4()
+        verified_email_uuid: uuidv4(),
+        attempt: logResult.attempt + 1
       }, {
         upsert: true,
         new: true
@@ -219,7 +220,7 @@ export class AuthService implements IAuthService {
     }
   }
 
-  private async getAccessToken(payload: User): Promise<string> {
+  private async getAccessToken(payload: IUser): Promise<string> {
     try {
       return await this.tokenService.generateToken(
         {
@@ -236,7 +237,7 @@ export class AuthService implements IAuthService {
     }
   }
 
-  private async getRefreshToken(payload: User): Promise<string> {
+  private async getRefreshToken(payload: IUser): Promise<string> {
     try {
       return await this.tokenService.generateToken(
         {
@@ -272,7 +273,7 @@ export class AuthService implements IAuthService {
   }
 
   private async updateUserStatus(
-    user: User,
+    user: IUser,
     payload: { current_status?: string, login_status?: boolean },
   ): Promise<User> {
     try {

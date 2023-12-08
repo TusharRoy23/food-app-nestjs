@@ -7,10 +7,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CartStatus, connectionName } from '../shared/utils/enum';
 import { throwException } from '../shared/errors/all.exception';
 import {
-  OrderItemResponse,
-  OrderResponse,
-  PaginatedOrderResponse,
-  PaginationPayload,
+  IOrderItemResponse,
+  IOrderResponse,
+  IPaginatedOrderResponse,
+  IPaginationPayload,
 } from '../shared/utils/response.utils';
 import { IOrderService } from './interfaces/IOrder.service';
 import { Order, OrderDocument, OrderItem, OrderItemDocument } from './schemas';
@@ -40,9 +40,9 @@ export class OrderService implements IOrderService {
     private orderItemModel: Model<OrderItemDocument>,
     @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
-  ) {}
+  ) { }
 
-  async submitOrder(cartId: string): Promise<OrderResponse> {
+  async submitOrder(cartId: string): Promise<IOrderResponse> {
     try {
       const user: User = this.getUserDetailsFromRequest();
       const cart: Cart = await this.sharedService.getCartInfo(cartId);
@@ -96,7 +96,7 @@ export class OrderService implements IOrderService {
       }
 
       const orderInfo: Order = await this.orderModel.create(order);
-      const orderResponse: OrderResponse = {
+      const orderResponse: IOrderResponse = {
         id: orderInfo._id,
         order_amount: orderInfo.order_amount,
         total_amount: orderInfo.total_amount,
@@ -159,10 +159,10 @@ export class OrderService implements IOrderService {
 
   async getOrdersByUser(
     paginationParams: PaginationParams,
-  ): Promise<PaginatedOrderResponse> {
+  ): Promise<IPaginatedOrderResponse> {
     try {
       const user: User = this.getUserDetailsFromRequest();
-      const paginationPayload: PaginationPayload = pagination({
+      const IPaginationPayload: IPaginationPayload = pagination({
         page: paginationParams.page,
         size: paginationParams.pageSize,
       });
@@ -172,15 +172,15 @@ export class OrderService implements IOrderService {
         .populate('order_items')
         .populate('order_discount')
         .sort({ _id: -1 })
-        .limit(paginationPayload.limit);
+        .limit(IPaginationPayload.limit);
       if (paginationParams.startId && paginationParams.page > 1) {
         query.and([{ _id: { $lt: paginationParams.startId } }]);
       } else {
-        query.skip(paginationPayload.offset);
+        query.skip(IPaginationPayload.offset);
       }
       const orders: Order[] = await query.exec();
 
-      const orderResponses: OrderResponse[] = [];
+      const orderResponses: IOrderResponse[] = [];
       orders?.forEach((order) => {
         orderResponses.push({
           id: order._id,
@@ -204,16 +204,16 @@ export class OrderService implements IOrderService {
       });
 
       const total = await this.orderModel
-        .count()
+        .countDocuments()
         .and([{ user: user._id }])
         .exec();
       const paginatedData = getPaginationData({
         total,
-        page: +paginationPayload.currentPage,
-        limit: +paginationPayload.limit,
+        page: +IPaginationPayload.currentPage,
+        limit: +IPaginationPayload.limit,
       });
 
-      const paginatedOrderResponse: PaginatedOrderResponse = {
+      const paginatedOrderResponse: IPaginatedOrderResponse = {
         orders: orderResponses,
         count: total,
         currentPage: paginatedData.currentPage,
@@ -240,7 +240,7 @@ export class OrderService implements IOrderService {
     }
   }
 
-  private orderItemResponse(orderItem: OrderItem): OrderItemResponse {
+  private orderItemResponse(orderItem: OrderItem): IOrderItemResponse {
     return {
       id: orderItem._id,
       amount: orderItem.amount,

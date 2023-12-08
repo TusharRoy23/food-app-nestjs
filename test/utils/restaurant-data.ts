@@ -2,21 +2,20 @@ import { faker } from '@faker-js/faker';
 import mongoose from 'mongoose';
 import { UserType } from '../../src/modules/shared/utils/enum';
 import { Restaurant } from '../../src/modules/restaurant/schemas';
-import { RestaurantResponse } from '../../src/modules/shared/utils/response.utils';
+import { IRestaurantResponse } from '../../src/modules/shared/utils/response.utils';
 import { generateUserList } from './user-data';
 
 const generateRestaurant = (object: any = {}) => {
   return {
     id: new mongoose.Types.ObjectId(faker.database.mongodbObjectId()),
-    address: `${
-      (faker.address.street(), faker.address.zipCode(), faker.address.state())
-    }`,
-    name: faker.name.middleName(),
+    address: `${(faker.location.street(), faker.location.zipCode(), faker.location.state())
+      }`,
+    name: faker.person.middleName(),
     opening_time: '08:08:08',
     closing_time: '12:00:00',
     current_status: 'active',
     ...object,
-  } as RestaurantResponse;
+  } as IRestaurantResponse;
 };
 
 export const generateRestaurantList = (n = 1, object = {}) => {
@@ -25,16 +24,14 @@ export const generateRestaurantList = (n = 1, object = {}) => {
       length: n,
     },
     () => generateRestaurant({ ...object }),
-  ) as RestaurantResponse[];
+  ) as IRestaurantResponse[];
 };
 
 export const generateRawRestaurant = (object: any = {}) => {
   return {
     _id: new mongoose.Types.ObjectId(faker.database.mongodbObjectId()),
-    address: `${
-      (faker.address.street(), faker.address.zipCode(), faker.address.state())
-    }`,
-    name: faker.name.middleName(),
+    address: `${(faker.location.street(), faker.location.zipCode(), faker.location.state())}`,
+    name: faker.person.middleName(),
     opening_time: '08:08:08',
     closing_time: '12:00:00',
     current_status: 'active',

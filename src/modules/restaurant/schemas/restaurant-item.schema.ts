@@ -4,7 +4,11 @@ import { Item } from '../../item/schemas/item.schema';
 import { Restaurant } from './restaurant.schema';
 import { IRestaurantItem } from '../interfaces/IRestaurant.model';
 
-@Schema()
+@Schema({
+  toJSON: {
+    virtuals: true
+  }
+})
 export class RestaurantItem implements IRestaurantItem {
   _id: mongoose.Types.ObjectId;
 

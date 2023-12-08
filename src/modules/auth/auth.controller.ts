@@ -3,7 +3,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from '../shared/decorator/public.decorator';
 import { ResponseMessage } from '../shared/decorator/response-msg.decorator';
 import { JwtRefreshTokenGuard } from '../shared/guards/jwt-refresh-token.guard';
-import { User } from '../user/schemas/user.schema';
 import {
   RefreshTokenDto,
   SignInCredentialsDto,
@@ -11,6 +10,7 @@ import {
 } from './dto';
 import { AUTH_SERVICE, IAuthService } from './interfaces/IAuth.service';
 import { ValidationMailDto } from './dto/validation-mail.dto';
+import { IUser } from '../user/interfaces/IUser.model';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -26,7 +26,7 @@ export class AuthController {
   @Post('/signin')
   public async signIn(
     @Body() signInCredentialDto: SignInCredentialsDto,
-  ): Promise<{ user: User; accessToken: string; refreshToken: string }> {
+  ): Promise<{ user: IUser; accessToken: string; refreshToken: string }> {
     return await this.authService.signIn(signInCredentialDto);
   }
 

@@ -7,9 +7,9 @@ import {
   UserType,
 } from '../../src/modules/shared/utils/enum';
 import {
-  OrderItemResponse,
-  OrderResponse,
-  PaginatedOrderResponse,
+  IOrderItemResponse,
+  IOrderResponse,
+  IPaginatedOrderResponse,
 } from '../../src/modules/shared/utils/response.utils';
 import { PaginatedData } from './generate';
 import { generateItemList } from './item-data';
@@ -28,13 +28,13 @@ const generateOrderItem = (object: any = {}) => {
     total_amount: +faker.commerce.price(),
     item: getItemList[0],
     ...object,
-  } as OrderItemResponse;
+  } as IOrderItemResponse;
 };
 
 const generateOrderItemList = (n = 1, object = {}) => {
   return Array.from({ length: n }, () =>
     generateOrderItem({ ...object }),
-  ) as OrderItemResponse[];
+  ) as IOrderItemResponse[];
 };
 
 const generateOrderResponse = (object: any = {}) => {
@@ -54,13 +54,13 @@ const generateOrderResponse = (object: any = {}) => {
     paid_by: PaidBy.CASH_ON_DELIVERY,
     order_item: generateOrderItemList(3),
     ...object,
-  } as OrderResponse;
+  } as IOrderResponse;
 };
 
 const generateOrderResponseList = (n = 1, object: any = {}) => {
   return Array.from({ length: n }, () =>
     generateOrderResponse({ ...object }),
-  ) as OrderResponse[];
+  ) as IOrderResponse[];
 };
 
 export const generatePaginatedOrderResponse = (
@@ -73,7 +73,7 @@ export const generatePaginatedOrderResponse = (
     currentPage: currentPage,
     nextPage: nextPage,
     totalPages: totalPages,
-  } as PaginatedOrderResponse;
+  } as IPaginatedOrderResponse;
 };
 
 const generateRawOrderResponse = (object: any = {}) => {

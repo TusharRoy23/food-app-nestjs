@@ -7,7 +7,7 @@ export const generateUser = (object: any = {}) => {
   return {
     _id: new mongoose.Types.ObjectId(faker.database.mongodbObjectId()),
     email: faker.internet.email(),
-    name: faker.name.fullName(),
+    name: faker.person.fullName(),
     current_status: CurrentStatus.ACTIVE,
     ...object,
   } as User;

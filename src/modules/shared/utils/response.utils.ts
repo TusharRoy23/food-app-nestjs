@@ -1,18 +1,18 @@
 import mongoose from 'mongoose';
-import { User } from '../../user/schemas/user.schema';
+import { IUser } from '../../user/interfaces/IUser.model';
 
-export class UserResponse {
-  user: User;
+export interface IUserResponse {
+  user: IUser;
   accessToken: string;
   refreshToken: string;
 }
 
-export class TokenResponse {
+export interface ITokenResponse {
   accessToken: string;
   refreshToken: string;
 }
 
-export class CartReponse {
+export interface ICartResponse {
   id: mongoose.Types.ObjectId;
   cart_amount: number;
   total_amount: number;
@@ -20,61 +20,61 @@ export class CartReponse {
   discount_rate: number;
   cart_date: Date;
   cart_status: string;
-  cart_item: CartItemResponse[];
+  cart_item: ICartItemResponse[];
 }
 
-export class CartItemResponse {
+export interface ICartItemResponse {
   id: mongoose.Types.ObjectId;
   qty: number;
   amount: number;
   total_amount: number;
-  item: ItemReponse;
+  item: IItemReponse;
 }
 
-export class OrderResponse {
+export interface IOrderResponse {
   id: mongoose.Types.ObjectId;
   order_amount: number;
   total_amount: number;
-  restaurant?: RestaurantResponse;
+  restaurant?: IRestaurantResponse;
   serial_number: string;
   rebate_amount: number;
   discount_rate: number;
   order_date: Date;
   order_status: string;
   paid_by: string;
-  order_item: OrderItemResponse[];
-  user?: User;
+  order_item: IOrderItemResponse[];
+  user?: IUser;
 }
 
-export class OrderItemResponse {
+export interface IOrderItemResponse {
   id: mongoose.Types.ObjectId;
   qty: number;
   amount: number;
   total_amount: number;
-  item: ItemReponse;
+  item: IItemReponse;
 }
 
-export class PaginatedOrderResponse {
-  orders: OrderResponse[];
+export interface IPaginatedOrderResponse {
+  orders: IOrderResponse[];
   count: number;
   currentPage: number;
   totalPages: number;
   nextPage: number;
 }
 
-export class PaginationPayload {
+export interface IPaginationPayload {
   limit: number;
   offset: number;
   currentPage: number;
 }
-export class PaginationDataResponse {
+export interface IPaginationDataResponse {
   count: number;
   currentPage: number;
   totalPages: number;
   nextPage: number;
 }
 
-export class ItemReponse {
+export interface IItemReponse {
   id?: mongoose.Types.ObjectId;
   meal_state: string;
   name: string;
@@ -83,12 +83,12 @@ export class ItemReponse {
   item_type: string;
   meal_type: string;
   meal_flavor: string;
-  restaurant?: RestaurantResponse;
+  restaurant?: IRestaurantResponse;
   price: number;
   discount_rate: number;
 }
 
-export class RestaurantResponse {
+export interface IRestaurantResponse {
   id: mongoose.Types.ObjectId;
   name: string;
   address: string;

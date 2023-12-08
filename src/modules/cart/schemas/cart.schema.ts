@@ -7,7 +7,11 @@ import { User } from '../../user/schemas/user.schema';
 import { CartItem } from './cart-item.schema';
 import { ICart } from '../interfaces/ICart.model';
 
-@Schema()
+@Schema({
+  toJSON: {
+    virtuals: true
+  }
+})
 export class Cart implements ICart {
   _id: mongoose.Types.ObjectId;
 

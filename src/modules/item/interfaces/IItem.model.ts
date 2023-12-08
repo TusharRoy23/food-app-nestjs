@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 import { Restaurant } from "../../restaurant/schemas";
 
 export interface IItem {
-    _id: number | mongoose.Types.ObjectId;
+    _id: mongoose.Types.ObjectId;
+    name: string;
     icon: string;
     image: string;
     item_type: string;
