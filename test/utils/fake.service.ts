@@ -26,7 +26,7 @@ import { RatingDto } from '../../src/modules/restaurant/dto/rating.dto';
 import { Restaurant } from '../../src/modules/restaurant/schemas/restaurant.schema';
 import { User } from '../../src/modules/user/schemas/user.schema';
 import { JwtService } from '@nestjs/jwt';
-import { IItem } from '../../src/modules/item/interfaces/IItem.model';
+import { IItem } from '../../src/modules/shared/interfaces/shared.model';
 
 export const restaurants = getRestaurantList(4);
 export const items = getItemList(4);
