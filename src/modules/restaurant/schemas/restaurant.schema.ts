@@ -1,9 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-// import { User } from '../../user/schemas/user.schema';
 import { CurrentStatus } from '../../shared/utils/enum';
-import { IRestaurant } from '../interfaces/IRestaurant.model';
-import { IUser } from '../../user/interfaces/IUser.model';
+import { IRestaurant, IUser } from "../../shared/interfaces/shared.model";
 
 @Schema({
   toJSON: {

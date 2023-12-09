@@ -24,7 +24,7 @@ import {
   REQUEST_SERVICE,
 } from '../shared/interfaces/IRequest.service';
 import { IMailService, MAIL_SERVICE } from '../mail/interfaces/IMail.service';
-import { IUser } from '../user/interfaces/IUser.model';
+import { IUser } from "../shared/interfaces/shared.model";
 import {
   UserVerificationLogger,
   UserVerificationLoggerDocuement,
@@ -45,7 +45,7 @@ export class AuthService implements IAuthService {
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
     @Inject(MAIL_SERVICE) private readonly mailService: IMailService,
     @Inject(TOKEN_SERVICE) private readonly tokenService: ITokenService,
-  ) {}
+  ) { }
 
   async signIn(payload: SignInCredentialsDto): Promise<IUserResponse> {
     try {

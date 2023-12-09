@@ -20,7 +20,7 @@ import {
 } from './dto';
 import { AUTH_SERVICE, IAuthService } from './interfaces/IAuth.service';
 import { ValidationMailDto } from './dto/validation-mail.dto';
-import { IUser } from '../user/interfaces/IUser.model';
+import { IUser } from "../shared/interfaces/shared.model";
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -30,7 +30,7 @@ import { IUser } from '../user/interfaces/IUser.model';
 export class AuthController {
   constructor(
     @Inject(AUTH_SERVICE) private readonly authService: IAuthService,
-  ) {}
+  ) { }
 
   @IsPublic(true)
   @Post('/signin')

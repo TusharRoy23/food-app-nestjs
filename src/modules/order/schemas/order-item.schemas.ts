@@ -6,7 +6,7 @@ import {
   MealState,
   MealFlavor,
 } from '../../shared/utils/enum';
-import { IOrder, IOrderItem } from '../interfaces/IOrder.model';
+import { IOrder, IOrderItem } from '../../shared/interfaces/shared.model';
 
 @Schema({
   toJSON: {

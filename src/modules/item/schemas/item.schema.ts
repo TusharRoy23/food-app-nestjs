@@ -7,8 +7,7 @@ import {
   MealState,
   MealType,
 } from '../../shared/utils/enum';
-import { IItem } from '../interfaces/IItem.model';
-import { IRestaurant } from '../../restaurant/interfaces/IRestaurant.model';
+import { IItem, IRestaurant } from "../../shared/interfaces/shared.model";
 
 @Schema({
   toJSON: {

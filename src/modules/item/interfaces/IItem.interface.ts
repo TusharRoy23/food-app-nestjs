@@ -1,5 +1,5 @@
 import { CreateItemDto, UpdateItemDto } from '../dto/index.dto';
-import { IItem } from './IItem.model';
+import { IItem } from "../../shared/interfaces/shared.model";
 
 export const ITEM_SERVICE = 'ITEM_SERVICE';
 export interface IItemService {

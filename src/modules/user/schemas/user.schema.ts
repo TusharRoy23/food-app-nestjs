@@ -3,8 +3,7 @@ import { IsEmail } from 'class-validator';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { CurrentStatus, UserRole, UserType } from '../../shared/utils/enum';
 import { hashString, isStringMatched } from '../../shared/utils/hashing.utils';
-import { IUser } from '../interfaces/IUser.model';
-import { IRestaurant } from '../../restaurant/interfaces/IRestaurant.model';
+import { IUser, IRestaurant } from "../../shared/interfaces/shared.model";
 
 @Schema({
   toJSON: {

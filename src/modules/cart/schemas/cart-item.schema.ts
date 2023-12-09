@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { ICart, ICartItem } from '../interfaces/ICart.model';
-import { IItem } from '../../item/interfaces/IItem.model';
+import { IItem, ICart, ICartItem } from "../../shared/interfaces/shared.model";
 
 @Schema({
   toJSON: {

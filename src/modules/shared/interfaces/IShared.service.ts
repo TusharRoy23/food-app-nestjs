@@ -1,10 +1,6 @@
 import { User } from '../../user/schemas/user.schema';
 import { RatingDto } from '../../restaurant/dto/index.dto';
-import { IItem } from '../../item/interfaces/IItem.model';
-import { IRestaurant } from '../../restaurant/interfaces/IRestaurant.model';
-import { IOrderDiscount } from '../../order/interfaces/IOrder.model';
-import { ICart } from '../../cart/interfaces/ICart.model';
-import { IUser } from '../../user/interfaces/IUser.model';
+import { IItem, IRestaurant, IUser, IOrderDiscount, ICart } from "./shared.model";
 
 export const SHARED_SERVICE = 'SHARED_SERVICE';
 export interface ISharedService {

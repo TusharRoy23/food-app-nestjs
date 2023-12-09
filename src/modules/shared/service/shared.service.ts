@@ -21,11 +21,7 @@ import {
 } from '../../order/schemas/order-discount.schema';
 import { Cart, CartDocument } from '../../cart/schemas/cart.schema';
 import { RatingDto } from '../../restaurant/dto/index.dto';
-import { IItem } from '../../item/interfaces/IItem.model';
-import { IRestaurant } from '../../restaurant/interfaces/IRestaurant.model';
-import { IUser } from '../../user/interfaces/IUser.model';
-import { ICart } from '../../cart/interfaces/ICart.model';
-import { IOrderDiscount } from '../../order/interfaces/IOrder.model';
+import { IItem, IRestaurant, IUser, ICart, IOrderDiscount } from "../interfaces/shared.model";
 import {
   Restaurant,
   RestaurantDocument,
@@ -50,7 +46,7 @@ export class SharedService implements ISharedService {
     private readonly orderDiscountModel: Model<OrderDiscountDocument>,
     @InjectModel(Cart.name, connectionName.MAIN_DB)
     private cartModel: Model<CartDocument>,
-  ) {}
+  ) { }
 
   async updateCartInfo(conditions: any, payload: any): Promise<ICart> {
     try {

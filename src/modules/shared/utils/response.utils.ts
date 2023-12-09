@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { IUser } from '../../user/interfaces/IUser.model';
+import { IUser } from "../interfaces/shared.model";
 
 export interface IUserResponse {
   user: IUser;

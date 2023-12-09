@@ -1,10 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { IUser } from '../../user/interfaces/IUser.model';
-import {
-  IRestaurant,
-  IRestaurantRating,
-} from '../interfaces/IRestaurant.model';
+import { IUser, IRestaurant, IRestaurantRating } from "../../shared/interfaces/shared.model";
 
 @Schema({
   toJSON: {
