@@ -10,7 +10,10 @@ import {
   ValidationException,
   ValidationFilter,
 } from './modules/shared/filters/validation.filter';
-import { ResponseInterceptor, ResponseSerializerInterceptor } from './modules/shared/interceptors/index';
+import {
+  ResponseInterceptor,
+  ResponseSerializerInterceptor,
+} from './modules/shared/interceptors/index';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -32,7 +35,9 @@ async function bootstrap() {
   SwaggerModule.setup('api/v1', app, document);
 
   app.enableCors();
-  app.useGlobalInterceptors(new ResponseSerializerInterceptor(app.get(Reflector)));
+  app.useGlobalInterceptors(
+    new ResponseSerializerInterceptor(app.get(Reflector)),
+  );
   app.useGlobalInterceptors(new ResponseInterceptor(app.get(Reflector)));
   app.useGlobalFilters(new ValidationFilter());
   app.useGlobalPipes(

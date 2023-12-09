@@ -9,7 +9,7 @@ import { IRestaurantResponse } from '../utils/response.utils';
 @Injectable()
 export class CustomElasticService implements IElasticsearchService {
   private restaurantIdx = 'restaurants';
-  constructor(private readonly elasticSearchService: ElasticsearchService) { }
+  constructor(private readonly elasticSearchService: ElasticsearchService) {}
 
   async getRestaurantList(): Promise<IRestaurantResponse[]> {
     try {
@@ -87,9 +87,11 @@ export class CustomElasticService implements IElasticsearchService {
           index: this.restaurantIdx,
           query: {
             bool: searchQuery,
-          }
+          },
         })
-        .then((response) => response.hits.hits.map((restaurant) => restaurant._source))
+        .then((response) =>
+          response.hits.hits.map((restaurant) => restaurant._source),
+        )
         .catch(() => {
           throw new InternalServerErrorException('Error on search');
         });

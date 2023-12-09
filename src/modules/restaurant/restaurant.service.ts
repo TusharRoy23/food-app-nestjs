@@ -20,7 +20,10 @@ import {
   IRestaurantResponse,
 } from '../shared/utils/response.utils';
 import { Order, OrderDocument } from '../order/schemas/order.schema';
-import { OrderDiscount, OrderDiscountDocument } from '../order/schemas/order-discount.schema';
+import {
+  OrderDiscount,
+  OrderDiscountDocument,
+} from '../order/schemas/order-discount.schema';
 import { User, UserDocument } from '../user/schemas/user.schema';
 import { CreateOrderDiscountDto } from './dto/create-order-discount.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -34,10 +37,22 @@ import {
 } from '../shared/utils/pagination.utils';
 import { AUTH_SERVICE, IAuthService } from '../auth/interfaces/IAuth.service';
 import { Restaurant, RestaurantDocument } from './schemas/restaurant.schema';
-import { RestaurantItem, RestaurantItemDocument } from './schemas/restaurant-item.schema';
-import { ISharedService, SHARED_SERVICE } from '../shared/interfaces/IShared.service';
-import { IRequestService, REQUEST_SERVICE } from '../shared/interfaces/IRequest.service';
-import { ELASTICSEARCH_SERVICE, IElasticsearchService } from '../shared/interfaces/IElasticsearch.service';
+import {
+  RestaurantItem,
+  RestaurantItemDocument,
+} from './schemas/restaurant-item.schema';
+import {
+  ISharedService,
+  SHARED_SERVICE,
+} from '../shared/interfaces/IShared.service';
+import {
+  IRequestService,
+  REQUEST_SERVICE,
+} from '../shared/interfaces/IRequest.service';
+import {
+  ELASTICSEARCH_SERVICE,
+  IElasticsearchService,
+} from '../shared/interfaces/IElasticsearch.service';
 
 @Injectable()
 export class RestaurantService implements IRestaurantService {
@@ -56,8 +71,8 @@ export class RestaurantService implements IRestaurantService {
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
     @Inject(ELASTICSEARCH_SERVICE)
     private readonly elasticSearchService: IElasticsearchService,
-    @Inject(AUTH_SERVICE) private readonly authService: IAuthService
-  ) { }
+    @Inject(AUTH_SERVICE) private readonly authService: IAuthService,
+  ) {}
 
   async register(registerDto: RegisterDto): Promise<string> {
     try {

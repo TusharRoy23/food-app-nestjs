@@ -15,7 +15,10 @@ import {
   CurrentStatus,
   ItemStatus,
 } from '../utils/enum';
-import { OrderDiscount, OrderDiscountDocument } from '../../order/schemas/order-discount.schema';
+import {
+  OrderDiscount,
+  OrderDiscountDocument,
+} from '../../order/schemas/order-discount.schema';
 import { Cart, CartDocument } from '../../cart/schemas/cart.schema';
 import { RatingDto } from '../../restaurant/dto/index.dto';
 import { IItem } from '../../item/interfaces/IItem.model';
@@ -23,8 +26,14 @@ import { IRestaurant } from '../../restaurant/interfaces/IRestaurant.model';
 import { IUser } from '../../user/interfaces/IUser.model';
 import { ICart } from '../../cart/interfaces/ICart.model';
 import { IOrderDiscount } from '../../order/interfaces/IOrder.model';
-import { Restaurant, RestaurantDocument } from '../../restaurant/schemas/restaurant.schema';
-import { RestaurantRating, RestaurantRatingDocument } from '../../restaurant/schemas/restaurant-rating.schema';
+import {
+  Restaurant,
+  RestaurantDocument,
+} from '../../restaurant/schemas/restaurant.schema';
+import {
+  RestaurantRating,
+  RestaurantRatingDocument,
+} from '../../restaurant/schemas/restaurant-rating.schema';
 
 @Injectable()
 export class SharedService implements ISharedService {
@@ -40,8 +49,8 @@ export class SharedService implements ISharedService {
     @InjectModel(OrderDiscount.name, connectionName.MAIN_DB)
     private readonly orderDiscountModel: Model<OrderDiscountDocument>,
     @InjectModel(Cart.name, connectionName.MAIN_DB)
-    private cartModel: Model<CartDocument>
-  ) { }
+    private cartModel: Model<CartDocument>,
+  ) {}
 
   async updateCartInfo(conditions: any, payload: any): Promise<ICart> {
     try {

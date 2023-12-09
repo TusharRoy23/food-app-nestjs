@@ -30,7 +30,7 @@ import { MailModule } from './modules/mail/mail.module';
     AuthModule,
     PublicModule,
     MailModule,
-    SharedModule
+    SharedModule,
   ],
   controllers: [],
   providers: [
@@ -39,4 +39,4 @@ import { MailModule } from './modules/mail/mail.module';
     { provide: APP_GUARD, useClass: UserTypeGuard },
   ],
 })
-export class AppModule { }
+export class AppModule {}

@@ -1,22 +1,21 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Item } from '../../item/schemas/item.schema';
-import { Restaurant } from './restaurant.schema';
-import { IRestaurantItem } from '../interfaces/IRestaurant.model';
+import { IItem } from '../../item/interfaces/IItem.model';
+import { IRestaurant, IRestaurantItem } from '../interfaces/IRestaurant.model';
 
 @Schema({
   toJSON: {
-    virtuals: true
-  }
+    virtuals: true,
+  },
 })
 export class RestaurantItem implements IRestaurantItem {
   _id: mongoose.Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' })
-  restaurant: Restaurant;
+  restaurant: IRestaurant;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Item' })
-  item: Item;
+  item: IItem;
 
   @Prop({ type: 'Number', default: 0 })
   sell_count: number;

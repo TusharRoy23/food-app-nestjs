@@ -25,8 +25,14 @@ import {
   getPaginationData,
   pagination,
 } from '../shared/utils/pagination.utils';
-import { ISharedService, SHARED_SERVICE } from '../shared/interfaces/IShared.service';
-import { IRequestService, REQUEST_SERVICE } from '../shared/interfaces/IRequest.service';
+import {
+  ISharedService,
+  SHARED_SERVICE,
+} from '../shared/interfaces/IShared.service';
+import {
+  IRequestService,
+  REQUEST_SERVICE,
+} from '../shared/interfaces/IRequest.service';
 
 @Injectable()
 export class OrderService implements IOrderService {
@@ -37,7 +43,7 @@ export class OrderService implements IOrderService {
     private orderItemModel: Model<OrderItemDocument>,
     @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
-  ) { }
+  ) {}
 
   async submitOrder(cartId: string): Promise<IOrderResponse> {
     try {

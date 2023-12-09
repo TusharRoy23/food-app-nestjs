@@ -4,7 +4,7 @@ import mongoose, { HydratedDocument } from 'mongoose';
 import { CurrentStatus, UserRole, UserType } from '../../shared/utils/enum';
 import { hashString, isStringMatched } from '../../shared/utils/hashing.utils';
 import { IUser } from '../interfaces/IUser.model';
-import { Restaurant } from '../../restaurant/schemas/restaurant.schema';
+import { IRestaurant } from '../../restaurant/interfaces/IRestaurant.model';
 
 @Schema({
   toJSON: {
@@ -14,7 +14,7 @@ import { Restaurant } from '../../restaurant/schemas/restaurant.schema';
       delete ret.hashedRefreshToken;
       return ret;
     },
-    versionKey: false
+    versionKey: false,
   },
 })
 export class User implements IUser {
@@ -55,7 +55,7 @@ export class User implements IUser {
   current_status: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' })
-  restaurant: Restaurant;
+  restaurant: IRestaurant;
 
   @Prop({ type: 'String' })
   hashedRefreshToken: string;

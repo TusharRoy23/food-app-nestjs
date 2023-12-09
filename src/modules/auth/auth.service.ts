@@ -19,11 +19,20 @@ import {
   ISharedService,
   SHARED_SERVICE,
 } from '../shared/interfaces/IShared.service';
-import { IRequestService, REQUEST_SERVICE } from '../shared/interfaces/IRequest.service';
+import {
+  IRequestService,
+  REQUEST_SERVICE,
+} from '../shared/interfaces/IRequest.service';
 import { IMailService, MAIL_SERVICE } from '../mail/interfaces/IMail.service';
 import { IUser } from '../user/interfaces/IUser.model';
-import { UserVerificationLogger, UserVerificationLoggerDocuement } from './schemas/user-verification-logger.schema';
-import { ITokenService, TOKEN_SERVICE } from '../token/interfaces/IToken.service';
+import {
+  UserVerificationLogger,
+  UserVerificationLoggerDocuement,
+} from './schemas/user-verification-logger.schema';
+import {
+  ITokenService,
+  TOKEN_SERVICE,
+} from '../token/interfaces/IToken.service';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -35,15 +44,18 @@ export class AuthService implements IAuthService {
     @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
     @Inject(MAIL_SERVICE) private readonly mailService: IMailService,
-    @Inject(TOKEN_SERVICE) private readonly tokenService: ITokenService
-  ) { }
+    @Inject(TOKEN_SERVICE) private readonly tokenService: ITokenService,
+  ) {}
 
   async signIn(payload: SignInCredentialsDto): Promise<IUserResponse> {
     try {
       const userData: IUser = await this.sharedService.getUserInfo(
         payload.email,
       );
-      if (userData.current_status == CurrentStatus.NOT_VERIFIED || userData.current_status == CurrentStatus.INACTIVE) {
+      if (
+        userData.current_status == CurrentStatus.NOT_VERIFIED ||
+        userData.current_status == CurrentStatus.INACTIVE
+      ) {
         throw new ForbiddenException({ message: 'User Not Found!' });
       }
       const user = new User();
@@ -129,7 +141,7 @@ export class AuthService implements IAuthService {
       const result = await this.generateValidationToken(email);
       this.sendUserConfirmationMail(email, 'Welcome to Food App!', {
         name: userInfo.name,
-        url: `${process.env.APP_HOST}${result.validation_token}/`
+        url: `${process.env.APP_HOST}${result.validation_token}/`,
       });
       return Promise.resolve('Mail Sent !');
     } catch (error: any) {
@@ -139,81 +151,115 @@ export class AuthService implements IAuthService {
 
   async mailValidation(token: string): Promise<string> {
     try {
-      const logResult: UserVerificationLogger = await this.userVerificationLoggerModel.findOne({ verified_email_uuid: token }).exec();
+      const logResult: UserVerificationLogger =
+        await this.userVerificationLoggerModel
+          .findOne({ verified_email_uuid: token })
+          .exec();
       if (!logResult) {
         throw new BadRequestException({ message: 'Invalid Token.' });
       }
 
-      const userInfo: IUser = await this.sharedService.getUserInfo(logResult.email);
+      const userInfo: IUser = await this.sharedService.getUserInfo(
+        logResult.email,
+      );
       if (userInfo.current_status !== CurrentStatus.NOT_VERIFIED) {
         throw new BadRequestException({ message: 'User is already verified.' });
       }
 
-      const isExpired = await this.tokenService.checkTokenValidity(logResult.verified_email_token, { secret: process.env.JWT_GENERATE_ACCOUNT_VERIFY_SECRET });
+      const isExpired = await this.tokenService.checkTokenValidity(
+        logResult.verified_email_token,
+        { secret: process.env.JWT_GENERATE_ACCOUNT_VERIFY_SECRET },
+      );
       if (isExpired) {
         throw new BadRequestException({ message: 'Token is expired.' });
       }
 
-      await this.updateUserStatus(userInfo, { current_status: CurrentStatus.VERIFIED });
+      await this.updateUserStatus(userInfo, {
+        current_status: CurrentStatus.VERIFIED,
+      });
       return Promise.resolve('User has been verified.');
     } catch (error: any) {
       return throwException(error);
     }
   }
 
-  private async generateValidationToken(email: string): Promise<{ validation_token: string }> {
+  private async generateValidationToken(
+    email: string,
+  ): Promise<{ validation_token: string }> {
     try {
-      const logResult: UserVerificationLogger = await this.userVerificationLoggerModel.findOne({ email }).exec();
+      const logResult: UserVerificationLogger =
+        await this.userVerificationLoggerModel.findOne({ email }).exec();
       if (logResult?._id && logResult?.email_verify_token) {
-        const isExpired = await this.tokenService.checkTokenValidity(logResult.email_verify_token, {
-          secret: process.env.JWT_GENERATE_ACCOUNT_VERIFY_EMAIL_LINK_SECRET
-        })
+        const isExpired = await this.tokenService.checkTokenValidity(
+          logResult.email_verify_token,
+          {
+            secret: process.env.JWT_GENERATE_ACCOUNT_VERIFY_EMAIL_LINK_SECRET,
+          },
+        );
         if (!isExpired) {
           throw new BadRequestException({ message: 'please wait a bit.' });
         }
       }
 
       // re-send email token
-      const mailToken = await this.tokenService.generateToken({
-        email: email,
-        timer: Date.now()
-      }, {
-        secret: process.env.JWT_GENERATE_ACCOUNT_VERIFY_EMAIL_LINK_SECRET,
-        expiresIn: process.env.JWT_GENERATE_ACCOUNT_VERIFY_EMAIL_LINK_DURATION,
-      });
+      const mailToken = await this.tokenService.generateToken(
+        {
+          email: email,
+          timer: Date.now(),
+        },
+        {
+          secret: process.env.JWT_GENERATE_ACCOUNT_VERIFY_EMAIL_LINK_SECRET,
+          expiresIn:
+            process.env.JWT_GENERATE_ACCOUNT_VERIFY_EMAIL_LINK_DURATION,
+        },
+      );
 
       // email validation link token
-      const validationToken = await this.tokenService.generateToken({
-        email: email,
-        timer: Date.now()
-      }, {
-        secret: process.env.JWT_GENERATE_ACCOUNT_VERIFY_SECRET,
-        expiresIn: process.env.JWT_GENERATE_ACCOUNT_VERIFY_DURATION,
-      });
+      const validationToken = await this.tokenService.generateToken(
+        {
+          email: email,
+          timer: Date.now(),
+        },
+        {
+          secret: process.env.JWT_GENERATE_ACCOUNT_VERIFY_SECRET,
+          expiresIn: process.env.JWT_GENERATE_ACCOUNT_VERIFY_DURATION,
+        },
+      );
 
-      const result: UserVerificationLogger = await this.userVerificationLoggerModel.findOneAndUpdate({ email: email }, {
-        email_verify_token: mailToken,
-        verified_email_token: validationToken,
-        verified_email_uuid: uuidv4(),
-        attempt: logResult.attempt + 1
-      }, {
-        upsert: true,
-        new: true
-      }).exec();
+      const result: UserVerificationLogger =
+        await this.userVerificationLoggerModel
+          .findOneAndUpdate(
+            { email: email },
+            {
+              email_verify_token: mailToken,
+              verified_email_token: validationToken,
+              verified_email_uuid: uuidv4(),
+              attempt: logResult?.attempt || 1 + 1,
+            },
+            {
+              upsert: true,
+              new: true,
+            },
+          )
+          .exec();
 
       return {
-        validation_token: result.verified_email_uuid
-      }
+        validation_token: result.verified_email_uuid,
+      };
     } catch (error: any) {
       return throwException(error);
     }
   }
 
-  private async sendUserConfirmationMail(email: string, subject: string, content: any) {
+  private async sendUserConfirmationMail(
+    email: string,
+    subject: string,
+    content: any,
+  ) {
     try {
       await this.mailService.sendUserConfirmationMail(email, {
         subject: subject,
-        data: content
+        data: content,
       });
     } catch (error: any) {
       return throwException(error);
@@ -230,7 +276,7 @@ export class AuthService implements IAuthService {
         {
           secret: process.env.JWT_ACCESS_TOKEN_SECRET,
           expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME,
-        }
+        },
       );
     } catch (error: any) {
       return throwException(error);
@@ -247,7 +293,7 @@ export class AuthService implements IAuthService {
         {
           secret: process.env.JWT_REFRESH_TOKEN_SECRET,
           expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME,
-        }
+        },
       );
     } catch (error: any) {
       return throwException(error);
@@ -274,15 +320,11 @@ export class AuthService implements IAuthService {
 
   private async updateUserStatus(
     user: IUser,
-    payload: { current_status?: string, login_status?: boolean },
+    payload: { current_status?: string; login_status?: boolean },
   ): Promise<User> {
     try {
       return await this.userModel
-        .findOneAndUpdate(
-          { _id: user._id },
-          payload,
-          { new: true },
-        )
+        .findOneAndUpdate({ _id: user._id }, payload, { new: true })
         .exec();
     } catch (error: any) {
       return throwException(error);

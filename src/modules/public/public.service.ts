@@ -11,7 +11,10 @@ import {
   IRestaurantResponse,
 } from '../shared/utils/response.utils';
 import { IPublicService } from './interfaces/IPublic.service';
-import { ISharedService, SHARED_SERVICE } from '../shared/interfaces/IShared.service';
+import {
+  ISharedService,
+  SHARED_SERVICE,
+} from '../shared/interfaces/IShared.service';
 
 @Injectable()
 export class PublicService implements IPublicService {
@@ -19,7 +22,7 @@ export class PublicService implements IPublicService {
     @Inject(RESTAURANT_SERVICE)
     private readonly restaurantService: IRestaurantService,
     @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
-  ) { }
+  ) {}
 
   async getItemList(restaurantId: string): Promise<IItemReponse[]> {
     try {

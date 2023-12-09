@@ -9,7 +9,10 @@ import { Item, ItemDocuement } from './schemas/item.schema';
 import { IItem } from './interfaces/IItem.model';
 import { ItemMessage } from './constants/enum';
 import { User } from '../user/schemas/user.schema';
-import { IRequestService, REQUEST_SERVICE } from '../shared/interfaces/IRequest.service';
+import {
+  IRequestService,
+  REQUEST_SERVICE,
+} from '../shared/interfaces/IRequest.service';
 
 @Injectable()
 export class ItemService implements IItemService {
@@ -17,7 +20,7 @@ export class ItemService implements IItemService {
     @InjectModel(Item.name, connectionName.MAIN_DB)
     private itemModel: Model<ItemDocuement>,
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
-  ) { }
+  ) {}
 
   async create(payload: CreateItemDto): Promise<string> {
     try {

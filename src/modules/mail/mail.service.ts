@@ -5,23 +5,22 @@ import { throwException } from '../shared/errors/all.exception';
 
 @Injectable()
 export class MailService implements IMailService {
-    constructor(
-        private readonly mailerService: MailerService
-    ) { }
+  constructor(private readonly mailerService: MailerService) {}
 
-    async sendUserConfirmationMail(email: string, context: { subject: string, data: any }): Promise<string> {
-        try {
-            await this.mailerService.sendMail({
-                to: email,
-                subject: context.subject,
-                template: __dirname + '/templates/confirmation',
-                context: context.data,
-            });
-            return Promise.resolve('Mail Sent! ')
-        } catch (error: any) {
-            return throwException(error);
-        }
-
+  async sendUserConfirmationMail(
+    email: string,
+    context: { subject: string; data: any },
+  ): Promise<string> {
+    try {
+      await this.mailerService.sendMail({
+        to: email,
+        subject: context.subject,
+        template: __dirname + '/templates/confirmation',
+        context: context.data,
+      });
+      return Promise.resolve('Mail Sent! ');
+    } catch (error: any) {
+      return throwException(error);
     }
-
+  }
 }

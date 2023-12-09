@@ -1,12 +1,11 @@
-import mongoose from "mongoose";
-import { User } from "../../user/schemas/user.schema";
-import { Restaurant } from "../schemas/restaurant.schema";
-import { Item } from "../../item/schemas/item.schema";
+import mongoose from 'mongoose';
+import { IUser } from '../../user/interfaces/IUser.model';
+import { IItem } from '../../item/interfaces/IItem.model';
 
 export interface IRestaurantItem {
     _id: mongoose.Types.ObjectId;
-    restaurant: Restaurant;
-    item: Item;
+    restaurant: IRestaurant;
+    item: IItem;
     sell_count: number;
 }
 
@@ -14,7 +13,7 @@ export interface IRestaurant {
     _id: mongoose.Types.ObjectId;
     name: string;
     address: string;
-    users: User[];
+    users: IUser[];
     profile_img: string;
     opening_time: string;
     closing_time: string;
@@ -23,8 +22,8 @@ export interface IRestaurant {
 
 export interface IRestaurantRating {
     _id: mongoose.Types.ObjectId;
-    restaurant: Restaurant;
-    user: User;
+    restaurant: IRestaurant;
+    user: IUser;
     star: number;
     rating_date: Date;
 }

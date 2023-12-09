@@ -8,7 +8,7 @@ import {
   Patch,
   Post,
   Query,
-  SerializeOptions
+  SerializeOptions,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from '../shared/decorator/public.decorator';
@@ -33,13 +33,13 @@ import {
 @Roles(UserRole.EMPLOYEE, UserRole.OWNER)
 @TypeOfUsers(UserType.RESTAURANT_USER)
 @SerializeOptions({
-  excludePrefixes: ['_']
+  excludePrefixes: ['_'],
 })
 export class RestaurantController {
   constructor(
     @Inject(RESTAURANT_SERVICE)
     private readonly restaurantService: IRestaurantService,
-  ) { }
+  ) {}
 
   @Get('/orders')
   public async getOrderList(@Query() paginationParams: PaginationParams) {

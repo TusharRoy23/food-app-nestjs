@@ -1,18 +1,18 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Restaurant } from '../../restaurant/schemas/restaurant.schema';
 import { IOrderDiscount } from '../interfaces/IOrder.model';
+import { IRestaurant } from '../../restaurant/interfaces/IRestaurant.model';
 
 @Schema({
   toJSON: {
-    virtuals: true
-  }
+    virtuals: true,
+  },
 })
 export class OrderDiscount implements IOrderDiscount {
   _id: mongoose.Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' })
-  restaurant: Restaurant;
+  restaurant: IRestaurant;
 
   @Prop({ type: 'Number', required: true })
   max_amount: number;

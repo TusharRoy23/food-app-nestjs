@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Inject, Param, ParseUUIDPipe, Post, SerializeOptions, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  SerializeOptions,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from '../shared/decorator/public.decorator';
 import { ResponseMessage } from '../shared/decorator/response-msg.decorator';
@@ -15,12 +25,12 @@ import { IUser } from '../user/interfaces/IUser.model';
 @ApiTags('Auth')
 @Controller('auth')
 @SerializeOptions({
-  excludePrefixes: ['_']
+  excludePrefixes: ['_'],
 })
 export class AuthController {
   constructor(
     @Inject(AUTH_SERVICE) private readonly authService: IAuthService,
-  ) { }
+  ) {}
 
   @IsPublic(true)
   @Post('/signin')
@@ -56,7 +66,9 @@ export class AuthController {
   @IsPublic(true)
   @Post('/send-validation-mail')
   @ResponseMessage('Mail Sent')
-  public async resendValidationMail(@Body() validationMailDto: ValidationMailDto) {
+  public async resendValidationMail(
+    @Body() validationMailDto: ValidationMailDto,
+  ) {
     return this.authService.sendEmailVerificationLink(validationMailDto.email);
   }
 

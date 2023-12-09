@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { User } from '../../user/schemas/user.schema';
+// import { User } from '../../user/schemas/user.schema';
 import { CurrentStatus } from '../../shared/utils/enum';
 import { IRestaurant } from '../interfaces/IRestaurant.model';
+import { IUser } from '../../user/interfaces/IUser.model';
 
 @Schema({
   toJSON: {
@@ -30,7 +31,7 @@ export class Restaurant implements IRestaurant {
   address: string;
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
-  users: User[];
+  users: IUser[];
 
   @Prop({ type: 'String' })
   profile_img: string;

@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import { Restaurant } from "../../restaurant/schemas/restaurant.schema";
+import mongoose from 'mongoose';
+import { IRestaurant } from '../../restaurant/interfaces/IRestaurant.model';
 
 export interface IUser {
     _id: mongoose.Types.ObjectId;
@@ -9,7 +9,7 @@ export interface IUser {
     user_type: string;
     role: string;
     current_status: string;
-    restaurant: Restaurant;
+    restaurant: IRestaurant;
     hashedRefreshToken: string;
     login_status: boolean;
     doPasswordHashing(password: string): Promise<string>;

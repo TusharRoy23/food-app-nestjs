@@ -6,13 +6,12 @@ import {
   MealState,
   MealFlavor,
 } from '../../shared/utils/enum';
-import { Order } from './order.schema';
-import { IOrderItem } from '../interfaces/IOrder.model';
+import { IOrder, IOrderItem } from '../interfaces/IOrder.model';
 
 @Schema({
   toJSON: {
-    virtuals: true
-  }
+    virtuals: true,
+  },
 })
 export class OrderItem implements IOrderItem {
   _id: mongoose.Types.ObjectId;
@@ -54,7 +53,7 @@ export class OrderItem implements IOrderItem {
   discount_rate?: number;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Order' })
-  order: Order;
+  order: IOrder;
 
   @Prop({ type: 'Number', required: true })
   qty: number;

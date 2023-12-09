@@ -1,4 +1,7 @@
-import { ITokenResponse, IUserResponse } from '../../shared/utils/response.utils';
+import {
+  ITokenResponse,
+  IUserResponse,
+} from '../../shared/utils/response.utils';
 import { SignInCredentialsDto, SignUpCredentialsDto } from '../dto/index';
 
 export const AUTH_SERVICE = 'AUTH_SERVICE';

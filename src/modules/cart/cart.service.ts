@@ -7,7 +7,10 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { throwException } from '../shared/errors/all.exception';
-import { ICartItemResponse, ICartResponse } from '../shared/utils/response.utils';
+import {
+  ICartItemResponse,
+  ICartResponse,
+} from '../shared/utils/response.utils';
 import { CartStatus, connectionName } from '../shared/utils/enum';
 import { Item } from '../item/schemas/item.schema';
 import { Restaurant } from '../restaurant/schemas/restaurant.schema';
@@ -16,8 +19,14 @@ import { ICartService } from './interfaces/ICart.interface';
 import { User } from '../user/schemas/user.schema';
 import { Cart, CartDocument } from './schemas/cart.schema';
 import { CartItem, CartItemDocument } from './schemas/cart-item.schema';
-import { ISharedService, SHARED_SERVICE } from '../shared/interfaces/IShared.service';
-import { IRequestService, REQUEST_SERVICE } from '../shared/interfaces/IRequest.service';
+import {
+  ISharedService,
+  SHARED_SERVICE,
+} from '../shared/interfaces/IShared.service';
+import {
+  IRequestService,
+  REQUEST_SERVICE,
+} from '../shared/interfaces/IRequest.service';
 
 @Injectable()
 export class CartService implements ICartService {
@@ -28,7 +37,7 @@ export class CartService implements ICartService {
     private cartItemModel: Model<CartItemDocument>,
     @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
-  ) { }
+  ) {}
 
   async create(
     cartItemDto: CartItemDto,
@@ -56,9 +65,8 @@ export class CartService implements ICartService {
       const itemTotalAmount = cartItemDto.qty * (itemInfo.price * discountRate);
       cart.total_amount = itemTotalAmount;
 
-      const discountInfo = await this.sharedService.getOrderDiscount(
-        restaurantId,
-      );
+      const discountInfo =
+        await this.sharedService.getOrderDiscount(restaurantId);
       if (
         discountInfo &&
         discountInfo.discount_rate > 0 &&
@@ -135,7 +143,10 @@ export class CartService implements ICartService {
     }
   }
 
-  async update(cartItemDto: CartItemDto, cartId: string): Promise<ICartResponse> {
+  async update(
+    cartItemDto: CartItemDto,
+    cartId: string,
+  ): Promise<ICartResponse> {
     try {
       const user: User = this.getUserDetailsFromRequest();
       const cart: Cart = await this.getCartInfo(cartId, user);

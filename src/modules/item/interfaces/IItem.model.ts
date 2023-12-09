@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import { Restaurant } from "../../restaurant/schemas/restaurant.schema";
+import mongoose from 'mongoose';
+import { IRestaurant } from '../../restaurant/interfaces/IRestaurant.model';
 
 export interface IItem {
     _id: mongoose.Types.ObjectId;
@@ -10,7 +10,7 @@ export interface IItem {
     meal_type: string;
     meal_state: string;
     meal_flavor: string;
-    restaurant: Restaurant;
+    restaurant: IRestaurant;
     price: number;
     max_order_qty?: number;
     min_order_qty?: number;

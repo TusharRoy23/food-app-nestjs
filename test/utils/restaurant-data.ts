@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import mongoose from 'mongoose';
 import { UserType } from '../../src/modules/shared/utils/enum';
-import { Restaurant } from '../../src/modules/restaurant/schemas';
+import { Restaurant } from '../../src/modules/restaurant/schemas/restaurant.schema';
 import { IRestaurantResponse } from '../../src/modules/shared/utils/response.utils';
 import { generateUserList } from './user-data';
 

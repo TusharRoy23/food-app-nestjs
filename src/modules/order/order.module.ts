@@ -6,7 +6,10 @@ import { OrderService } from './order.service';
 import { ORDER_SERVICE } from './interfaces/IOrder.service';
 import { Order, OrderSchema } from './schemas/order.schema';
 import { OrderItem, OrderItemSchema } from './schemas/order-item.schemas';
-import { OrderDiscount, OrderDiscountSchema } from './schemas/order-discount.schema';
+import {
+  OrderDiscount,
+  OrderDiscountSchema,
+} from './schemas/order-discount.schema';
 
 @Module({
   imports: [
@@ -23,4 +26,4 @@ import { OrderDiscount, OrderDiscountSchema } from './schemas/order-discount.sch
   providers: [{ useClass: OrderService, provide: ORDER_SERVICE }],
   exports: [MongooseModule],
 })
-export class OrderModule { }
+export class OrderModule {}
