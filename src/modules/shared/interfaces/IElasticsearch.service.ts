@@ -1,4 +1,4 @@
-import { Restaurant } from '../../restaurant/schemas';
+import { Restaurant } from '../../restaurant/schemas/restaurant.schema';
 import { IRestaurantResponse } from '../utils/response.utils';
 
 export const ELASTICSEARCH_SERVICE = 'ELASTICSEARCH_SERVICE';

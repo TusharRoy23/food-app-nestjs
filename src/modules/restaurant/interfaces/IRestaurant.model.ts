@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { User } from "../../user/schemas/user.schema";
-import { Restaurant } from "../schemas";
+import { Restaurant } from "../schemas/restaurant.schema";
 import { Item } from "../../item/schemas/item.schema";
 
 export interface IRestaurantItem {

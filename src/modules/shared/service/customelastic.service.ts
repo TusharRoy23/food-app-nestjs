@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
-import { Restaurant } from '../../restaurant/schemas';
+import { Restaurant } from '../../restaurant/schemas/restaurant.schema';
 import { throwException } from '../errors/all.exception';
 import { IElasticsearchService } from '../interfaces';
 import { CurrentStatus } from '../utils/enum';

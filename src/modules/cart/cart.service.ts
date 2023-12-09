@@ -10,17 +10,14 @@ import { throwException } from '../shared/errors/all.exception';
 import { ICartItemResponse, ICartResponse } from '../shared/utils/response.utils';
 import { CartStatus, connectionName } from '../shared/utils/enum';
 import { Item } from '../item/schemas/item.schema';
-import { Restaurant } from '../restaurant/schemas';
+import { Restaurant } from '../restaurant/schemas/restaurant.schema';
 import { CartItemDto } from './dto/cart-item.dto';
 import { ICartService } from './interfaces/ICart.interface';
-import { Cart, CartDocument, CartItem, CartItemDocument } from './schemas';
 import { User } from '../user/schemas/user.schema';
-import {
-  IRequestService,
-  REQUEST_SERVICE,
-  ISharedService,
-  SHARED_SERVICE,
-} from '../shared/interfaces';
+import { Cart, CartDocument } from './schemas/cart.schema';
+import { CartItem, CartItemDocument } from './schemas/cart-item.schema';
+import { ISharedService, SHARED_SERVICE } from '../shared/interfaces/IShared.service';
+import { IRequestService, REQUEST_SERVICE } from '../shared/interfaces/IRequest.service';
 
 @Injectable()
 export class CartService implements ICartService {

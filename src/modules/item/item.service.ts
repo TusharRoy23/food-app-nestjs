@@ -9,7 +9,7 @@ import { Item, ItemDocuement } from './schemas/item.schema';
 import { IItem } from './interfaces/IItem.model';
 import { ItemMessage } from './constants/enum';
 import { User } from '../user/schemas/user.schema';
-import { IRequestService, REQUEST_SERVICE } from '../shared/interfaces';
+import { IRequestService, REQUEST_SERVICE } from '../shared/interfaces/IRequest.service';
 
 @Injectable()
 export class ItemService implements IItemService {

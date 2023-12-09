@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
-import { MailService } from './mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { MailService } from './mail.service';
 import { MAIL_SERVICE } from './interfaces/IMail.service';
 
 const mailService = { useClass: MailService, provide: MAIL_SERVICE }

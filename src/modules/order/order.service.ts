@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { CartStatus, connectionName } from '../shared/utils/enum';
 import { throwException } from '../shared/errors/all.exception';
@@ -13,9 +14,9 @@ import {
   IPaginationPayload,
 } from '../shared/utils/response.utils';
 import { IOrderService } from './interfaces/IOrder.service';
-import { Order, OrderDocument, OrderItem, OrderItemDocument } from './schemas';
-import { Model } from 'mongoose';
-import { Cart } from '../cart/schemas';
+import { Order, OrderDocument } from './schemas/order.schema';
+import { OrderItem, OrderItemDocument } from './schemas/order-item.schemas';
+import { Cart } from '../cart/schemas/cart.schema';
 import { User } from '../user/schemas/user.schema';
 import { Item } from '../item/schemas/item.schema';
 import { RatingDto } from '../restaurant/dto/rating.dto';
@@ -24,12 +25,8 @@ import {
   getPaginationData,
   pagination,
 } from '../shared/utils/pagination.utils';
-import {
-  IRequestService,
-  REQUEST_SERVICE,
-  SHARED_SERVICE,
-  ISharedService,
-} from '../shared/interfaces';
+import { ISharedService, SHARED_SERVICE } from '../shared/interfaces/IShared.service';
+import { IRequestService, REQUEST_SERVICE } from '../shared/interfaces/IRequest.service';
 
 @Injectable()
 export class OrderService implements IOrderService {

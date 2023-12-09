@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Restaurant } from '../../restaurant/schemas';
+import { Restaurant } from '../../restaurant/schemas/restaurant.schema';
 import {
   ItemStatus,
   ItemType,

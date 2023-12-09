@@ -7,12 +7,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Item, ItemDocuement } from '../../item/schemas/item.schema';
 import { User, UserDocument } from '../../user/schemas/user.schema';
-import {
-  Restaurant,
-  RestaurantDocument,
-  RestaurantRating,
-  RestaurantRatingDocument,
-} from '../../restaurant/schemas';
 import { throwException } from '../errors/all.exception';
 import { ISharedService } from '../interfaces/IShared.service';
 import {
@@ -21,14 +15,16 @@ import {
   CurrentStatus,
   ItemStatus,
 } from '../utils/enum';
-import { OrderDiscount, OrderDiscountDocument } from '../../order/schemas';
-import { Cart, CartDocument } from '../../cart/schemas';
+import { OrderDiscount, OrderDiscountDocument } from '../../order/schemas/order-discount.schema';
+import { Cart, CartDocument } from '../../cart/schemas/cart.schema';
 import { RatingDto } from '../../restaurant/dto/index.dto';
 import { IItem } from '../../item/interfaces/IItem.model';
 import { IRestaurant } from '../../restaurant/interfaces/IRestaurant.model';
 import { IUser } from '../../user/interfaces/IUser.model';
 import { ICart } from '../../cart/interfaces/ICart.model';
 import { IOrderDiscount } from '../../order/interfaces/IOrder.model';
+import { Restaurant, RestaurantDocument } from '../../restaurant/schemas/restaurant.schema';
+import { RestaurantRating, RestaurantRatingDocument } from '../../restaurant/schemas/restaurant-rating.schema';
 
 @Injectable()
 export class SharedService implements ISharedService {

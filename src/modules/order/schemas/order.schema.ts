@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { OrderStatus, PaidBy } from '../../shared/utils/enum';
-import { Restaurant } from '../../restaurant/schemas';
+import { Restaurant } from '../../restaurant/schemas/restaurant.schema';
 import { User } from '../../user/schemas/user.schema';
 import { OrderDiscount } from './order-discount.schema';
 import { OrderItem } from './order-item.schemas';

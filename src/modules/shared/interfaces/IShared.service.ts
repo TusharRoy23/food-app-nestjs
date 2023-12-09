@@ -1,6 +1,4 @@
 import { User } from '../../user/schemas/user.schema';
-import { OrderDiscount } from '../../order/schemas';
-import { Cart } from '../../cart/schemas';
 import { RatingDto } from '../../restaurant/dto/index.dto';
 import { IItem } from '../../item/interfaces/IItem.model';
 import { IRestaurant } from '../../restaurant/interfaces/IRestaurant.model';

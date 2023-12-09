@@ -19,38 +19,25 @@ import {
   IOrderResponse,
   IRestaurantResponse,
 } from '../shared/utils/response.utils';
-import {
-  Order,
-  OrderDiscount,
-  OrderDiscountDocument,
-  OrderDocument,
-} from '../order/schemas';
+import { Order, OrderDocument } from '../order/schemas/order.schema';
+import { OrderDiscount, OrderDiscountDocument } from '../order/schemas/order-discount.schema';
 import { User, UserDocument } from '../user/schemas/user.schema';
 import { CreateOrderDiscountDto } from './dto/create-order-discount.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateOrderDiscountDto } from './dto/update-order-discount.dto';
 import { IRestaurantService } from './interfaces/IRestaurant.service';
-import {
-  Restaurant,
-  RestaurantDocument,
-  RestaurantItem,
-  RestaurantItemDocument,
-} from './schemas';
 import { Item } from '../item/schemas/item.schema';
 import { PaginationParams } from '../shared/dto/pagination-params';
 import {
   getPaginationData,
   pagination,
 } from '../shared/utils/pagination.utils';
-import {
-  IRequestService,
-  REQUEST_SERVICE,
-  ISharedService,
-  SHARED_SERVICE,
-  IElasticsearchService,
-  ELASTICSEARCH_SERVICE,
-} from '../shared/interfaces';
 import { AUTH_SERVICE, IAuthService } from '../auth/interfaces/IAuth.service';
+import { Restaurant, RestaurantDocument } from './schemas/restaurant.schema';
+import { RestaurantItem, RestaurantItemDocument } from './schemas/restaurant-item.schema';
+import { ISharedService, SHARED_SERVICE } from '../shared/interfaces/IShared.service';
+import { IRequestService, REQUEST_SERVICE } from '../shared/interfaces/IRequest.service';
+import { ELASTICSEARCH_SERVICE, IElasticsearchService } from '../shared/interfaces/IElasticsearch.service';
 
 @Injectable()
 export class RestaurantService implements IRestaurantService {

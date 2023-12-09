@@ -6,12 +6,12 @@ import {
   IRestaurantService,
 } from '../restaurant/interfaces/IRestaurant.service';
 import { throwException } from '../shared/errors/all.exception';
-import { ISharedService, SHARED_SERVICE } from '../shared/interfaces';
 import {
   IItemReponse,
   IRestaurantResponse,
 } from '../shared/utils/response.utils';
 import { IPublicService } from './interfaces/IPublic.service';
+import { ISharedService, SHARED_SERVICE } from '../shared/interfaces/IShared.service';
 
 @Injectable()
 export class PublicService implements IPublicService {

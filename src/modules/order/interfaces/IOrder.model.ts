@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
-import { Restaurant } from "../../restaurant/schemas";
+import { Restaurant } from "../../restaurant/schemas/restaurant.schema";
 import { User } from "../../user/schemas/user.schema";
-import { OrderItem, OrderDiscount, Order } from "../schemas";
 import { OrderStatus, PaidBy } from "../../shared/utils/enum";
+import { Order } from "../schemas/order.schema";
+import { OrderItem } from "../schemas/order-item.schemas";
+import { OrderDiscount } from "../schemas/order-discount.schema";
 
 export interface IOrderDiscount {
     _id: mongoose.Types.ObjectId;

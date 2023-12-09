@@ -1,20 +1,15 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { connectionName } from '../shared/utils/enum';
-import {
-  Restaurant,
-  RestaurantSchema,
-  RestaurantItem,
-  RestaurantItemSchema,
-  RestaurantRating,
-  RestaurantRatingSchema,
-} from './schemas';
 import { RestaurantController } from './restaurant.controller';
 import { RestaurantService } from './restaurant.service';
 import { UserModule } from '../user/user.module';
 import { RESTAURANT_SERVICE } from './interfaces/IRestaurant.service';
 import { OrderModule } from '../order/order.module';
 import { AuthModule } from '../auth/auth.module';
+import { Restaurant, RestaurantSchema } from './schemas/restaurant.schema';
+import { RestaurantItem, RestaurantItemSchema } from './schemas/restaurant-item.schema';
+import { RestaurantRating, RestaurantRatingSchema } from './schemas/restaurant-rating.schema';
 
 const restaurantService = {
   useClass: RestaurantService,

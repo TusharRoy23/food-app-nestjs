@@ -9,4 +9,4 @@ import { PUBLIC_SERVICE } from './interfaces/IPublic.service';
   providers: [{ provide: PUBLIC_SERVICE, useClass: PublicService }],
   controllers: [PublicController],
 })
-export class PublicModule {}
+export class PublicModule { }

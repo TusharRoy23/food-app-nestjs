@@ -19,7 +19,7 @@ import {
   ISharedService,
   SHARED_SERVICE,
 } from '../shared/interfaces/IShared.service';
-import { IRequestService, REQUEST_SERVICE } from '../shared/interfaces';
+import { IRequestService, REQUEST_SERVICE } from '../shared/interfaces/IRequest.service';
 import { IMailService, MAIL_SERVICE } from '../mail/interfaces/IMail.service';
 import { IUser } from '../user/interfaces/IUser.model';
 import { UserVerificationLogger, UserVerificationLoggerDocuement } from './schemas/user-verification-logger.schema';

@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsEmail } from 'class-validator';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Restaurant } from '../../restaurant/schemas';
 import { CurrentStatus, UserRole, UserType } from '../../shared/utils/enum';
 import { hashString, isStringMatched } from '../../shared/utils/hashing.utils';
 import { IUser } from '../interfaces/IUser.model';
+import { Restaurant } from '../../restaurant/schemas/restaurant.schema';
 
 @Schema({
   toJSON: {

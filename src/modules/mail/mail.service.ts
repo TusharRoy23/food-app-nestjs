@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { IMailService } from './interfaces/IMail.service';
 import { throwException } from '../shared/errors/all.exception';
-import { IUser } from '../user/interfaces/IUser.model';
 
 @Injectable()
 export class MailService implements IMailService {
