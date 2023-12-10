@@ -177,7 +177,7 @@ export class FakeAuthService implements IAuthService {
     throw new Error('Method not implemented.');
   }
   sendEmailVerificationLink(email: string): Promise<string> {
-    throw new Error('Method not implemented.');
+    return Promise.resolve('Mail Sent !');
   }
   mailValidation(token: string): Promise<string> {
     throw new Error('Method not implemented.');

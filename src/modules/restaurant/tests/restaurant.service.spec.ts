@@ -9,6 +9,7 @@ import {
 } from '../../../../test/utils/fake.service';
 import {
   ELASTICSEARCH_SERVICE,
+  IElasticsearchService,
   IRequestService,
   REQUEST_SERVICE,
   SHARED_SERVICE,
@@ -38,6 +39,8 @@ describe('RestaurantService', () => {
   let restaurantService: IRestaurantService;
   let requestService: IRequestService;
   let authService: IAuthService;
+  let elasticSearchService: IElasticsearchService;
+
   const restaurentDoc = getModelToken(Restaurant.name, connectionName.MAIN_DB);
   const orderDoc = getModelToken(Order.name, connectionName.MAIN_DB);
   const userDoc = getModelToken(User.name, connectionName.MAIN_DB);
@@ -114,6 +117,9 @@ describe('RestaurantService', () => {
 
     restaurantService = module.get<IRestaurantService>(RestaurantService);
     requestService = module.get<IRequestService>(RequestService);
+    elasticSearchService = module.get<IElasticsearchService>(FakeElasticsearchService);
+    authService = module.get<IAuthService>(FakeAuthService);
+
     restaurantModel = module.get<Model<RestaurantDocument>>(restaurentDoc);
     orderModel = module.get<Model<OrderDocument>>(orderDoc);
     userModel = module.get<Model<UserDocument>>(userDoc);
@@ -143,13 +149,16 @@ describe('RestaurantService', () => {
     };
     jest
       .spyOn(userModel, 'create')
-      .mockImplementationOnce(() => Promise.resolve(user));
+      .mockImplementationOnce(() => Promise.resolve(user as any));
     jest
       .spyOn(restaurantModel, 'create')
-      .mockImplementationOnce(() => Promise.resolve(restaurant));
+      .mockImplementationOnce(() => Promise.resolve(restaurant as any));
     jest.spyOn(userModel, 'findOneAndUpdate').mockReturnValueOnce({
       exec: jest.fn().mockResolvedValueOnce(restaurant),
     } as any);
+
+    jest.spyOn(elasticSearchService, 'indexRestaurant').mockImplementationOnce(() => Promise.resolve(true));
+    jest.spyOn(authService, 'sendEmailVerificationLink').mockImplementationOnce(() => Promise.resolve('Mail Sent !'));
 
     const createdUser = await restaurantService.register(registerDto);
     expect(createdUser).toEqual(restaurantRegistrationMsg);
