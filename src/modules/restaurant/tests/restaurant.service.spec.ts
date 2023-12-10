@@ -75,6 +75,11 @@ describe('RestaurantService', () => {
         },
         FakeElasticsearchService,
         {
+          provide: AUTH_SERVICE,
+          useExisting: FakeAuthService
+        },
+        FakeAuthService,
+        {
           provide: restaurentDoc,
           useValue: {
             create: jest.fn(),
