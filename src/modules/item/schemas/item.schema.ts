@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Restaurant } from '../../restaurant/schemas';
 import {
   ItemStatus,
   ItemType,
@@ -8,9 +7,13 @@ import {
   MealState,
   MealType,
 } from '../../shared/utils/enum';
-import { IItem } from "../interfaces/IItem.model";
+import { IItem, IRestaurant } from "../../shared/interfaces/shared.model";
 
-@Schema()
+@Schema({
+  toJSON: {
+    virtuals: true,
+  },
+})
 export class Item implements IItem {
   _id: mongoose.Types.ObjectId;
 
@@ -42,7 +45,7 @@ export class Item implements IItem {
   meal_flavor: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' })
-  restaurant: Restaurant;
+  restaurant: IRestaurant;
 
   @Prop({ type: 'Number', required: true, min: 0.0 })
   price: number;

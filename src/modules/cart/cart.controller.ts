@@ -25,12 +25,12 @@ import { CART_SERVICE, ICartService } from './interfaces/ICart.interface';
 @Roles(UserRole.NONE)
 @TypeOfUsers(UserType.VISITOR)
 @SerializeOptions({
-  excludePrefixes: ['_']
+  excludePrefixes: ['_'],
 })
 export class CartController {
   constructor(
     @Inject(CART_SERVICE) private readonly cartService: ICartService,
-  ) { }
+  ) {}
 
   @Post('/:restaurantId')
   public async create(

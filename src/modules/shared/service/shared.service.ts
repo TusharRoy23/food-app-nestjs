@@ -7,12 +7,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Item, ItemDocuement } from '../../item/schemas/item.schema';
 import { User, UserDocument } from '../../user/schemas/user.schema';
-import {
-  Restaurant,
-  RestaurantDocument,
-  RestaurantRating,
-  RestaurantRatingDocument,
-} from '../../restaurant/schemas';
 import { throwException } from '../errors/all.exception';
 import { ISharedService } from '../interfaces/IShared.service';
 import {
@@ -21,9 +15,21 @@ import {
   CurrentStatus,
   ItemStatus,
 } from '../utils/enum';
-import { OrderDiscount, OrderDiscountDocument } from '../../order/schemas';
-import { Cart, CartDocument } from '../../cart/schemas';
+import {
+  OrderDiscount,
+  OrderDiscountDocument,
+} from '../../order/schemas/order-discount.schema';
+import { Cart, CartDocument } from '../../cart/schemas/cart.schema';
 import { RatingDto } from '../../restaurant/dto/index.dto';
+import { IItem, IRestaurant, IUser, ICart, IOrderDiscount } from "../interfaces/shared.model";
+import {
+  Restaurant,
+  RestaurantDocument,
+} from '../../restaurant/schemas/restaurant.schema';
+import {
+  RestaurantRating,
+  RestaurantRatingDocument,
+} from '../../restaurant/schemas/restaurant-rating.schema';
 
 @Injectable()
 export class SharedService implements ISharedService {
@@ -39,10 +45,10 @@ export class SharedService implements ISharedService {
     @InjectModel(OrderDiscount.name, connectionName.MAIN_DB)
     private readonly orderDiscountModel: Model<OrderDiscountDocument>,
     @InjectModel(Cart.name, connectionName.MAIN_DB)
-    private cartModel: Model<CartDocument>
+    private cartModel: Model<CartDocument>,
   ) { }
 
-  async updateCartInfo(conditions: any, payload: any): Promise<Cart> {
+  async updateCartInfo(conditions: any, payload: any): Promise<ICart> {
     try {
       const cart: Cart = await this.cartModel
         .findOneAndUpdate(conditions, payload, { new: true })
@@ -56,7 +62,7 @@ export class SharedService implements ISharedService {
     }
   }
 
-  async getCartInfo(cartId: string): Promise<Cart> {
+  async getCartInfo(cartId: string): Promise<ICart> {
     try {
       const cart: Cart = await this.cartModel
         .findOne({ _id: cartId, cart_status: CartStatus.SAVED })
@@ -71,7 +77,7 @@ export class SharedService implements ISharedService {
     }
   }
 
-  async getUserInfo(email: string): Promise<User> {
+  async getUserInfo(email: string): Promise<IUser> {
     try {
       const user = await this.userModel
         .findOne({ email: email })
@@ -98,9 +104,9 @@ export class SharedService implements ISharedService {
     }
   }
 
-  async getRestaurantInfo(restaurantId: string): Promise<Restaurant> {
+  async getRestaurantInfo(restaurantId: string): Promise<IRestaurant> {
     try {
-      const restaurant = await this.restaurantModel
+      const restaurant: Restaurant = await this.restaurantModel
         .findOne({ _id: restaurantId, current_status: CurrentStatus.ACTIVE })
         .exec();
       if (restaurant == null) {
@@ -112,7 +118,7 @@ export class SharedService implements ISharedService {
     }
   }
 
-  async getItemInfo(itemId: string, restaurantId: any): Promise<Item> {
+  async getItemInfo(itemId: string, restaurantId: any): Promise<IItem> {
     try {
       const item: Item = await this.itemModel
         .findOne({
@@ -130,7 +136,7 @@ export class SharedService implements ISharedService {
     }
   }
 
-  async getItemList(restaurantId: string): Promise<Item[]> {
+  async getItemList(restaurantId: string): Promise<IItem[]> {
     try {
       return await this.itemModel
         .find({ restaurant: restaurantId, item_status: ItemStatus.ACTIVE })
@@ -140,7 +146,7 @@ export class SharedService implements ISharedService {
     }
   }
 
-  async getOrderDiscount(restaurantId: any): Promise<OrderDiscount> {
+  async getOrderDiscount(restaurantId: any): Promise<IOrderDiscount> {
     try {
       const currentDate = new Date().toISOString();
       return await this.orderDiscountModel

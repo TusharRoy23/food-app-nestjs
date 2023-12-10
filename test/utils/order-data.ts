@@ -7,9 +7,9 @@ import {
   UserType,
 } from '../../src/modules/shared/utils/enum';
 import {
-  OrderItemResponse,
-  OrderResponse,
-  PaginatedOrderResponse,
+  IOrderItemResponse,
+  IOrderResponse,
+  IPaginatedOrderResponse,
 } from '../../src/modules/shared/utils/response.utils';
 import { PaginatedData } from './generate';
 import { generateItemList } from './item-data';
@@ -23,18 +23,18 @@ const getRestaurantList = (n = 1, ...object) =>
 const generateOrderItem = (object: any = {}) => {
   return {
     id: new mongoose.Types.ObjectId(faker.database.mongodbObjectId()),
-    qty: +faker.datatype.number({ min: 1, max: 50 }),
+    qty: +faker.number.int({ min: 1, max: 50 }),
     amount: +faker.commerce.price(),
     total_amount: +faker.commerce.price(),
     item: getItemList[0],
     ...object,
-  } as OrderItemResponse;
+  } as IOrderItemResponse;
 };
 
 const generateOrderItemList = (n = 1, object = {}) => {
   return Array.from({ length: n }, () =>
     generateOrderItem({ ...object }),
-  ) as OrderItemResponse[];
+  ) as IOrderItemResponse[];
 };
 
 const generateOrderResponse = (object: any = {}) => {
@@ -45,22 +45,22 @@ const generateOrderResponse = (object: any = {}) => {
     serial_number: `FA-${Date.now()}`,
     rebate_amount: 0,
     discount_rate: 0.0,
-    order_date: faker.date.between(
-      '2020-01-01T00:00:00.000Z',
-      '2030-01-01T00:00:00.000Z',
-    ),
+    order_date: faker.date.between({
+      from: '2020-01-01T00:00:00.000Z',
+      to: '2030-01-01T00:00:00.000Z'
+    }),
     restaurant: getRestaurantList()[0],
     order_status: OrderStatus.PAID,
     paid_by: PaidBy.CASH_ON_DELIVERY,
     order_item: generateOrderItemList(3),
     ...object,
-  } as OrderResponse;
+  } as IOrderResponse;
 };
 
 const generateOrderResponseList = (n = 1, object: any = {}) => {
   return Array.from({ length: n }, () =>
     generateOrderResponse({ ...object }),
-  ) as OrderResponse[];
+  ) as IOrderResponse[];
 };
 
 export const generatePaginatedOrderResponse = (
@@ -73,7 +73,7 @@ export const generatePaginatedOrderResponse = (
     currentPage: currentPage,
     nextPage: nextPage,
     totalPages: totalPages,
-  } as PaginatedOrderResponse;
+  } as IPaginatedOrderResponse;
 };
 
 const generateRawOrderResponse = (object: any = {}) => {
@@ -84,10 +84,10 @@ const generateRawOrderResponse = (object: any = {}) => {
     serial_number: `FA-${Date.now()}`,
     rebate_amount: 0,
     discount_rate: 0.0,
-    order_date: faker.date.between(
-      '2020-01-01T00:00:00.000Z',
-      '2030-01-01T00:00:00.000Z',
-    ),
+    order_date: faker.date.between({
+      from: '2020-01-01T00:00:00.000Z',
+      to: '2030-01-01T00:00:00.000Z',
+    }),
     restaurant: getRestaurantList()[0],
     order_status: OrderStatus.PAID,
     paid_by: PaidBy.CASH_ON_DELIVERY,

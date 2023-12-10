@@ -1,8 +1,10 @@
 import { RegisterDto } from '../../src/modules/restaurant/dto/register.dto';
 import {
-  ItemReponse,
-  PaginatedOrderResponse,
-  RestaurantResponse,
+  IItemReponse,
+  IPaginatedOrderResponse,
+  IRestaurantResponse,
+  ITokenResponse,
+  IUserResponse,
 } from '../../src/modules/shared/utils/response.utils';
 import { IPublicService } from '../../src/modules/public/interfaces/IPublic.service';
 import {
@@ -20,12 +22,15 @@ import {
   IElasticsearchService,
   ISharedService,
 } from '../../src/modules/shared/interfaces';
-import { Cart } from 'src/modules/cart/schemas';
-import { Item } from 'src/modules/item/schemas/item.schema';
-import { RatingDto } from 'src/modules/restaurant/dto/rating.dto';
-import { Restaurant } from 'src/modules/restaurant/schemas';
-import { User } from 'src/modules/user/schemas/user.schema';
+import { Cart } from '../../src/modules/cart/schemas';
+import { Item } from '../../src/modules/item/schemas/item.schema';
+import { RatingDto } from '../../src/modules/restaurant/dto/rating.dto';
+import { Restaurant } from '../../src/modules/restaurant/schemas/restaurant.schema';
+import { User } from '../../src/modules/user/schemas/user.schema';
 import { JwtService } from '@nestjs/jwt';
+import { IItem } from '../../src/modules/shared/interfaces/shared.model';
+import { IAuthService } from '../../src/modules/auth/interfaces/IAuth.service';
+import { SignInCredentialsDto, SignUpCredentialsDto } from '../../src/modules/auth/dto';
 
 export const restaurants = getRestaurantList(4);
 export const items = getItemList(4);
@@ -34,13 +39,13 @@ export class FakePublicService implements IPublicService {
   restaurantRegistration(registerDto: RegisterDto): Promise<string> {
     return Promise.resolve(restaurantRegistrationMsg);
   }
-  getRestaurantList(): Promise<RestaurantResponse[]> {
+  getRestaurantList(): Promise<IRestaurantResponse[]> {
     return Promise.resolve(restaurants);
   }
-  getItemList(restaurantId: string): Promise<ItemReponse[]> {
+  getItemList(restaurantId: string): Promise<IItemReponse[]> {
     return Promise.resolve(items);
   }
-  searchRestaurant(keyword: string): Promise<RestaurantResponse[]> {
+  searchRestaurant(keyword: string): Promise<IRestaurantResponse[]> {
     return Promise.resolve(restaurants);
   }
 }
@@ -55,12 +60,12 @@ export class FakeRestaurantService implements IRestaurantService {
   register(registerDto: RegisterDto): Promise<string> {
     return Promise.resolve(restaurantRegistrationMsg);
   }
-  getRestaurantList(): Promise<RestaurantResponse[]> {
+  getRestaurantList(): Promise<IRestaurantResponse[]> {
     return Promise.resolve(restaurants);
   }
   getOrderList(
     paginationParams: PaginationParams,
-  ): Promise<PaginatedOrderResponse> {
+  ): Promise<IPaginatedOrderResponse> {
     return Promise.resolve(paginatedOrderResponse);
   }
   releaseOrder(orderId: string): Promise<string> {
@@ -86,7 +91,7 @@ export class FakeRestaurantService implements IRestaurantService {
   deleteOrderDiscount(discountId: string): Promise<boolean> {
     return Promise.resolve(true);
   }
-  searchRestaurant(keyword: string): Promise<RestaurantResponse[]> {
+  searchRestaurant(keyword: string): Promise<IRestaurantResponse[]> {
     return Promise.resolve(restaurants);
   }
 }
@@ -108,7 +113,7 @@ export class FakeSharedService implements ISharedService {
   getItemInfo(itemId: string, restaurantId: any): Promise<Item> {
     throw new Error('Method not implemented.');
   }
-  getItemList(restaurantId: string): Promise<Item[]> {
+  getItemList(restaurantId: string): Promise<IItem[]> {
     return Promise.resolve(items);
   }
   getOrderDiscount(restaurantId: any): Promise<OrderDiscount> {
@@ -126,10 +131,10 @@ export class FakeSharedService implements ISharedService {
 }
 
 export class FakeElasticsearchService implements IElasticsearchService {
-  getRestaurantList(): Promise<RestaurantResponse[]> {
+  getRestaurantList(): Promise<IRestaurantResponse[]> {
     return Promise.resolve(restaurants);
   }
-  searchRestaurant(keyword: string): Promise<RestaurantResponse[]> {
+  searchRestaurant(keyword: string): Promise<IRestaurantResponse[]> {
     return Promise.resolve(restaurants);
   }
   indexRestaurant(restaurant: Restaurant): Promise<boolean> {
@@ -155,5 +160,26 @@ export class FakeJwtService {
       },
     );
     return accessToken;
+  }
+}
+
+export class FakeAuthService implements IAuthService {
+  signIn(payload: SignInCredentialsDto): Promise<IUserResponse> {
+    throw new Error('Method not implemented.');
+  }
+  createUser(signupDto: SignUpCredentialsDto): Promise<string> {
+    throw new Error('Method not implemented.');
+  }
+  getNewAccessAndRefreshToken(): Promise<ITokenResponse> {
+    throw new Error('Method not implemented.');
+  }
+  logout(): Promise<boolean> {
+    throw new Error('Method not implemented.');
+  }
+  sendEmailVerificationLink(email: string): Promise<string> {
+    return Promise.resolve('Mail Sent !');
+  }
+  mailValidation(token: string): Promise<string> {
+    throw new Error('Method not implemented.');
   }
 }

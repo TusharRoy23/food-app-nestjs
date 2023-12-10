@@ -1,18 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Item } from '../../item/schemas/item.schema';
-import { Cart } from './cart.schema';
-import { ICartItem } from '../interfaces/ICart.model';
+import { IItem, ICart, ICartItem } from "../../shared/interfaces/shared.model";
 
-@Schema()
+@Schema({
+  toJSON: {
+    virtuals: true,
+  },
+})
 export class CartItem implements ICartItem {
   _id: mongoose.Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Item' })
-  item: Item;
+  item: IItem;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Cart' })
-  cart: Cart;
+  cart: ICart;
 
   @Prop({ type: 'Number', default: 0.0 })
   qty: number;

@@ -1,15 +1,18 @@
+import { Model } from 'mongoose';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { throwException } from '../shared/errors/all.exception';
 import { connectionName, ItemStatus } from '../shared/utils/enum';
 import { CreateItemDto, UpdateItemDto } from './dto/index.dto';
 import { IItemService } from './interfaces/IItem.interface';
 import { Item, ItemDocuement } from './schemas/item.schema';
-import { IItem } from './interfaces/IItem.model';
+import { IItem } from "../shared/interfaces/shared.model";
 import { ItemMessage } from './constants/enum';
 import { User } from '../user/schemas/user.schema';
-import { IRequestService, REQUEST_SERVICE } from '../shared/interfaces';
+import {
+  IRequestService,
+  REQUEST_SERVICE,
+} from '../shared/interfaces/IRequest.service';
 
 @Injectable()
 export class ItemService implements IItemService {

@@ -1,9 +1,18 @@
-import { Body, Controller, Get, Inject, Param, ParseUUIDPipe, Post, SerializeOptions, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  SerializeOptions,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from '../shared/decorator/public.decorator';
 import { ResponseMessage } from '../shared/decorator/response-msg.decorator';
 import { JwtRefreshTokenGuard } from '../shared/guards/jwt-refresh-token.guard';
-import { User } from '../user/schemas/user.schema';
 import {
   RefreshTokenDto,
   SignInCredentialsDto,
@@ -11,11 +20,12 @@ import {
 } from './dto';
 import { AUTH_SERVICE, IAuthService } from './interfaces/IAuth.service';
 import { ValidationMailDto } from './dto/validation-mail.dto';
+import { IUser } from "../shared/interfaces/shared.model";
 
 @ApiTags('Auth')
 @Controller('auth')
 @SerializeOptions({
-  excludePrefixes: ['_']
+  excludePrefixes: ['_'],
 })
 export class AuthController {
   constructor(
@@ -26,7 +36,7 @@ export class AuthController {
   @Post('/signin')
   public async signIn(
     @Body() signInCredentialDto: SignInCredentialsDto,
-  ): Promise<{ user: User; accessToken: string; refreshToken: string }> {
+  ): Promise<{ user: IUser; accessToken: string; refreshToken: string }> {
     return await this.authService.signIn(signInCredentialDto);
   }
 
@@ -56,7 +66,9 @@ export class AuthController {
   @IsPublic(true)
   @Post('/send-validation-mail')
   @ResponseMessage('Mail Sent')
-  public async resendValidationMail(@Body() validationMailDto: ValidationMailDto) {
+  public async resendValidationMail(
+    @Body() validationMailDto: ValidationMailDto,
+  ) {
     return this.authService.sendEmailVerificationLink(validationMailDto.email);
   }
 

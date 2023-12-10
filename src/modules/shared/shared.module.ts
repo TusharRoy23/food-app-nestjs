@@ -5,12 +5,12 @@ import { ItemModule } from '../item/item.module';
 import { OrderModule } from '../order/order.module';
 import { RestaurantModule } from '../restaurant/restaurant.module';
 import { UserModule } from '../user/user.module';
-import {
-  REQUEST_SERVICE,
-  SHARED_SERVICE,
-  ELASTICSEARCH_SERVICE,
-} from './interfaces';
-import { RequestService, SharedService, CustomElasticService } from './service';
+import { SHARED_SERVICE } from './interfaces/IShared.service';
+import { REQUEST_SERVICE } from './interfaces/IRequest.service';
+import { ELASTICSEARCH_SERVICE } from './interfaces/IElasticsearch.service';
+import { SharedService } from './service/shared.service';
+import { RequestService } from './service/request.service';
+import { CustomElasticService } from './service/customelastic.service';
 
 const sharedService = { provide: SHARED_SERVICE, useClass: SharedService };
 const requestService = { provide: REQUEST_SERVICE, useClass: RequestService };
@@ -35,7 +35,7 @@ const elasticSearchService = {
           password: process.env.ELASTICSEARCH_PASSWORD,
         },
       }),
-    })
+    }),
   ],
   providers: [sharedService, requestService, elasticSearchService],
   exports: [
@@ -45,4 +45,4 @@ const elasticSearchService = {
     ElasticsearchModule,
   ],
 })
-export class SharedModule { }
+export class SharedModule {}

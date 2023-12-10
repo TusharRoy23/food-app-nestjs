@@ -14,43 +14,46 @@ import {
   UserType,
 } from '../shared/utils/enum';
 import {
-  PaginationPayload,
-  PaginatedOrderResponse,
-  OrderResponse,
-  RestaurantResponse,
+  IPaginationPayload,
+  IPaginatedOrderResponse,
+  IOrderResponse,
+  IRestaurantResponse,
 } from '../shared/utils/response.utils';
+import { Order, OrderDocument } from '../order/schemas/order.schema';
 import {
-  Order,
   OrderDiscount,
   OrderDiscountDocument,
-  OrderDocument,
-} from '../order/schemas';
+} from '../order/schemas/order-discount.schema';
 import { User, UserDocument } from '../user/schemas/user.schema';
 import { CreateOrderDiscountDto } from './dto/create-order-discount.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateOrderDiscountDto } from './dto/update-order-discount.dto';
 import { IRestaurantService } from './interfaces/IRestaurant.service';
-import {
-  Restaurant,
-  RestaurantDocument,
-  RestaurantItem,
-  RestaurantItemDocument,
-} from './schemas';
 import { Item } from '../item/schemas/item.schema';
 import { PaginationParams } from '../shared/dto/pagination-params';
 import {
   getPaginationData,
   pagination,
 } from '../shared/utils/pagination.utils';
+import { AUTH_SERVICE, IAuthService } from '../auth/interfaces/IAuth.service';
+import { Restaurant, RestaurantDocument } from './schemas/restaurant.schema';
+import {
+  RestaurantItem,
+  RestaurantItemDocument,
+} from './schemas/restaurant-item.schema';
+import {
+  ISharedService,
+  SHARED_SERVICE,
+} from '../shared/interfaces/IShared.service';
 import {
   IRequestService,
   REQUEST_SERVICE,
-  ISharedService,
-  SHARED_SERVICE,
-  IElasticsearchService,
+} from '../shared/interfaces/IRequest.service';
+import {
   ELASTICSEARCH_SERVICE,
-} from '../shared/interfaces';
-import { AUTH_SERVICE, IAuthService } from '../auth/interfaces/IAuth.service';
+  IElasticsearchService,
+} from '../shared/interfaces/IElasticsearch.service';
+import { IOrderDiscount } from '../shared/interfaces/shared.model';
 
 @Injectable()
 export class RestaurantService implements IRestaurantService {
@@ -69,7 +72,7 @@ export class RestaurantService implements IRestaurantService {
     @Inject(REQUEST_SERVICE) private readonly requestService: IRequestService,
     @Inject(ELASTICSEARCH_SERVICE)
     private readonly elasticSearchService: IElasticsearchService,
-    @Inject(AUTH_SERVICE) private readonly authService: IAuthService
+    @Inject(AUTH_SERVICE) private readonly authService: IAuthService,
   ) { }
 
   async register(registerDto: RegisterDto): Promise<string> {
@@ -107,7 +110,7 @@ export class RestaurantService implements IRestaurantService {
       return throwException(error);
     }
   }
-  async getRestaurantList(): Promise<RestaurantResponse[]> {
+  async getRestaurantList(): Promise<IRestaurantResponse[]> {
     try {
       return await this.elasticSearchService.getRestaurantList();
     } catch (error) {
@@ -116,10 +119,10 @@ export class RestaurantService implements IRestaurantService {
   }
   async getOrderList(
     paginationParams: PaginationParams,
-  ): Promise<PaginatedOrderResponse> {
+  ): Promise<IPaginatedOrderResponse> {
     try {
       const user: User = this.getUserDetailsFromRequest();
-      const paginationPayload: PaginationPayload = pagination({
+      const paginationPayload: IPaginationPayload = pagination({
         page: paginationParams.page,
         size: paginationParams.pageSize,
       });
@@ -139,7 +142,7 @@ export class RestaurantService implements IRestaurantService {
 
       const orders: Order[] = await query.exec();
 
-      const orderResponses: OrderResponse[] = [];
+      const orderResponses: IOrderResponse[] = [];
       orders?.forEach((order) => {
         orderResponses.push({
           id: order._id,
@@ -173,7 +176,7 @@ export class RestaurantService implements IRestaurantService {
       });
 
       const total = await this.orderModel
-        .count()
+        .countDocuments()
         .and([{ restaurant: user.restaurant._id }])
         .exec();
 
@@ -183,7 +186,7 @@ export class RestaurantService implements IRestaurantService {
         limit: +paginationPayload.limit,
       });
 
-      const paginatedOrderResponse: PaginatedOrderResponse = {
+      const paginatedOrderResponse: IPaginatedOrderResponse = {
         orders: orderResponses,
         count: total,
         currentPage: paginatedData.currentPage,
@@ -256,7 +259,7 @@ export class RestaurantService implements IRestaurantService {
     }
   }
 
-  async getOrderDiscount(): Promise<OrderDiscount[]> {
+  async getOrderDiscount(): Promise<IOrderDiscount[]> {
     try {
       const user: User = this.getUserDetailsFromRequest();
       return await this.orderDiscountModel
@@ -269,7 +272,7 @@ export class RestaurantService implements IRestaurantService {
 
   async createOrderDiscount(
     orderDiscountDto: CreateOrderDiscountDto,
-  ): Promise<OrderDiscount> {
+  ): Promise<IOrderDiscount> {
     try {
       const user: User = this.getUserDetailsFromRequest();
       const orderDis: OrderDiscount[] = await this.orderDiscountModel
@@ -303,7 +306,7 @@ export class RestaurantService implements IRestaurantService {
   async updateOrderDiscount(
     orderDiscountDto: UpdateOrderDiscountDto,
     discountId: string,
-  ): Promise<OrderDiscount> {
+  ): Promise<IOrderDiscount> {
     try {
       const user: User = this.getUserDetailsFromRequest();
       const isUsed: boolean = await this.isUsedOrderDiscount(discountId);
@@ -345,7 +348,7 @@ export class RestaurantService implements IRestaurantService {
     }
   }
 
-  async searchRestaurant(keyword: string): Promise<RestaurantResponse[]> {
+  async searchRestaurant(keyword: string): Promise<IRestaurantResponse[]> {
     try {
       return await this.elasticSearchService.searchRestaurant(keyword);
     } catch (error: any) {

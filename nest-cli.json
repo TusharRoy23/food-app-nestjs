@@ -6,6 +6,8 @@
     "assets": [
       "modules/mail/templates/**/*"
     ],
-    "watchAssets": true
+    "watchAssets": true,
+    "builder": "swc",
+    "typeCheck": true
   }
 }

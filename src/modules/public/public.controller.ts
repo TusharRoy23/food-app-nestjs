@@ -19,12 +19,12 @@ import { ParseObjectIDPipe } from '../shared/pipe/parse-objectid.pipe';
 @Controller('public')
 @IsPublic(true)
 @SerializeOptions({
-  excludePrefixes: ['_']
+  excludePrefixes: ['_'],
 })
 export class PublicController {
   constructor(
     @Inject(PUBLIC_SERVICE) private readonly publicService: IPublicService,
-  ) { }
+  ) {}
 
   @Post('restaurant/register')
   public async register(

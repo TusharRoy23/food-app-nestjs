@@ -1,10 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsEmail } from 'class-validator';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Restaurant } from '../../restaurant/schemas';
 import { CurrentStatus, UserRole, UserType } from '../../shared/utils/enum';
 import { hashString, isStringMatched } from '../../shared/utils/hashing.utils';
-import { IUser } from '../interfaces/IUser.model';
+import { IUser, IRestaurant } from "../../shared/interfaces/shared.model";
 
 @Schema({
   toJSON: {
@@ -14,7 +13,7 @@ import { IUser } from '../interfaces/IUser.model';
       delete ret.hashedRefreshToken;
       return ret;
     },
-    versionKey: false
+    versionKey: false,
   },
 })
 export class User implements IUser {
@@ -55,7 +54,7 @@ export class User implements IUser {
   current_status: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' })
-  restaurant: Restaurant;
+  restaurant: IRestaurant;
 
   @Prop({ type: 'String' })
   hashedRefreshToken: string;

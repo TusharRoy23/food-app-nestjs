@@ -1,27 +1,27 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { OrderStatus, PaidBy } from '../../shared/utils/enum';
-import { Restaurant } from '../../restaurant/schemas';
-import { User } from '../../user/schemas/user.schema';
-import { OrderDiscount } from './order-discount.schema';
-import { OrderItem } from './order-item.schemas';
-import { IOrder } from '../interfaces/IOrder.model';
+import { IUser, IRestaurant, IOrder, IOrderDiscount, IOrderItem } from "../../shared/interfaces/shared.model";
 
-@Schema()
+@Schema({
+  toJSON: {
+    virtuals: true,
+  },
+})
 export class Order implements IOrder {
   _id: mongoose.Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  user: User;
+  user: IUser;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' })
-  restaurant: Restaurant;
+  restaurant: IRestaurant;
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'OrderItem' }] })
-  order_items: OrderItem[];
+  order_items: IOrderItem[];
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'OrderDiscount' })
-  order_discount: OrderDiscount;
+  order_discount: IOrderDiscount;
 
   @Prop({ type: 'String', required: true })
   serial_number: string;

@@ -1,33 +1,33 @@
 import { PaginationParams } from '../../shared/dto/pagination-params';
-import { OrderDiscount } from '../../../modules/order/schemas';
 import {
-  PaginatedOrderResponse,
-  RestaurantResponse,
+  IPaginatedOrderResponse,
+  IRestaurantResponse,
 } from '../../shared/utils/response.utils';
 import {
   CreateOrderDiscountDto,
   RegisterDto,
   UpdateOrderDiscountDto,
 } from '../dto/index.dto';
+import { IOrderDiscount } from '../../shared/interfaces/shared.model';
 
 export const RESTAURANT_SERVICE = 'RESTAURANT_SERVICE';
 
 export interface IRestaurantService {
   register(registerDto: RegisterDto): Promise<string>;
-  getRestaurantList(): Promise<RestaurantResponse[]>;
+  getRestaurantList(): Promise<IRestaurantResponse[]>;
   getOrderList(
     paginationParams: PaginationParams,
-  ): Promise<PaginatedOrderResponse>;
+  ): Promise<IPaginatedOrderResponse>;
   releaseOrder(orderId: string): Promise<string>;
   completeOrder(orderId: string): Promise<string>;
-  getOrderDiscount(): Promise<OrderDiscount[]>;
+  getOrderDiscount(): Promise<IOrderDiscount[]>;
   createOrderDiscount(
     orderDiscountDto: CreateOrderDiscountDto,
-  ): Promise<OrderDiscount>;
+  ): Promise<IOrderDiscount>;
   updateOrderDiscount(
     orderDiscountDto: UpdateOrderDiscountDto,
     discountId: string,
-  ): Promise<OrderDiscount>;
+  ): Promise<IOrderDiscount>;
   deleteOrderDiscount(discountId: string): Promise<boolean>;
-  searchRestaurant(keyword: string): Promise<RestaurantResponse[]>;
+  searchRestaurant(keyword: string): Promise<IRestaurantResponse[]>;
 }

@@ -1,27 +1,27 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { OrderDiscount } from '../../order/schemas';
 import { CartStatus } from '../../shared/utils/enum';
-import { Restaurant } from '../../restaurant/schemas';
-import { User } from '../../user/schemas/user.schema';
-import { CartItem } from './cart-item.schema';
-import { ICart } from '../interfaces/ICart.model';
+import { IUser, IRestaurant, IOrderDiscount, ICart, ICartItem } from "../../shared/interfaces/shared.model";
 
-@Schema()
+@Schema({
+  toJSON: {
+    virtuals: true,
+  },
+})
 export class Cart implements ICart {
   _id: mongoose.Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  user: User;
+  user: IUser;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' })
-  restaurant: Restaurant;
+  restaurant: IRestaurant;
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CartItem' }] })
-  cart_items: CartItem[];
+  cart_items: ICartItem[];
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'OrderDiscount' })
-  order_discount: OrderDiscount;
+  order_discount: IOrderDiscount;
 
   @Prop({ type: 'Number', default: 0.0 })
   cart_amount: number;

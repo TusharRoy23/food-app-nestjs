@@ -27,8 +27,8 @@ describe('Public Controller (e2e)', () => {
   const registerDto: RegisterDto = {
     address: restaurants[0].address,
     email: 'tushar@gm.com',
-    closing_time: restaurants[0].closing_time,
-    opening_time: restaurants[0].opening_time,
+    opening_time: restaurants[0].opening_time ?? '08:08:08',
+    closing_time: restaurants[0].closing_time ?? '12:00:00',
     password: 'tushar',
     restaurant_name: restaurants[0].name,
     name: restaurants[0].name,
@@ -50,7 +50,7 @@ describe('Public Controller (e2e)', () => {
         exceptionFactory: (errors: ValidationError[]) => {
           const errMsg = {};
           errors.forEach((err) => {
-            errMsg[err.property] = [...Object.values(err.constraints)];
+            errMsg[err.property] = [...Object.values(err.constraints ?? {})];
           });
           return new ValidationException(errMsg);
         },

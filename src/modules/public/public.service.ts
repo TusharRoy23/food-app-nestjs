@@ -6,12 +6,15 @@ import {
   IRestaurantService,
 } from '../restaurant/interfaces/IRestaurant.service';
 import { throwException } from '../shared/errors/all.exception';
-import { ISharedService, SHARED_SERVICE } from '../shared/interfaces';
 import {
-  ItemReponse,
-  RestaurantResponse,
+  IItemReponse,
+  IRestaurantResponse,
 } from '../shared/utils/response.utils';
 import { IPublicService } from './interfaces/IPublic.service';
+import {
+  ISharedService,
+  SHARED_SERVICE,
+} from '../shared/interfaces/IShared.service';
 
 @Injectable()
 export class PublicService implements IPublicService {
@@ -21,11 +24,11 @@ export class PublicService implements IPublicService {
     @Inject(SHARED_SERVICE) private readonly sharedService: ISharedService,
   ) {}
 
-  async getItemList(restaurantId: string): Promise<ItemReponse[]> {
+  async getItemList(restaurantId: string): Promise<IItemReponse[]> {
     try {
       await this.sharedService.getRestaurantInfo(restaurantId);
       const items: Item[] = await this.sharedService.getItemList(restaurantId);
-      const list: ItemReponse[] = items.map((item) => ({
+      const list: IItemReponse[] = items.map((item) => ({
         meal_state: item.meal_state,
         name: item.name,
         item_type: item.item_type,
@@ -45,11 +48,11 @@ export class PublicService implements IPublicService {
     return this.restaurantService.register(registerDto);
   }
 
-  async getRestaurantList(): Promise<RestaurantResponse[]> {
+  async getRestaurantList(): Promise<IRestaurantResponse[]> {
     return this.restaurantService.getRestaurantList();
   }
 
-  async searchRestaurant(keyword: string): Promise<RestaurantResponse[]> {
+  async searchRestaurant(keyword: string): Promise<IRestaurantResponse[]> {
     return this.restaurantService.searchRestaurant(keyword);
   }
 }

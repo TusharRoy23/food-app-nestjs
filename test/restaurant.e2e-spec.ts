@@ -71,7 +71,7 @@ describe('Restaurant Controller (e2e)', () => {
         exceptionFactory: (errors: ValidationError[]) => {
           const errMsg = {};
           errors.forEach((err) => {
-            errMsg[err.property] = [...Object.values(err.constraints)];
+            errMsg[err.property] = [...Object.values(err.constraints ?? {})];
           });
           return new ValidationException(errMsg);
         },

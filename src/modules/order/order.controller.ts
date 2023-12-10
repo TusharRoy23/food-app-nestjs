@@ -25,12 +25,12 @@ import { IOrderService, ORDER_SERVICE } from './interfaces/IOrder.service';
 @Roles(UserRole.NONE)
 @TypeOfUsers(UserType.VISITOR)
 @SerializeOptions({
-  excludePrefixes: ['_']
+  excludePrefixes: ['_'],
 })
 export class OrderController {
   constructor(
     @Inject(ORDER_SERVICE) private readonly orderService: IOrderService,
-  ) { }
+  ) {}
 
   @Post('/:cartId')
   public async create(@Param('cartId', ParseObjectIDPipe) cartId: string) {

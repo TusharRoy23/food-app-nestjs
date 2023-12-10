@@ -2,18 +2,22 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { connectionName } from '../../shared/utils/enum';
 import {
+  FakeAuthService,
   FakeElasticsearchService,
   FakeSharedService,
   restaurantRegistrationMsg,
 } from '../../../../test/utils/fake.service';
 import {
   ELASTICSEARCH_SERVICE,
+  IElasticsearchService,
+  IRequestService,
   REQUEST_SERVICE,
   SHARED_SERVICE,
 } from '../../shared/interfaces';
 import { RequestService } from '../../shared/service';
 import { RestaurantService } from '../restaurant.service';
-import { Restaurant, RestaurantDocument, RestaurantItem } from '../schemas';
+import { Restaurant, RestaurantDocument } from "../schemas/restaurant.schema";
+import { RestaurantItem } from "../schemas/restaurant-item.schema";
 import { Order, OrderDiscount, OrderDocument } from '../../order/schemas';
 import { User, UserDocument } from '../../user/schemas/user.schema';
 import { Model } from 'mongoose';
@@ -26,12 +30,17 @@ import {
 } from '../../../../test/utils/generate';
 import { RegisterDto } from '../dto/register.dto';
 import { PaginationParams } from '../../shared/dto/pagination-params';
-import { PaginatedOrderResponse } from '../../shared/utils/response.utils';
+import { IPaginatedOrderResponse } from '../../shared/utils/response.utils';
 import { NotFoundException } from '@nestjs/common';
+import { IRestaurantService } from '../interfaces/IRestaurant.service';
+import { AUTH_SERVICE, IAuthService } from '../../auth/interfaces/IAuth.service';
 
 describe('RestaurantService', () => {
-  let restaurantService: RestaurantService;
-  let requestService: RequestService;
+  let restaurantService: IRestaurantService;
+  let requestService: IRequestService;
+  let authService: IAuthService;
+  let elasticSearchService: IElasticsearchService;
+
   const restaurentDoc = getModelToken(Restaurant.name, connectionName.MAIN_DB);
   const orderDoc = getModelToken(Order.name, connectionName.MAIN_DB);
   const userDoc = getModelToken(User.name, connectionName.MAIN_DB);
@@ -69,6 +78,11 @@ describe('RestaurantService', () => {
         },
         FakeElasticsearchService,
         {
+          provide: AUTH_SERVICE,
+          useExisting: FakeAuthService
+        },
+        FakeAuthService,
+        {
           provide: restaurentDoc,
           useValue: {
             create: jest.fn(),
@@ -79,7 +93,7 @@ describe('RestaurantService', () => {
           useValue: {
             find: jest.fn(),
             exec: jest.fn(),
-            count: jest.fn(),
+            countDocuments: jest.fn(),
             findOneAndUpdate: jest.fn(),
           },
         },
@@ -101,10 +115,13 @@ describe('RestaurantService', () => {
       ],
     }).compile();
 
-    restaurantService = module.get<RestaurantService>(RestaurantService);
-    requestService = module.get<RequestService>(RequestService);
-    restaurantModel = module.get(restaurentDoc);
-    orderModel = module.get(orderDoc);
+    restaurantService = module.get<IRestaurantService>(RestaurantService);
+    requestService = module.get<IRequestService>(RequestService);
+    elasticSearchService = module.get<IElasticsearchService>(FakeElasticsearchService);
+    authService = module.get<IAuthService>(FakeAuthService);
+
+    restaurantModel = module.get<Model<RestaurantDocument>>(restaurentDoc);
+    orderModel = module.get<Model<OrderDocument>>(orderDoc);
     userModel = module.get<Model<UserDocument>>(userDoc);
 
     requestService.setUserInfo(userInfo);
@@ -132,13 +149,16 @@ describe('RestaurantService', () => {
     };
     jest
       .spyOn(userModel, 'create')
-      .mockImplementationOnce(() => Promise.resolve(user));
+      .mockImplementationOnce(() => Promise.resolve(user as any));
     jest
       .spyOn(restaurantModel, 'create')
-      .mockImplementationOnce(() => Promise.resolve(restaurant));
+      .mockImplementationOnce(() => Promise.resolve(restaurant as any));
     jest.spyOn(userModel, 'findOneAndUpdate').mockReturnValueOnce({
       exec: jest.fn().mockResolvedValueOnce(restaurant),
     } as any);
+
+    jest.spyOn(elasticSearchService, 'indexRestaurant').mockImplementationOnce(() => Promise.resolve(true));
+    jest.spyOn(authService, 'sendEmailVerificationLink').mockImplementationOnce(() => Promise.resolve('Mail Sent !'));
 
     const createdUser = await restaurantService.register(registerDto);
     expect(createdUser).toEqual(restaurantRegistrationMsg);
@@ -171,13 +191,13 @@ describe('RestaurantService', () => {
       }),
     } as any);
 
-    jest.spyOn(orderModel, 'count').mockReturnValue({
+    jest.spyOn(orderModel, 'countDocuments').mockReturnValue({
       and: jest.fn().mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(rawOrderList.length),
       }),
     } as any);
 
-    const orderList: PaginatedOrderResponse =
+    const orderList: IPaginatedOrderResponse =
       await restaurantService.getOrderList(paginationParams);
     expect(orderList).toHaveProperty('orders');
     expect(orderList.orders[0]).toHaveProperty('id');
