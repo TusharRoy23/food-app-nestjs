@@ -101,6 +101,12 @@ $ docker exec food-dev npx ts-node streamData.js
 # Insert data to ES
 $ docker exec food-dev node_modules/elasticdump/bin/elasticdump --input=restaurant.json --output=http://esUN:esPW@esFood01:9200/ --type=data
 ```
+## To find Circular dependency ([madge](https://www.npmjs.com/package/madge))
+### [Graphviz](https://www.npmjs.com/package/madge#graphviz-optional) (optional) - To see a graphical representation
+```bash
+$ npm install madge --save-dev
+$ npx ts-node circular.js
+```
 ## Different URLs
 - Swagger - [http://localhost:4000/api/v1/](http://localhost:4000/api/v1/)
 - Mongo-express - [http://localhost:8082/admin/](http://localhost:8082/admin/)
