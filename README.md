@@ -19,12 +19,12 @@ It's a simple food application on top of Nestjs & MongoDB. It can be used for le
 ## What has been used by far?
 | Name        | version |
 | ------------|---------|
-| NestJS      | 9.2.1   |
+| NestJS      | 10.2.10 |
 | MongoDB     | 6.0.3   |
 | Mongo-express | latest|
-| Elasticsearch | 7.17.9|
-| Kibana      | 7.17.9  |
-| @nestjs/swagger| 6.2.1|
+| Elasticsearch | 10.0.1|
+| Kibana      | 10.0.1  |
+| @nestjs/swagger|7.1.16|
 
 
 ## Run the app using docker
@@ -57,10 +57,11 @@ $ mongosh -u username -p password dbName
 ```
 More on - [Mongosh shell doc](https://www.mongodb.com/docs/mongodb-shell/crud/)
 ## Setup ELK
-This command will only work during the initial configuration of the Elasticsearch security features.For More Info - [Elasticsearch Doc](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/setup-passwords.html#setup-passwords-parameters). On the other hand, by using kibana password can be changed for the user. Go to **Management** > **Stack Management** > **Security** > **Users**
+This command will only work during the initial configuration of the Elasticsearch security features.For More Info - [Elasticsearch Doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/reset-password.html). On the other hand, by using kibana password can be changed for the user. Go to **Management** > **Stack Management** > **Security** > **Users**
 ```bash
 # Set password for ELK
-$ docker exec -it elasticContainerName bin/elasticsearch-setup-passwords interactive
+$ docker exec -it ESContainerName bin/elasticsearch-reset-password -u elastic -i
+$ docker exec -it ESContainerName bin/elasticsearch-reset-password -u kibana_system -i
 ```
 ## Insert Mapping for restaurant in ES by using Kibana Dev tools
 ```bash
@@ -98,7 +99,7 @@ PUT restaurants
 $ docker exec food-dev npx ts-node streamData.js
 
 # Insert data to ES
-$ docker exec food-dev node_modules/elasticdump/bin/elasticdump --input=restaurant.json --output=http://esFood01:9200/
+$ docker exec food-dev node_modules/elasticdump/bin/elasticdump --input=restaurant.json --output=http://esUN:esPW@esFood01:9200/ --type=data
 ```
 ## Different URLs
 - Swagger - [http://localhost:4000/api/v1/](http://localhost:4000/api/v1/)
