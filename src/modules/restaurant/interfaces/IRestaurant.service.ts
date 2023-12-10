@@ -1,5 +1,4 @@
 import { PaginationParams } from '../../shared/dto/pagination-params';
-import { OrderDiscount } from '../../../modules/order/schemas';
 import {
   IPaginatedOrderResponse,
   IRestaurantResponse,
@@ -9,6 +8,7 @@ import {
   RegisterDto,
   UpdateOrderDiscountDto,
 } from '../dto/index.dto';
+import { IOrderDiscount } from '../../shared/interfaces/shared.model';
 
 export const RESTAURANT_SERVICE = 'RESTAURANT_SERVICE';
 
@@ -20,14 +20,14 @@ export interface IRestaurantService {
   ): Promise<IPaginatedOrderResponse>;
   releaseOrder(orderId: string): Promise<string>;
   completeOrder(orderId: string): Promise<string>;
-  getOrderDiscount(): Promise<OrderDiscount[]>;
+  getOrderDiscount(): Promise<IOrderDiscount[]>;
   createOrderDiscount(
     orderDiscountDto: CreateOrderDiscountDto,
-  ): Promise<OrderDiscount>;
+  ): Promise<IOrderDiscount>;
   updateOrderDiscount(
     orderDiscountDto: UpdateOrderDiscountDto,
     discountId: string,
-  ): Promise<OrderDiscount>;
+  ): Promise<IOrderDiscount>;
   deleteOrderDiscount(discountId: string): Promise<boolean>;
   searchRestaurant(keyword: string): Promise<IRestaurantResponse[]>;
 }

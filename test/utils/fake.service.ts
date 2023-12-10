@@ -3,6 +3,8 @@ import {
   IItemReponse,
   IPaginatedOrderResponse,
   IRestaurantResponse,
+  ITokenResponse,
+  IUserResponse,
 } from '../../src/modules/shared/utils/response.utils';
 import { IPublicService } from '../../src/modules/public/interfaces/IPublic.service';
 import {
@@ -27,6 +29,8 @@ import { Restaurant } from '../../src/modules/restaurant/schemas/restaurant.sche
 import { User } from '../../src/modules/user/schemas/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import { IItem } from '../../src/modules/shared/interfaces/shared.model';
+import { IAuthService } from '../../src/modules/auth/interfaces/IAuth.service';
+import { SignInCredentialsDto, SignUpCredentialsDto } from '../../src/modules/auth/dto';
 
 export const restaurants = getRestaurantList(4);
 export const items = getItemList(4);
@@ -156,5 +160,26 @@ export class FakeJwtService {
       },
     );
     return accessToken;
+  }
+}
+
+export class FakeAuthService implements IAuthService {
+  signIn(payload: SignInCredentialsDto): Promise<IUserResponse> {
+    throw new Error('Method not implemented.');
+  }
+  createUser(signupDto: SignUpCredentialsDto): Promise<string> {
+    throw new Error('Method not implemented.');
+  }
+  getNewAccessAndRefreshToken(): Promise<ITokenResponse> {
+    throw new Error('Method not implemented.');
+  }
+  logout(): Promise<boolean> {
+    throw new Error('Method not implemented.');
+  }
+  sendEmailVerificationLink(email: string): Promise<string> {
+    throw new Error('Method not implemented.');
+  }
+  mailValidation(token: string): Promise<string> {
+    throw new Error('Method not implemented.');
   }
 }

@@ -53,6 +53,7 @@ import {
   ELASTICSEARCH_SERVICE,
   IElasticsearchService,
 } from '../shared/interfaces/IElasticsearch.service';
+import { IOrderDiscount } from '../shared/interfaces/shared.model';
 
 @Injectable()
 export class RestaurantService implements IRestaurantService {
@@ -72,7 +73,7 @@ export class RestaurantService implements IRestaurantService {
     @Inject(ELASTICSEARCH_SERVICE)
     private readonly elasticSearchService: IElasticsearchService,
     @Inject(AUTH_SERVICE) private readonly authService: IAuthService,
-  ) {}
+  ) { }
 
   async register(registerDto: RegisterDto): Promise<string> {
     try {
@@ -258,7 +259,7 @@ export class RestaurantService implements IRestaurantService {
     }
   }
 
-  async getOrderDiscount(): Promise<OrderDiscount[]> {
+  async getOrderDiscount(): Promise<IOrderDiscount[]> {
     try {
       const user: User = this.getUserDetailsFromRequest();
       return await this.orderDiscountModel
@@ -271,7 +272,7 @@ export class RestaurantService implements IRestaurantService {
 
   async createOrderDiscount(
     orderDiscountDto: CreateOrderDiscountDto,
-  ): Promise<OrderDiscount> {
+  ): Promise<IOrderDiscount> {
     try {
       const user: User = this.getUserDetailsFromRequest();
       const orderDis: OrderDiscount[] = await this.orderDiscountModel
@@ -305,7 +306,7 @@ export class RestaurantService implements IRestaurantService {
   async updateOrderDiscount(
     orderDiscountDto: UpdateOrderDiscountDto,
     discountId: string,
-  ): Promise<OrderDiscount> {
+  ): Promise<IOrderDiscount> {
     try {
       const user: User = this.getUserDetailsFromRequest();
       const isUsed: boolean = await this.isUsedOrderDiscount(discountId);
