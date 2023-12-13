@@ -17,6 +17,7 @@ import { ParseObjectIDPipe } from '../shared/pipe/parse-objectid.pipe';
 import { UserRole, UserType } from '../shared/utils/enum';
 import { CartItemDto } from './dto/cart-item.dto';
 import { CART_SERVICE, ICartService } from './interfaces/ICart.interface';
+import { Throttle, seconds } from '@nestjs/throttler';
 
 @ApiTags('Cart')
 @ApiBearerAuth()
@@ -30,8 +31,14 @@ import { CART_SERVICE, ICartService } from './interfaces/ICart.interface';
 export class CartController {
   constructor(
     @Inject(CART_SERVICE) private readonly cartService: ICartService,
-  ) {}
+  ) { }
 
+  @Throttle({
+    medium: {
+      ttl: seconds(+process.env.SHORT_THROTTLE_TTL),
+      limit: +process.env.SHORT_THROTTLE_LIMIT
+    }
+  }) // To specific to the API only
   @Post('/:restaurantId')
   public async create(
     @Body() cartItemDto: CartItemDto,
@@ -53,6 +60,12 @@ export class CartController {
     return this.cartService.delete(cartItemId, cartId);
   }
 
+  @Throttle({
+    medium: {
+      ttl: seconds(+process.env.SHORT_THROTTLE_TTL),
+      limit: +process.env.SHORT_THROTTLE_LIMIT
+    }
+  }) // To specific to the API only
   @Put('/:cartId')
   public async update(
     @Body() cartItemDto: CartItemDto,

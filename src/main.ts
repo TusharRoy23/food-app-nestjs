@@ -34,7 +34,10 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config, options);
   SwaggerModule.setup('api/v1', app, document);
 
-  app.enableCors();
+  app.enableCors({
+    origin: '*',
+    methods: ['PUT', 'POST', 'GET', 'PATCH', 'DELETE']
+  });
   app.useGlobalInterceptors(
     new ResponseSerializerInterceptor(app.get(Reflector)),
   );
