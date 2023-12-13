@@ -16,11 +16,27 @@ import {
 import { APP_GUARD } from '@nestjs/core';
 import { SharedModule } from './modules/shared/shared.module';
 import { MailModule } from './modules/mail/mail.module';
+import { ThrottlerGuard, ThrottlerModule, seconds } from '@nestjs/throttler';
+import { ThrottlerBehindProxyGuard } from './modules/shared/guards/rate-limiter.guard';
 
 @Module({
   imports: [
     MongooseModule.forRoot(`${process.env.MONGODB_URL}`, {
       connectionName: connectionName.MAIN_DB,
+    }),
+    ThrottlerModule.forRootAsync({
+      useFactory: () => [
+        {
+          name: 'medium',
+          ttl: seconds(+process.env.MEDIUM_THROTTLE_TTL),
+          limit: +process.env.MEDIUM_THROTTLE_LIMIT
+        },
+        {
+          name: 'long',
+          ttl: seconds(+process.env.LONG_THROTTLE_TTL),
+          limit: +process.env.LONG_THROTTLE_LIMIT
+        }
+      ]
     }),
     UserModule,
     RestaurantModule,
@@ -37,6 +53,7 @@ import { MailModule } from './modules/mail/mail.module';
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
     { provide: APP_GUARD, useClass: UserTypeGuard },
+    { provide: APP_GUARD, useClass: ThrottlerBehindProxyGuard }
   ],
 })
-export class AppModule {}
+export class AppModule { }

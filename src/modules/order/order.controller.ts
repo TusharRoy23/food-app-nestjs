@@ -17,6 +17,7 @@ import { PaginationParams } from '../shared/dto/pagination-params';
 import { ParseObjectIDPipe } from '../shared/pipe/parse-objectid.pipe';
 import { UserRole, UserType } from '../shared/utils/enum';
 import { IOrderService, ORDER_SERVICE } from './interfaces/IOrder.service';
+import { Throttle, seconds } from '@nestjs/throttler';
 
 @ApiTags('Order')
 @ApiBearerAuth()
@@ -30,8 +31,14 @@ import { IOrderService, ORDER_SERVICE } from './interfaces/IOrder.service';
 export class OrderController {
   constructor(
     @Inject(ORDER_SERVICE) private readonly orderService: IOrderService,
-  ) {}
+  ) { }
 
+  @Throttle({
+    medium: {
+      ttl: seconds(+process.env.SHORT_THROTTLE_TTL),
+      limit: +process.env.SHORT_THROTTLE_LIMIT
+    }
+  }) // To specific to the API only
   @Post('/:cartId')
   public async create(@Param('cartId', ParseObjectIDPipe) cartId: string) {
     return this.orderService.submitOrder(cartId);

@@ -24,7 +24,7 @@ import { ParseObjectIDPipe } from '../shared/pipe/parse-objectid.pipe';
 export class PublicController {
   constructor(
     @Inject(PUBLIC_SERVICE) private readonly publicService: IPublicService,
-  ) {}
+  ) { }
 
   @Post('restaurant/register')
   public async register(
