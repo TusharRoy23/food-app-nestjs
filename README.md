@@ -128,4 +128,4 @@ $ npm run test:e2e test/fileName.e2e-spec.ts
 ## Stay in touch
 - 📖 Checkout my stories - [Medium](https://medium.com/@tushar-chy)
 - 🔗 Connect with me - [LinkedIn](https://www.linkedin.com/in/tushar-roy-chy/)
-- 📫 Contact Me - [chowdhurytusharroy@gmail.com](mailto:chowdhurytusharroy@gmail.com?subject=[GitHub]%20Query)
+- 📫 Contact Me - [chowdhurytusharroy@gmail.com](mailto:chowdhurytusharroy@gmail.com?subject=Hey%20there)
