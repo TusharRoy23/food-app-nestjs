@@ -12,6 +12,7 @@ It's a simple food application on top of Nestjs & MongoDB. It can be used for le
 * Customer can perform CRUD operation on carts & also request for the orders.
 * Customers are allowed to give ratings for restaurants.
 * Users can search restaurants.
+* Rate limiting of requests.
 
 ## ERD
 ![Food App ERD](https://github.com/TusharRoy23/food-app-nestjs/blob/master/food-app-ERD.png)
@@ -20,7 +21,7 @@ It's a simple food application on top of Nestjs & MongoDB. It can be used for le
 | Name        | version |
 | ------------|---------|
 | NestJS      | 10.2.10 |
-| MongoDB     | 6.0.3   |
+| MongoDB     | 7.0.4   |
 | Mongo-express | latest|
 | Elasticsearch | 10.0.1|
 | Kibana      | 10.0.1  |
@@ -48,6 +49,7 @@ $ docker exec mongoContainerName mongoexport --uri="mongodb://UN:PWD@mongoContai
 # Copy the file from DB Container
 $ docker cp DBcontainerName:/collectionName.json destinationFolderPath
 ```
+More on - [mongoexport](https://www.mongodb.com/docs/database-tools/mongoexport/)
 ## Mongo Shell
 ```bash
 # Get inside the DB container
@@ -124,6 +126,6 @@ $ npm run test:e2e test/fileName.e2e-spec.ts
 ## CI/CD integration
 - Checkout Medium - [CD with Google Cloud Run, GitHub Actions, Artifact Registry, & WIF](https://tushar-chy.medium.com/cd-with-google-cloud-run-github-actions-artifact-registry-workload-identity-federation-fcc8e317b327)
 ## Stay in touch
-- Checkout my stories - [Medium](https://medium.com/@tushar-chy)
-- Connect with me - [LinkedIn](https://www.linkedin.com/in/tushar-roy-chy/)
-- Contact Me - chowdhurytusharroy@gmail.com
+- 📖 Checkout my stories - [Medium](https://medium.com/@tushar-chy)
+- 🔗 Connect with me - [LinkedIn](https://www.linkedin.com/in/tushar-roy-chy/)
+- 📫 Contact Me - [chowdhurytusharroy@gmail.com](mailto:chowdhurytusharroy@gmail.com?subject=[GitHub]%20Query)
